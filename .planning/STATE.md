@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 01
-current_phase_name: foundation-spike
-status: verifying
-stopped_at: Completed 01-03-PLAN.md (phase 01 complete)
-last_updated: "2026-08-07T17:41:32.747Z"
+current_phase: 2
+current_phase_name: Domain Core & Persistence
+status: planning
+stopped_at: Phase 1 complete (UAT + verification passed), ready to plan Phase 2
+last_updated: "2026-08-07T19:10:00.000Z"
 last_activity: 2026-08-07
-last_activity_desc: Phase 01 execution started
+last_activity_desc: Phase 01 complete, transitioned to Phase 2
 progress:
   total_phases: 1
   completed_phases: 1
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-07)
 
 **Core value:** Create a professional, print-ready business document (invoice, quote, or receipt) in under five minutes with a true WYSIWYG editing experience, entirely offline in the browser.
-**Current focus:** Phase 01 — foundation-spike
+**Current focus:** Phase 02 — Domain Core & Persistence
 
 ## Current Position
 
-Phase: 01 (foundation-spike) — EXECUTING
-Plan: 3 of 3
-Status: Phase complete — ready for verification
-Last activity: 2026-08-07 — Phase 01 execution started
+Phase: 2 — Domain Core & Persistence
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-08-07 — Phase 01 complete, transitioned to Phase 2
 
 Progress: [██████████] 100%
 
@@ -38,7 +38,7 @@ Progress: [██████████] 100%
 
 **Velocity:**
 
-- Total plans completed: 0
+- Total plans completed: 3
 - Average duration: N/A
 - Total execution time: N/A
 
@@ -52,6 +52,7 @@ Progress: [██████████] 100%
 | 4. Editing UX | - | TBD | - |
 | 5. Reference Data UX | - | TBD | - |
 | 6. Validation, Delivery & Polish | - | TBD | - |
+| 01 | 3 | - | - |
 
 **Recent Trend:**
 
@@ -74,9 +75,9 @@ Progress: [██████████] 100%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- [Phase 1]: Framework choice (Vite SPA + TanStack Router vs TanStack Start) — TBD by spike; research recommends Vite SPA
-- [Phase 1]: PDF path (print-CSS primary vs @react-pdf/renderer) — TBD by spike; research recommends print-CSS primary
-- [Phase 1]: Parity harness via golden-image screenshot diff — required before any editing UX is built
+- [Phase 1]: Framework choice (Vite SPA + TanStack Router) — RESOLVED via spike; Vite 8 SPA + TanStack Router 1.170.22 (ADR 0001), TanStack Start rejected
+- [Phase 1]: PDF path (print-CSS primary) — RESOLVED via spike (ADR 0002); react-pdf 4.5.1 fallback; Safari 18.2+ acceptance PENDING (does not block Phase 2)
+- [Phase 1]: Parity harness via golden-image screenshot diff — RESOLVED: Playwright + pixelmatch + pdfjs-dist; proves preview == print == PDF on torture fixture (0.0000 / 0.0306 / 0.0367 diff fractions)
 - [Roadmap]: 6-phase structure (research's 8 compressed); research phases 7–8 (PDF delivery, PWA/polish) folded into Phase 6; all DASH requirements unified in Phase 6
 - [Phase ?]: Shadcn 4.16.2 base-nova preset (Base UI), neutral base, CSS variables on
 - [Phase ?]: workbox-window 7.4.1 required by vite-plugin-pwa prompt-mode virtual module
@@ -94,7 +95,7 @@ None yet.
 
 ### Blockers/Concerns
 
-- [Phase 1] The foundation spike is BLOCKING — no other phase starts until framework + PDF engine ADRs are recorded and the parity harness passes on fixture documents.
+- [Phase 1] The foundation spike is BLOCKING — no other phase starts until framework + PDF engine ADRs are recorded and the parity harness passes on fixture documents. *(Resolved 2026-08-07 — ADRs 0001/0002 recorded, harness green, Phase 2 unblocked)*
 - [Phase 1] Research flags (from SUMMARY.md): golden-image diff tooling choice (Playwright vs pixelmatch) needs a mini-spike during Phase 3 planning; blob-in-JSON backup/restore edge cases need a mini-spike during Phase 6 planning.
 - [Phase 4] Mobile interaction sub-spec (PRD open question) is a required design artifact before mobile builder implementation; real-device QA mandatory.
 - [All phases] PDF preview/output parity is the product's core promise — never build the editor against a projection that hasn't passed the parity harness.
@@ -109,6 +110,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-07T17:41:18.066Z
-Stopped at: Completed 01-03-PLAN.md (phase 01 complete)
+Last session: 2026-08-07
+Stopped at: Phase 1 complete, ready to plan Phase 2
 Resume file: None

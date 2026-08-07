@@ -13,7 +13,7 @@ Paperchaser is a browser-only, local-first document workspace for freelancers an
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation Spike** - Prove framework and PDF-engine decisions on a realistic invoice; establish scaffold, CI, and parity harness
+- [x] **Phase 1: Foundation Spike** - Prove framework and PDF-engine decisions on a realistic invoice; establish scaffold, CI, and parity harness (completed 2026-08-07)
 - [ ] **Phase 2: Domain Core & Persistence** - Pure document model, totals/money engine, IndexedDB storage, JSON import/export — zero UI
 - [ ] **Phase 3: Render Pipeline** - Templates, branding, PDF generation, print preview with provably identical preview/output
 - [ ] **Phase 4: Editing UX** - Three-pane WYSIWYG builder with inline editing, drag-and-drop, undo/redo, auto-save, mobile interaction
@@ -127,7 +127,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation Spike | 3/3 | In Progress|  |
+| 1. Foundation Spike | 3/3 | Complete    | 2026-08-07 |
 | 2. Domain Core & Persistence | 0/TBD | Not started | - |
 | 3. Render Pipeline | 0/TBD | Not started | - |
 | 4. Editing UX | 0/TBD | Not started | - |

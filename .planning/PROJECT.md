@@ -64,7 +64,7 @@ The PRD pins TanStack Start (full-stack framework) for an explicitly frontend-on
 
 ## Constraints
 
-- **Tech stack**: TanStack Start, TypeScript, Tailwind CSS, shadcn/ui, HugeIcons, TanStack Form, Zod, Zustand, dnd-kit, Dexie (IndexedDB), @react-pdf/renderer, vite-plugin-pwa — pinned by PRD §7, kept per user decision
+- **Tech stack**: Vite 8 SPA + TanStack Router 1.170.22, TypeScript (~6.0.3 strict), Tailwind v4, shadcn/ui (base-nova, Base UI), Dexie (IndexedDB), vite-plugin-pwa, print-CSS primary PDF path with @react-pdf/renderer 4.5.1 as documented fallback (ADR 0001, ADR 0002) — overrides PRD §7 pins (TanStack Start, react-pdf) per the PRD's own Phase 1 validation mandate
 - **No backend**: No user accounts, no server, no cloud sync — privacy-first and local-first are non-negotiable (PRD §2)
 - **Mobile-first**: Must work beautifully on desktop and mobile (PRD §3)
 - **PDF parity**: PDF output must be identical to on-screen preview (PRD §6.9)
@@ -76,8 +76,11 @@ The PRD pins TanStack Start (full-stack framework) for an explicitly frontend-on
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Product name: Paperchaser | Matches project directory; working title | — Pending |
-| Keep PRD stack (TanStack Start + react-pdf) | User chose to honor the PRD as written | — Pending |
-| Validate stack in Phase 1 spike | PRD itself lists PDF engine as an open question; preview/output parity is at risk | — Pending |
+| Framework: Vite 8 SPA + TanStack Router (overturns PRD's TanStack Start pin) | Start is RC + needs Node >= 22.12 server runtime for zero in-scope server features; Router-alone guidance | Validated — ADR 0001, Phase 1 |
+| PDF path: print-CSS primary (overturns PRD's react-pdf pin) | Safari 18.2+ paged-media fidelity, per-page watermark, zero edit-time latency vs full regeneration; harness-measured evidence | Validated — ADR 0002, Phase 1; Safari acceptance step PENDING (only open item, does not block Phase 2) |
+| Golden-image parity harness (Playwright + pixelmatch + pdfjs-dist) required before editing UX | "Identical preview/output" is the product's core promise (PRD §6.9); harness proves preview == print == PDF on fixture documents | Validated — Phase 1, plan 01-02 |
+| CI baseline = green gate mirroring local scripts, never writes baselines | Same gates dev runs; committed goldens drift-guarded | Validated — Phase 1, plan 01-03 |
+| Validate stack in Phase 1 spike | PRD itself lists PDF engine as an open question; preview/output parity is at risk | Done — resolved both decisions via ADRs |
 | Greenfield, git init in this directory | Empty dir, clean start, auto mode | — Pending |
 
 ## Evolution
@@ -98,4 +101,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-07 after initialization*
+*Last updated: 2026-08-07 after Phase 1*
