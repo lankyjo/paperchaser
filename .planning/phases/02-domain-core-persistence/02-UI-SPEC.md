@@ -1,7 +1,8 @@
 ---
 phase: 2
 slug: domain-core-persistence
-status: draft
+status: approved
+reviewed_at: 2026-08-07
 shadcn_initialized: true
 preset: base-nova (Base UI), neutral base, CSS variables on
 created: 2026-08-07
@@ -89,11 +90,13 @@ Accent reserved for (deferred to Phase 3/4/5 — declared now so the contract is
 
 ## UI Considerations
 
-Applicable state considerations resolved: **0 covered, 0 backstop, 0 unresolved — "none applicable"**
+Probe result: 1 element (E1 — JSON import error contract), 0 applicable considerations after dismissal. **0 covered, 0 backstop, 0 unresolved — "none applicable"**
 
 | Category | Element(s) | Status | Resolution / Reason |
 |----------|------------|--------|---------------------|
-| — | none | ✅ covered | Zero UI elements exist in this phase (ROADMAP: "zero UI"; 02-CONTEXT.md §Phase Boundary). No empty/loading/error/populated/partial/overflow/zero-one-many/long-text states to specify. |
+| overflow | E1 (JSON import error contract) | dismissed | Non-rendered data record (Zod `{ code, path, expected, received }`) — no DOM surface this phase; zero-UI boundary (ROADMAP §"Phase 2", 02-CONTEXT.md §Phase Boundary). Container-overflow state cannot occur. |
+| long-text | E1 (JSON import error contract) | dismissed | Same as above — data-only record, never rendered; no text-wrapping state to specify. |
+| — | none rendered | ✅ covered | Zero rendered UI elements exist in this phase (ROADMAP: "zero UI"; 02-CONTEXT.md §Phase Boundary). No empty/loading/error/populated/partial/zero-one-many states to specify. |
 
 ---
 
@@ -115,6 +118,6 @@ No registry additions this phase. Phase 1 components (button, card, input, label
 - [ ] Dimension 3 Color: PASS (baseline recorded only)
 - [ ] Dimension 4 Typography: PASS (baseline recorded only)
 - [ ] Dimension 5 Spacing: PASS (baseline recorded only)
-- [ ] Dimension 6 Registry Safety: PASS (no registry usage)
+- [x] Dimension 6 Registry Safety: PASS (no registry usage)
 
-**Approval:** pending
+**Approval:** approved (2026-08-07, gsd-ui-checker)
