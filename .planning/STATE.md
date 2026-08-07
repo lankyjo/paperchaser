@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 2
-current_phase_name: Domain Core & Persistence
+current_phase: 02
+current_phase_name: domain-core-persistence
 status: executing
-stopped_at: Phase 2 UI-SPEC approved
-last_updated: "2026-08-07T21:13:02.653Z"
+stopped_at: Completed 02-01-PLAN.md
+last_updated: "2026-08-07T21:44:28.774Z"
 last_activity: 2026-08-07
-last_activity_desc: Phase 01 complete, transitioned to Phase 2
+last_activity_desc: Phase 02 execution started
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 7
-  completed_plans: 3
+  completed_plans: 4
 ---
 
 # Project State
@@ -23,16 +23,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-07)
 
 **Core value:** Create a professional, print-ready business document (invoice, quote, or receipt) in under five minutes with a true WYSIWYG editing experience, entirely offline in the browser.
-**Current focus:** Phase 02 — Domain Core & Persistence
+**Current focus:** Phase 02 — domain-core-persistence
 
 ## Current Position
 
-Phase: 2 — Domain Core & Persistence
-Plan: Not started
+Phase: 02 (domain-core-persistence) — EXECUTING
+Plan: 2 of 4
 Status: Ready to execute
-Last activity: 2026-08-07 — Phase 01 complete, transitioned to Phase 2
+Last activity: 2026-08-07 — Phase 02 execution started
 
-Progress: [██████████] 100%
+Progress: [██████░░░░] 57%
 
 ## Performance Metrics
 
@@ -67,6 +67,7 @@ Progress: [██████████] 100%
 | Phase 01 P01 | 40min | 3 tasks | 33 files |
 | Phase 01 P02 | 33min | 3 tasks | 9 files |
 | Phase 01 P03 | 9 min | 2 tasks | 2 files |
+| Phase 02 P01 | 18min | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -86,6 +87,7 @@ Recent decisions affecting current work:
 - [Phase 01]: pdfjs-dist Node rasterization via @napi-rs/canvas + legacy build (plan's 'canvas' name corrected)
 - [Phase 01]: @page margin 0 + page-block 15mm padding; watermark overlay global (both projections); element-box captures; page.pdf while print media emulated
 - [Phase 01]: Vite 8 SPA + TanStack Router 1.170.22 is the application framework; TanStack Start rejected (RC status, Node >= 22.12 server runtime, zero in-scope server features); re-adopted only if the product gains auth/sync/shared documents (ADR 0001) — ADR 0001 evidence is research-sourced (Start RC quote, Router-alone guidance); CI baseline mirrors local gate scripts byte-for-byte with a frozen lockfile and no baseline-write step
+- [Phase 02]: Scoped vitest include to src/**/*.test.ts + passWithNoTests: true in the existing vite.config.ts (no new vitest.config.ts) — vitest's default glob collides with the Phase 1 Playwright spec; zero-config assumption corrected at install time — Preserves the plan's zero-config prohibition while making the plan's own acceptance criterion (vitest run exits 0 on an empty suite) pass on this repo
 
 ### Pending Todos
 
@@ -110,6 +112,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-07T20:10:50.476Z
-Stopped at: Phase 2 UI-SPEC approved
-Resume file: /mnt/storage/Documents/PERSONAL/paperchaser/.planning/phases/02-domain-core-persistence/02-UI-SPEC.md
+Last session: 2026-08-07T21:43:23.039Z
+Stopped at: Completed 02-01-PLAN.md
+Resume file: None

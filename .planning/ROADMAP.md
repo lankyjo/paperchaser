@@ -57,12 +57,12 @@ Plans:
   3. Company profile, customers, product catalog, documents, and preferences persist in IndexedDB and survive a full page reload (STOR-01, STOR-02).
   4. A single document can be exported to JSON and imported back losslessly; malformed or schema-invalid imports are rejected at the boundary (STOR-03, STOR-04).
 
-**Plans**: 4 plans
+**Plans**: 1/4 plans executed
 
 Plans:
 **Wave 1**
 
-- [ ] 02-01-PLAN.md — Tooling & CI gates: zod/vitest/fake-indexeddb install, test:unit script, CI unit gate
+- [x] 02-01-PLAN.md — Tooling & CI gates: zod/vitest/fake-indexeddb install, test:unit script, CI unit gate
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -142,7 +142,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation Spike | 3/3 | Complete    | 2026-08-07 |
-| 2. Domain Core & Persistence | 0/4 | Not started | - |
+| 2. Domain Core & Persistence | 1/4 | In Progress|  |
 | 3. Render Pipeline | 0/TBD | Not started | - |
 | 4. Editing UX | 0/TBD | Not started | - |
 | 5. Reference Data UX | 0/TBD | Not started | - |
