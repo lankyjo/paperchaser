@@ -151,72 +151,74 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DASH-01 | TBD | Pending |
-| DASH-02 | TBD | Pending |
-| DASH-03 | TBD | Pending |
-| DASH-04 | TBD | Pending |
-| DASH-05 | TBD | Pending |
-| DASH-06 | TBD | Pending |
-| BUIL-01 | TBD | Pending |
-| BUIL-02 | TBD | Pending |
-| BUIL-03 | TBD | Pending |
-| BUIL-04 | TBD | Pending |
-| BUIL-05 | TBD | Pending |
-| BUIL-06 | TBD | Pending |
-| BUIL-07 | TBD | Pending |
-| BUIL-08 | TBD | Pending |
-| BUIL-09 | TBD | Pending |
-| BUIL-10 | TBD | Pending |
-| TEMP-01 | TBD | Pending |
-| TEMP-02 | TBD | Pending |
-| TEMP-03 | TBD | Pending |
-| COPR-01 | TBD | Pending |
-| COPR-02 | TBD | Pending |
-| CUST-01 | TBD | Pending |
-| CUST-02 | TBD | Pending |
-| CUST-03 | TBD | Pending |
-| CUST-04 | TBD | Pending |
-| CATL-01 | TBD | Pending |
-| CATL-02 | TBD | Pending |
-| CATL-03 | TBD | Pending |
-| LINE-01 | TBD | Pending |
-| LINE-02 | TBD | Pending |
-| LINE-03 | TBD | Pending |
-| BRND-01 | TBD | Pending |
-| BRND-02 | TBD | Pending |
-| BRND-03 | TBD | Pending |
-| BRND-04 | TBD | Pending |
-| BRND-05 | TBD | Pending |
-| BRND-06 | TBD | Pending |
-| BRND-07 | TBD | Pending |
-| PDF-01 | TBD | Pending |
-| PDF-02 | TBD | Pending |
-| PDF-03 | TBD | Pending |
-| PDF-04 | TBD | Pending |
-| PDF-05 | TBD | Pending |
-| PDF-06 | TBD | Pending |
-| PDF-07 | TBD | Pending |
-| PDF-08 | TBD | Pending |
-| STOR-01 | TBD | Pending |
-| STOR-02 | TBD | Pending |
-| STOR-03 | TBD | Pending |
-| STOR-04 | TBD | Pending |
-| STOR-05 | TBD | Pending |
-| STOR-06 | TBD | Pending |
-| VALD-01 | TBD | Pending |
-| VALD-02 | TBD | Pending |
-| VALD-03 | TBD | Pending |
-| VALD-04 | TBD | Pending |
-| VALD-05 | TBD | Pending |
-| VALD-06 | TBD | Pending |
-| VALD-07 | TBD | Pending |
-| COMPL-01 | TBD | Pending |
-| COMPL-02 | TBD | Pending |
+| DASH-01 | Phase 6 | Pending |
+| DASH-02 | Phase 6 | Pending |
+| DASH-03 | Phase 6 | Pending |
+| DASH-04 | Phase 6 | Pending |
+| DASH-05 | Phase 6 | Pending |
+| DASH-06 | Phase 6 | Pending |
+| BUIL-01 | Phase 4 | Pending |
+| BUIL-02 | Phase 4 | Pending |
+| BUIL-03 | Phase 4 | Pending |
+| BUIL-04 | Phase 4 | Pending |
+| BUIL-05 | Phase 4 | Pending |
+| BUIL-06 | Phase 4 | Pending |
+| BUIL-07 | Phase 4 | Pending |
+| BUIL-08 | Phase 4 | Pending |
+| BUIL-09 | Phase 4 | Pending |
+| BUIL-10 | Phase 3 | Pending |
+| TEMP-01 | Phase 3 | Pending |
+| TEMP-02 | Phase 3 | Pending |
+| TEMP-03 | Phase 3 | Pending |
+| COPR-01 | Phase 5 | Pending |
+| COPR-02 | Phase 5 | Pending |
+| CUST-01 | Phase 5 | Pending |
+| CUST-02 | Phase 5 | Pending |
+| CUST-03 | Phase 5 | Pending |
+| CUST-04 | Phase 5 | Pending |
+| CATL-01 | Phase 5 | Pending |
+| CATL-02 | Phase 5 | Pending |
+| CATL-03 | Phase 5 | Pending |
+| LINE-01 | Phase 4 | Pending |
+| LINE-02 | Phase 4 | Pending |
+| LINE-03 | Phase 2 | Pending |
+| BRND-01 | Phase 3 | Pending |
+| BRND-02 | Phase 3 | Pending |
+| BRND-03 | Phase 3 | Pending |
+| BRND-04 | Phase 3 | Pending |
+| BRND-05 | Phase 3 | Pending |
+| BRND-06 | Phase 3 | Pending |
+| BRND-07 | Phase 3 | Pending |
+| PDF-01 | Phase 3 | Pending |
+| PDF-02 | Phase 3 | Pending |
+| PDF-03 | Phase 3 | Pending |
+| PDF-04 | Phase 3 | Pending |
+| PDF-05 | Phase 3 | Pending |
+| PDF-06 | Phase 3 | Pending |
+| PDF-07 | Phase 6 | Pending |
+| PDF-08 | Phase 6 | Pending |
+| STOR-01 | Phase 2 | Pending |
+| STOR-02 | Phase 2 | Pending |
+| STOR-03 | Phase 2 | Pending |
+| STOR-04 | Phase 2 | Pending |
+| STOR-05 | Phase 6 | Pending |
+| STOR-06 | Phase 6 | Pending |
+| VALD-01 | Phase 6 | Pending |
+| VALD-02 | Phase 6 | Pending |
+| VALD-03 | Phase 6 | Pending |
+| VALD-04 | Phase 6 | Pending |
+| VALD-05 | Phase 6 | Pending |
+| VALD-06 | Phase 6 | Pending |
+| VALD-07 | Phase 6 | Pending |
+| COMPL-01 | Phase 6 | Pending |
+| COMPL-02 | Phase 6 | Pending |
 
 **Coverage:**
 - v1 requirements: 61 total
-- Mapped to phases: 0
-- Unmapped: 61 ⚠️ (roadmap pending)
+- Mapped to phases: 61
+- Unmapped: 0 ✓
+
+Note: Phase 1 (Foundation Spike) is a blocking feasibility spike and intentionally maps no requirements — it gates all other phases.
 
 ---
 *Requirements defined: 2026-08-07*
