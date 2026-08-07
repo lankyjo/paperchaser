@@ -1,16 +1,50 @@
 /* Print projection — the entire PDF path (RESEARCH Pattern 1).
    The SAME DOM the screen renders is printed; @page + @media print differ only
-   by media. Per-page watermark repetition is NOT claimed here — a single
-   positioned element renders on the first PDF page in Chromium (ADR 0002). */
+   by media.
 
+   Geometry contract (harness-measured, plan 01-02): #print-root stays in normal
+   flow in BOTH projections (its inline position:relative beats any stylesheet
+   absolute flip, so the print stylesheet must not rely on one). The A4 page
+   block is 210mm wide with 15mm padding, so content sits at exactly 15mm from
+   the page edge in the preview, the print projection, and the rasterized PDF
+   page. */
+
+/* The A4 page block carries its own 15mm padding (DocumentPage pageStyle), so
+   @page margin must be 0: with a 15mm @page margin AND 15mm element padding the
+   content would sit at 30mm — a 15mm double offset from the on-screen preview
+   (harness-measured, plan 01-02). The 15mm print margin is enforced by the page
+   block; the visual output is identical to an @page-margin document. */
 @page {
   size: A4;
-  margin: 15mm;
+  margin: 0;
+}
+
+/* Watermark overlay — shared by BOTH projections. On screen it is the WYSIWYG
+   draft mark over the canvas; in print it is the absolute overlay at top:40%.
+   Styling it only inside @media print made the screen projection render "DRAFT"
+   as an in-flow text line, shifting the whole document by one line (parity
+   break caught by the 01-02 harness). */
+.watermark {
+  position: absolute;
+  top: 40%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  transform: rotate(-30deg);
+  opacity: 0.15;
+  font-size: 64px;
+  color: #1d4ed8;
+  pointer-events: none;
 }
 
 @media print {
+  /* App chrome is hidden by visibility (display:none would destroy the
+     #print-root subtree, which lives inside .app-shell). Its layout is
+     neutralized so the shell cannot push the document 24px down the page
+     (padding 24px 0 / min-height 100vh) — harness-measured, plan 01-02. */
   .app-shell {
-    display: none !important;
+    padding: 0 !important;
+    min-height: 0 !important;
   }
 
   body * {
@@ -23,10 +57,6 @@
   }
 
   #print-root {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
     margin: 0;
     box-shadow: none;
     -webkit-print-color-adjust: exact;
@@ -41,18 +71,5 @@
   /* line-item rows never split across pages */
   tr {
     break-inside: avoid;
-  }
-
-  .watermark {
-    position: absolute;
-    top: 40%;
-    left: 0;
-    right: 0;
-    text-align: center;
-    transform: rotate(-30deg);
-    opacity: 0.15;
-    font-size: 64px;
-    color: #1d4ed8;
-    pointer-events: none;
   }
 }
