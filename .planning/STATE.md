@@ -5,8 +5,8 @@ milestone_name: milestone
 current_phase: 02
 current_phase_name: domain-core-persistence
 status: executing
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-08-07T21:44:28.774Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-08-07T22:06:50.243Z"
 last_activity: 2026-08-07
 last_activity_desc: Phase 02 execution started
 progress:
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-08-07)
 ## Current Position
 
 Phase: 02 (domain-core-persistence) — EXECUTING
-Plan: 2 of 4
+Plan: 3 of 4
 Status: Ready to execute
 Last activity: 2026-08-07 — Phase 02 execution started
 
@@ -68,6 +68,7 @@ Progress: [██████░░░░] 57%
 | Phase 01 P02 | 33min | 3 tasks | 9 files |
 | Phase 01 P03 | 9 min | 2 tasks | 2 files |
 | Phase 02 P01 | 18min | 3 tasks | 4 files |
+| Phase 02 P02 | 11 min | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -88,6 +89,10 @@ Recent decisions affecting current work:
 - [Phase 01]: @page margin 0 + page-block 15mm padding; watermark overlay global (both projections); element-box captures; page.pdf while print media emulated
 - [Phase 01]: Vite 8 SPA + TanStack Router 1.170.22 is the application framework; TanStack Start rejected (RC status, Node >= 22.12 server runtime, zero in-scope server features); re-adopted only if the product gains auth/sync/shared documents (ADR 0001) — ADR 0001 evidence is research-sourced (Start RC quote, Router-alone guidance); CI baseline mirrors local gate scripts byte-for-byte with a frozen lockfile and no baseline-write step
 - [Phase 02]: Scoped vitest include to src/**/*.test.ts + passWithNoTests: true in the existing vite.config.ts (no new vitest.config.ts) — vitest's default glob collides with the Phase 1 Playwright spec; zero-config assumption corrected at install time — Preserves the plan's zero-config prohibition while making the plan's own acceptance criterion (vitest run exits 0 on an empty suite) pass on this repo
+- [Phase 02]: Schema-first model: Zod 4 schemas are the source of truth; z.infer derives LineItem/Company/Customer/DocumentModel, keeping Phase 1 exported names so fixtures and the renderer compile (D-15)
+- [Phase 02]: Money math: integer minor units with CURRENCY_DECIMALS registry (EUR 2dp, JPY 0dp); roundMinor half-away-from-zero is the single rounding primitive, never bare Math.round (D-01..D-03, D-12, A1)
+- [Phase 02]: Totals engine is the single derived source (LINE-03): per-line rounding before summation, tax on the rounded net, both discount levels, shipping/fees line-like with tax grouped by rate (D-04..D-08)
+- [Phase 02]: watermark derives from status via deriveWatermark(), never stored (D-11); fixtures edited watermark->status only, parity baselines stayed green
 
 ### Pending Todos
 
@@ -112,6 +117,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-07T21:43:23.039Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-08-07T22:06:50.183Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None

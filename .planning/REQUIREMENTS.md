@@ -57,7 +57,7 @@ Requirements for initial release. Each maps to roadmap phases. Scope sourced fro
 
 - [ ] **LINE-01**: Line item supports title, description, quantity, unit price, discount, tax, optional image
 - [ ] **LINE-02**: User can duplicate, delete, reorder, and collapse line items
-- [ ] **LINE-03**: Totals (subtotal, tax, shipping, fees, discount, grand total) are computed correctly and never go out of sync
+- [x] **LINE-03**: Totals (subtotal, tax, shipping, fees, discount, grand total) are computed correctly and never go out of sync
 
 ### Branding
 
@@ -181,7 +181,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CATL-03 | Phase 5 | Pending |
 | LINE-01 | Phase 4 | Pending |
 | LINE-02 | Phase 4 | Pending |
-| LINE-03 | Phase 2 | Pending |
+| LINE-03 | Phase 2 | Complete |
 | BRND-01 | Phase 3 | Pending |
 | BRND-02 | Phase 3 | Pending |
 | BRND-03 | Phase 3 | Pending |
@@ -214,6 +214,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COMPL-02 | Phase 6 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 61 total
 - Mapped to phases: 61
 - Unmapped: 0 ✓
