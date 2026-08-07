@@ -30,7 +30,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. An ADR records the PDF path decision (print-CSS primary vs react-pdf) decided against explicit criteria: Safari paged-media fidelity, per-page watermark positioning, rendering latency vs editing speed.
   3. A golden-image parity harness proves identical preview/output on fixture documents (long names, 12+ items, accented text, logo, watermark) and runs in dev and CI.
   4. The app scaffold (Vite SPA, TypeScript strict, Tailwind v4, shadcn/ui, TanStack Router, Dexie, vite-plugin-pwa) boots, deploys as static files, and has a green CI baseline.
-**Plans**: TBD (refined during planning)
+**Plans**: 3 plans (wave 1: tracer scaffold; wave 2: harness + ADRs + CI)
+Plans:
+- [ ] 01-01-PLAN.md — Tracer scaffold: Vite SPA + fixture invoice renders through one shared component + print CSS, green build
+- [ ] 01-02-PLAN.md — Golden-image parity harness + committed baselines + ADR 0002 (PDF path)
+- [ ] 01-03-PLAN.md — ADR 0001 (framework) + CI baseline workflow
 
 ### Phase 2: Domain Core & Persistence
 **Goal**: The document model, totals engine, and local persistence behave correctly with no user interface built yet — the parity contract every later phase consumes.
