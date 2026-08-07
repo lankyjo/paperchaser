@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { FIXTURE_MAP } from '../fixtures'
 import { CURRENCY_DECIMALS, roundMinor } from '../money'
-import { computeTotals } from '../totals'
+import { computeTotals, deriveWatermark } from '../totals'
 import { documentSchema } from '../types'
 
 describe('roundMinor — half-away-from-zero ties (A1, Pitfall 2)', () => {
@@ -135,5 +135,109 @@ describe('documentSchema — restructured model accepts the Phase 1 fixture shap
       company: { ...FIXTURE_MAP['invoice-simple'].company, logo: 'https://evil.example/pixel.png' },
     }
     expect(documentSchema.safeParse(evilLogo).success).toBe(false)
+  })
+})
+
+describe('computeTotals — per-line discounts (D-05/D-06)', () => {
+  it('a per-line percent discount reduces the net BEFORE rounding', () => {
+    // JPY 0dp: qty 0.5 × 211 = 105.5 gross, 25% line discount → 79.125 → 79.
+    // If the gross were rounded before discounting (106 − 26.375 = 79.625) it
+    // would round to 80 — the fixture pins discount-then-round (D-05/D-06).
+    const totals = computeTotals({
+      currency: 'JPY',
+      lineItems: [{ quantity: 0.5, unitPriceMinor: 211, taxRateMinor: 1900, discount: { kind: 'percent', value: 2500 } }],
+    })
+    expect(totals.lineNets).toEqual([79])
+    expect(totals.subtotalMinor).toBe(79)
+  })
+
+  it('a per-line flat-amount discount reduces the net by exact minor units', () => {
+    const totals = computeTotals({
+      currency: 'EUR',
+      lineItems: [{ quantity: 2, unitPriceMinor: 1000, taxRateMinor: 1900, discount: { kind: 'amount', value: 500 } }],
+    })
+    expect(totals.lineNets).toEqual([1500]) // 2000 − 500
+    expect(totals.subtotalMinor).toBe(1500)
+  })
+})
+
+describe('computeTotals — document-level discount applied to the discounted subtotal (D-05)', () => {
+  it('a percent document discount applies AFTER line discounts and rounds', () => {
+    // Line: qty 2 × 1000 = 2000 with 10% line discount → net 1800.
+    // Document discount 10% applies to the LINE-DISCOUNTED subtotal: 180.
+    const totals = computeTotals({
+      currency: 'EUR',
+      lineItems: [{ quantity: 2, unitPriceMinor: 1000, taxRateMinor: 1900, discount: { kind: 'percent', value: 1000 } }],
+      discount: { kind: 'percent', value: 1000 },
+    })
+    expect(totals.subtotalMinor).toBe(1800)
+    expect(totals.discountMinor).toBe(180) // 10% of 1800 — not of the raw 2000
+    expect(totals.discountedSubtotalMinor).toBe(1620)
+    expect(totals.taxMinor).toBe(342) // 1800 × 19%
+    expect(totals.grandTotalMinor).toBe(1962)
+  })
+
+  it('a flat document discount subtracts exact minor units from the subtotal', () => {
+    const totals = computeTotals({
+      currency: 'EUR',
+      lineItems: [
+        { quantity: 2, unitPriceMinor: 1000, taxRateMinor: 1900 },
+        { quantity: 1, unitPriceMinor: 500, taxRateMinor: 1900 },
+      ],
+      discount: { kind: 'amount', value: 300 },
+    })
+    expect(totals.subtotalMinor).toBe(2500)
+    expect(totals.discountMinor).toBe(300)
+    expect(totals.discountedSubtotalMinor).toBe(2200)
+    expect(totals.taxMinor).toBe(475) // 380 + 95
+    expect(totals.grandTotalMinor).toBe(2675)
+  })
+})
+
+describe('computeTotals — shipping/fees are line-like, tax grouped by rate (D-07/D-08/D-04)', () => {
+  it('taxed + untaxed entries: amounts sum; taxed tax folds in; untaxed adds no tax', () => {
+    const totals = computeTotals({
+      currency: 'EUR',
+      lineItems: [{ quantity: 1, unitPriceMinor: 1000, taxRateMinor: 1900 }],
+      shippingFees: [
+        { label: 'Versand', amountMinor: 400, taxRateMinor: 1900 },
+        { label: 'Verpackung', amountMinor: 100, taxRateMinor: 0 },
+      ],
+    })
+    expect(totals.shippingFeesMinor).toBe(500)
+    // rate 1900: 190 (line) + 76 (400 × 19%); rate 0 skipped entirely
+    expect(totals.taxByRate).toEqual([{ rateMinor: 1900, taxMinor: 266 }])
+    expect(totals.taxMinor).toBe(266)
+    expect(totals.grandTotalMinor).toBe(1000 + 266 + 500)
+  })
+
+  it('multiple entries sharing a rate collapse into ONE taxByRate entry (D-04/D-08)', () => {
+    const totals = computeTotals({
+      currency: 'EUR',
+      lineItems: [{ quantity: 1, unitPriceMinor: 1000, taxRateMinor: 1900 }],
+      shippingFees: [
+        { label: 'Versand', amountMinor: 400, taxRateMinor: 1900 },
+        { label: 'Express', amountMinor: 200, taxRateMinor: 1900 },
+      ],
+    })
+    expect(totals.shippingFeesMinor).toBe(600)
+    expect(totals.taxByRate).toEqual([{ rateMinor: 1900, taxMinor: 304 }]) // 190 + 76 + 38
+    expect(totals.taxByRate).toHaveLength(1)
+    // full grandTotal reconciliation (test 5 contract): discountedSubtotal + tax + shippingFees
+    expect(totals.grandTotalMinor).toBe(totals.discountedSubtotalMinor + totals.taxMinor + totals.shippingFeesMinor)
+  })
+})
+
+describe('deriveWatermark — derives from status, never stored (D-11)', () => {
+  it("maps 'draft' to 'draft'", () => {
+    expect(deriveWatermark('draft')).toBe('draft')
+  })
+
+  it("maps 'sent' to null", () => {
+    expect(deriveWatermark('sent')).toBeNull()
+  })
+
+  it("maps 'paid' to null", () => {
+    expect(deriveWatermark('paid')).toBeNull()
   })
 })
