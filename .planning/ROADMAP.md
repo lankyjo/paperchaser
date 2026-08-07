@@ -57,7 +57,13 @@ Plans:
   3. Company profile, customers, product catalog, documents, and preferences persist in IndexedDB and survive a full page reload (STOR-01, STOR-02).
   4. A single document can be exported to JSON and imported back losslessly; malformed or schema-invalid imports are rejected at the boundary (STOR-03, STOR-04).
 
-**Plans**: TBD (refined during planning)
+**Plans**: 4 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Tooling & CI gates: zod/vitest/fake-indexeddb install, test:unit script, CI unit gate
+- [ ] 02-02-PLAN.md — Schema-first model + totals engine (LINE-03): types.ts restructure, money/totals, DocumentPage engine swap
+- [ ] 02-03-PLAN.md — Persistence (STOR-01/02): Dexie version(2) five tables, repos, reload-survival spec
+- [ ] 02-04-PLAN.md — Import/export boundary (STOR-03/04): versioned envelope, structured rejection
 
 ### Phase 3: Render Pipeline
 
@@ -128,7 +134,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation Spike | 3/3 | Complete    | 2026-08-07 |
-| 2. Domain Core & Persistence | 0/TBD | Not started | - |
+| 2. Domain Core & Persistence | 0/4 | Not started | - |
 | 3. Render Pipeline | 0/TBD | Not started | - |
 | 4. Editing UX | 0/TBD | Not started | - |
 | 5. Reference Data UX | 0/TBD | Not started | - |
