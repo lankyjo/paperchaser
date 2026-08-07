@@ -49,7 +49,7 @@ For Phase 1 the golden-image parity harness IS the validation architecture — i
 | 01-02-02 | 02 | 2 | (spike SC3) | T-01-04 | N/A | integration | `pnpm build && pnpm exec playwright test tests/parity.spec.ts && git status --short tests/fixtures/ tests/artifacts/` | ❌ W0 | ⬜ pending |
 | 01-02-03 | 02 | 2 | (spike SC2) | — | N/A | document | `grep -c "Decision:" docs/adr/0002-pdf-path.md && grep -c "Safari" docs/adr/0002-pdf-path.md` | ❌ W0 | ⬜ pending |
 | 01-03-01 | 03 | 2 | (spike SC1) | T-01-02 | N/A | document | `grep -c "Decision:" docs/adr/0001-framework.md && grep -c "TanStack Start" docs/adr/0001-framework.md` | ❌ W0 | ⬜ pending |
-| 01-03-02 | 03 | 2 | (spike SC4) | T-01-05 / T-01-04 | N/A | CI | `ls .github/workflows/ci.yml && grep -c "frozen-lockfile" .github/workflows/ci.yml && grep -c "playwright test\|pnpm test" .github/workflows/ci.yml && grep -c "UPDATE_BASELINES" .github/workflows/ci.yml && grep -c "upload-artifact" .github/workflows/ci.yml` | ❌ W0 | ⬜ pending |
+| 01-03-02 | 03 | 2 | (spike SC4) | T-01-05 / T-01-04 | N/A | CI | `ls .github/workflows/ci.yml && grep -c "frozen-lockfile" .github/workflows/ci.yml && grep -c "playwright test\|pnpm test" .github/workflows/ci.yml && ! grep -q "UPDATE_BASELINES" .github/workflows/ci.yml && grep -c "upload-artifact" .github/workflows/ci.yml` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
