@@ -1,0 +1,58 @@
+/* Print projection — the entire PDF path (RESEARCH Pattern 1).
+   The SAME DOM the screen renders is printed; @page + @media print differ only
+   by media. Per-page watermark repetition is NOT claimed here — a single
+   positioned element renders on the first PDF page in Chromium (ADR 0002). */
+
+@page {
+  size: A4;
+  margin: 15mm;
+}
+
+@media print {
+  .app-shell {
+    display: none !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  #print-root,
+  #print-root * {
+    visibility: visible;
+  }
+
+  #print-root {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    box-shadow: none;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* repeat the line-item table header on every printed page */
+  thead {
+    display: table-header-group;
+  }
+
+  /* line-item rows never split across pages */
+  tr {
+    break-inside: avoid;
+  }
+
+  .watermark {
+    position: absolute;
+    top: 40%;
+    left: 0;
+    right: 0;
+    text-align: center;
+    transform: rotate(-30deg);
+    opacity: 0.15;
+    font-size: 64px;
+    color: #1d4ed8;
+    pointer-events: none;
+  }
+}
