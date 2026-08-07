@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 02
 current_phase_name: domain-core-persistence
 status: executing
-stopped_at: Completed 02-02-PLAN.md
-last_updated: "2026-08-07T22:06:50.243Z"
+stopped_at: Completed 02-03-PLAN.md
+last_updated: "2026-08-07T22:25:17.983Z"
 last_activity: 2026-08-07
 last_activity_desc: Phase 02 execution started
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 7
-  completed_plans: 4
+  completed_plans: 6
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-08-07)
 ## Current Position
 
 Phase: 02 (domain-core-persistence) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 Status: Ready to execute
 Last activity: 2026-08-07 — Phase 02 execution started
 
-Progress: [██████░░░░] 57%
+Progress: [█████████░] 86%
 
 ## Performance Metrics
 
@@ -69,6 +69,7 @@ Progress: [██████░░░░] 57%
 | Phase 01 P03 | 9 min | 2 tasks | 2 files |
 | Phase 02 P01 | 18min | 3 tasks | 4 files |
 | Phase 02 P02 | 11 min | 3 tasks | 6 files |
+| Phase 02 P03 | 8min | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,14 @@ Recent decisions affecting current work:
 - [Phase 02]: Money math: integer minor units with CURRENCY_DECIMALS registry (EUR 2dp, JPY 0dp); roundMinor half-away-from-zero is the single rounding primitive, never bare Math.round (D-01..D-03, D-12, A1)
 - [Phase 02]: Totals engine is the single derived source (LINE-03): per-line rounding before summation, tax on the rounded net, both discount levels, shipping/fees line-like with tax grouped by rate (D-04..D-08)
 - [Phase 02]: watermark derives from status via deriveWatermark(), never stored (D-11); fixtures edited watermark->status only, parity baselines stayed green
+- [Phase 02]: Typed plain-Dexie via one cast in repos.ts (rawDb as unknown as Tables)
+
+companyRepo singleton contract: constant id 'company', strip on read
+Persistence row types carry the id (CompanyRow/CustomerRow/CatalogItemRow)
+Reload-survival spec re-injects UMD Dexie after page.reload(); full SCHEMA both sides — dexie 4.4.4 typings expose table props only on subclassed instances; plan pins new Dexie('paperchaser') untouched — the cast keeps db.<table> access typed and matching plan traceability
+schema is id-keyed but domain Company has no id; singleton put-replaces proven by count()===1
+id-keyed tables per ARCHITECTURE.md; name index for Phase 5 search
+RESEARCH example omitted the re-inject (window.Dexie undefined post-reload) — Rule 1 fix
 
 ### Pending Todos
 
@@ -117,6 +126,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-07T22:06:50.183Z
-Stopped at: Completed 02-02-PLAN.md
+Last session: 2026-08-07T22:25:04.471Z
+Stopped at: Completed 02-03-PLAN.md
 Resume file: None
