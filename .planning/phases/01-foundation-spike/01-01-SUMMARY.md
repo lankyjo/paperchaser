@@ -194,3 +194,10 @@ None - no external service configuration required.
 ---
 *Phase: 01-foundation-spike*
 *Completed: 2026-08-07*
+
+## Self-Check: PASSED
+
+- All 20 key files exist on disk (source, dist artifacts, SUMMARY)
+- All 5 commits present: b95a81e, e31d56d, ac6f0a5, 44f91f0, 270307a
+- Plan-level verification green: `pnpm lint && pnpm typecheck && pnpm build`; dist/ emitted; sw.js + manifest.webmanifest + favicon.svg present; preview serves fixture routes 200
+
