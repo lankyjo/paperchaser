@@ -4,16 +4,16 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 01
 current_phase_name: foundation-spike
-status: executing
-stopped_at: Completed 01-02-PLAN.md
-last_updated: "2026-08-07T17:27:47.328Z"
+status: verifying
+stopped_at: Completed 01-03-PLAN.md (phase 01 complete)
+last_updated: "2026-08-07T17:41:32.747Z"
 last_activity: 2026-08-07
 last_activity_desc: Phase 01 execution started
 progress:
   total_phases: 1
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 3
-  completed_plans: 2
+  completed_plans: 3
 ---
 
 # Project State
@@ -29,10 +29,10 @@ See: .planning/PROJECT.md (updated 2026-08-07)
 
 Phase: 01 (foundation-spike) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-08-07 — Phase 01 execution started
 
-Progress: [███████░░░] 67%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -65,6 +65,7 @@ Progress: [███████░░░] 67%
 |------|----------|-------|-------|
 | Phase 01 P01 | 40min | 3 tasks | 33 files |
 | Phase 01 P02 | 33min | 3 tasks | 9 files |
+| Phase 01 P03 | 9 min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -83,6 +84,7 @@ Recent decisions affecting current work:
 - [Phase 01]: Print-CSS primary PDF path; react-pdf 4.5.1 fallback flip trigger = Safari 18.2+ manual acceptance failure (ADR 0002, harness-measured evidence)
 - [Phase 01]: pdfjs-dist Node rasterization via @napi-rs/canvas + legacy build (plan's 'canvas' name corrected)
 - [Phase 01]: @page margin 0 + page-block 15mm padding; watermark overlay global (both projections); element-box captures; page.pdf while print media emulated
+- [Phase 01]: Vite 8 SPA + TanStack Router 1.170.22 is the application framework; TanStack Start rejected (RC status, Node >= 22.12 server runtime, zero in-scope server features); re-adopted only if the product gains auth/sync/shared documents (ADR 0001) — ADR 0001 evidence is research-sourced (Start RC quote, Router-alone guidance); CI baseline mirrors local gate scripts byte-for-byte with a frozen lockfile and no baseline-write step
 
 ### Pending Todos
 
@@ -107,6 +109,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-07T17:27:12.789Z
-Stopped at: Completed 01-02-PLAN.md
+Last session: 2026-08-07T17:41:18.066Z
+Stopped at: Completed 01-03-PLAN.md (phase 01 complete)
 Resume file: None
