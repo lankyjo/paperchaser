@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 01
 current_phase_name: foundation-spike
 status: executing
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-08-07T16:22:12.919Z"
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-08-07T17:27:47.328Z"
 last_activity: 2026-08-07
 last_activity_desc: Phase 01 execution started
 progress:
   total_phases: 1
   completed_phases: 0
   total_plans: 3
-  completed_plans: 1
+  completed_plans: 2
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-08-07)
 ## Current Position
 
 Phase: 01 (foundation-spike) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-08-07 — Phase 01 execution started
 
-Progress: [███░░░░░░░] 33%
+Progress: [███████░░░] 67%
 
 ## Performance Metrics
 
@@ -64,6 +64,7 @@ Progress: [███░░░░░░░] 33%
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | Phase 01 P01 | 40min | 3 tasks | 33 files |
+| Phase 01 P02 | 33min | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,9 @@ Recent decisions affecting current work:
 - [Phase ?]: Shadcn 4.16.2 base-nova preset (Base UI), neutral base, CSS variables on
 - [Phase ?]: workbox-window 7.4.1 required by vite-plugin-pwa prompt-mode virtual module
 - [Phase ?]: baseUrl removed from tsconfigs (TS 6.0 deprecation); paths relative to tsconfig
+- [Phase 01]: Print-CSS primary PDF path; react-pdf 4.5.1 fallback flip trigger = Safari 18.2+ manual acceptance failure (ADR 0002, harness-measured evidence)
+- [Phase 01]: pdfjs-dist Node rasterization via @napi-rs/canvas + legacy build (plan's 'canvas' name corrected)
+- [Phase 01]: @page margin 0 + page-block 15mm padding; watermark overlay global (both projections); element-box captures; page.pdf while print media emulated
 
 ### Pending Todos
 
@@ -103,6 +107,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-07T16:22:12.897Z
-Stopped at: Completed 01-01-PLAN.md
+Last session: 2026-08-07T17:27:12.789Z
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None

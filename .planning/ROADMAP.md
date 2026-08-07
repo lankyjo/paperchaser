@@ -34,7 +34,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A golden-image parity harness proves identical preview/output on fixture documents (long names, 12+ items, accented text, logo, watermark) and runs in dev and CI.
   4. The app scaffold (Vite SPA, TypeScript strict, Tailwind v4, shadcn/ui, TanStack Router, Dexie, vite-plugin-pwa) boots, deploys as static files, and has a green CI baseline.
 
-**Plans**: 1/3 plans executed
+**Plans**: 2/3 plans executed
 Plans:
 **Wave 1**
 
@@ -42,7 +42,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 01-02-PLAN.md — Golden-image parity harness + committed baselines + ADR 0002 (PDF path)
+- [x] 01-02-PLAN.md — Golden-image parity harness + committed baselines + ADR 0002 (PDF path)
 - [ ] 01-03-PLAN.md — ADR 0001 (framework) + CI baseline workflow
 
 ### Phase 2: Domain Core & Persistence
@@ -127,7 +127,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation Spike | 1/3 | In Progress|  |
+| 1. Foundation Spike | 2/3 | In Progress|  |
 | 2. Domain Core & Persistence | 0/TBD | Not started | - |
 | 3. Render Pipeline | 0/TBD | Not started | - |
 | 4. Editing UX | 0/TBD | Not started | - |
