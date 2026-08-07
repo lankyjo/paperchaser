@@ -84,8 +84,8 @@ Requirements for initial release. Each maps to roadmap phases. Scope sourced fro
 
 - [x] **STOR-01**: Data persists locally in IndexedDB via Dexie
 - [x] **STOR-02**: IndexedDB stores company profile, customers, product catalog, documents, and preferences
-- [ ] **STOR-03**: User can export a single document as JSON
-- [ ] **STOR-04**: User can import a single document from JSON
+- [x] **STOR-03**: User can export a single document as JSON
+- [x] **STOR-04**: User can import a single document from JSON
 - [ ] **STOR-05**: User can export the full workspace as JSON
 - [ ] **STOR-06**: User can import a workspace from JSON (backup/restore)
 
@@ -199,8 +199,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PDF-08 | Phase 6 | Pending |
 | STOR-01 | Phase 2 | Complete |
 | STOR-02 | Phase 2 | Complete |
-| STOR-03 | Phase 2 | Pending |
-| STOR-04 | Phase 2 | Pending |
+| STOR-03 | Phase 2 | Complete |
+| STOR-04 | Phase 2 | Complete |
 | STOR-05 | Phase 6 | Pending |
 | STOR-06 | Phase 6 | Pending |
 | VALD-01 | Phase 6 | Pending |

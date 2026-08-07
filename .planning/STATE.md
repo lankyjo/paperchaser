@@ -4,16 +4,16 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 02
 current_phase_name: domain-core-persistence
-status: executing
-stopped_at: Completed 02-03-PLAN.md
-last_updated: "2026-08-07T22:25:17.983Z"
+status: verifying
+stopped_at: Completed 02-04-PLAN.md
+last_updated: "2026-08-07T22:55:02.391Z"
 last_activity: 2026-08-07
 last_activity_desc: Phase 02 execution started
 progress:
   total_phases: 2
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 7
-  completed_plans: 6
+  completed_plans: 7
 ---
 
 # Project State
@@ -29,10 +29,10 @@ See: .planning/PROJECT.md (updated 2026-08-07)
 
 Phase: 02 (domain-core-persistence) — EXECUTING
 Plan: 4 of 4
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-08-07 — Phase 02 execution started
 
-Progress: [█████████░] 86%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -70,6 +70,7 @@ Progress: [█████████░] 86%
 | Phase 02 P01 | 18min | 3 tasks | 4 files |
 | Phase 02 P02 | 11 min | 3 tasks | 6 files |
 | Phase 02 P03 | 8min | 3 tasks | 4 files |
+| Phase 02 P04 | 13min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -103,6 +104,12 @@ schema is id-keyed but domain Company has no id; singleton put-replaces proven b
 id-keyed tables per ARCHITECTURE.md; name index for Phase 5 search
 RESEARCH example omitted the re-inject (window.Dexie undefined post-reload) — Rule 1 fix
 
+- [Phase 02]: ImportError carries keys on BOTH invalid_envelope and schema_mismatch (plan internal inconsistency resolved toward the plan branch behavior)
+
+Zod 4.4.3 runtime literal-reject code is invalid_value not invalid_literal_value; received absent from most issues — path-based branch logic absorbs both
+MAX_JSON_LENGTH 5M-char raw cap before JSON.parse (T-02-04-DOS) with ponytail upgrade-path comment
+Raw Zod-4 issue-shape read via one cast (public $ZodIssue union hides expected/received/keys)
+
 ### Pending Todos
 
 [From .planning/todos/pending/ — ideas captured during sessions]
@@ -126,6 +133,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-07T22:25:04.471Z
-Stopped at: Completed 02-03-PLAN.md
+Last session: 2026-08-07T22:55:02.338Z
+Stopped at: Completed 02-04-PLAN.md
 Resume file: None
