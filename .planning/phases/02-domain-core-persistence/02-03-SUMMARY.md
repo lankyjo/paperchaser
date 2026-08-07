@@ -182,3 +182,10 @@ None - no external service configuration required.
 
 *Phase: 02-domain-core-persistence*
 *Completed: 2026-08-07*
+
+## Self-Check: PASSED
+
+- All 4 plan files exist on disk: `src/db/db.ts`, `src/db/repos.ts`, `src/db/__tests__/repos.test.ts`, `tests/persistence.spec.ts`
+- Task commits present: `330a124` (feat), `0c88535` (test), `8af4864` (test); metadata `1274779` (docs)
+- Plan-level verification re-run green at final gate: `pnpm lint` OK, `pnpm typecheck` OK, `pnpm test:unit` 34/34, `pnpm test` (parity) 4/4, `pnpm exec playwright test tests/persistence.spec.ts` green
+- Grep gates: `version(1).stores` diff count 0; `newContext` count 0 in the spec; `page.reload()` present; MUST-match comment present; no stray `db` imports in production code
