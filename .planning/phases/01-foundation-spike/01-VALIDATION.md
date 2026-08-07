@@ -42,11 +42,14 @@ For Phase 1 the golden-image parity harness IS the validation architecture — i
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 01-01-01 | 01 | 1 | (spike) | T-01-01 / — | N/A | smoke | `pnpm lint && pnpm typecheck && pnpm build` | ❌ W0 | ⬜ pending |
-| 01-01-02 | 01 | 1 | (spike) | T-01-02 / — | N/A | document | `grep "Decision:" docs/adr/0001-framework.md` | ❌ W0 | ⬜ pending |
-| 01-01-03 | 01 | 1 | (spike) | T-01-03 / — | N/A | document | `grep "Decision:" docs/adr/0002-pdf-path.md` | ❌ W0 | ⬜ pending |
-| 01-02-01 | 02 | 2 | (spike) | T-01-04 / — | N/A | integration | `pnpm exec playwright test tests/parity.spec.ts` | ❌ W0 | ⬜ pending |
-| 01-03-01 | 03 | 2 | (spike) | T-01-05 / — | N/A | CI | `.github/workflows/ci.yml` present + green | ❌ W0 | ⬜ pending |
+| 01-01-01 | 01 | 1 | (spike SC4) | T-01-03 / T-01-SC | N/A | smoke | `pnpm lint && pnpm typecheck && pnpm build && ls dist/index.html` | ❌ W0 | ⬜ pending |
+| 01-01-02 | 01 | 1 | (spike SC3/SC4) | T-01-01 / T-01-06 | N/A | smoke | `pnpm typecheck && pnpm build && (pnpm preview --port 4173 --strictPort &) && sleep 2 && curl -s -o /dev/null -w "%{http_code}" "http://localhost:4173/?fixture=invoice-torture" | grep -q 200 && curl -s "http://localhost:4173/?fixture=bogus" | grep -c "id=\"root\"" && kill %1; grep -rn "InnerHTML" src/ | grep -v '^#' | wc -l` | ❌ W0 | ⬜ pending |
+| 01-01-03 | 01 | 1 | (spike SC4) | T-01-SC | N/A | smoke | `pnpm lint && pnpm typecheck && pnpm build && ls dist/sw.js dist/manifest.webmanifest dist/favicon.svg && grep -c "registerType: 'prompt'" vite.config.ts` | ❌ W0 | ⬜ pending |
+| 01-02-01 | 02 | 2 | (spike SC3) | T-01-04 / T-01-03 | N/A | integration | `pnpm typecheck && pnpm build && pnpm exec playwright test --list` | ❌ W0 | ⬜ pending |
+| 01-02-02 | 02 | 2 | (spike SC3) | T-01-04 | N/A | integration | `pnpm build && pnpm exec playwright test tests/parity.spec.ts && git status --short tests/fixtures/ tests/artifacts/` | ❌ W0 | ⬜ pending |
+| 01-02-03 | 02 | 2 | (spike SC2) | — | N/A | document | `grep -c "Decision:" docs/adr/0002-pdf-path.md && grep -c "Safari" docs/adr/0002-pdf-path.md` | ❌ W0 | ⬜ pending |
+| 01-03-01 | 03 | 2 | (spike SC1) | T-01-02 | N/A | document | `grep -c "Decision:" docs/adr/0001-framework.md && grep -c "TanStack Start" docs/adr/0001-framework.md` | ❌ W0 | ⬜ pending |
+| 01-03-02 | 03 | 2 | (spike SC4) | T-01-05 / T-01-04 | N/A | CI | `ls .github/workflows/ci.yml && grep -c "frozen-lockfile" .github/workflows/ci.yml && grep -c "playwright test\|pnpm test" .github/workflows/ci.yml && grep -c "UPDATE_BASELINES" .github/workflows/ci.yml && grep -c "upload-artifact" .github/workflows/ci.yml` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -59,8 +62,8 @@ For Phase 1 the golden-image parity harness IS the validation architecture — i
 - [ ] `tests/helpers/raster.ts` — pdfjs-dist → PNG normalization helper
 - [ ] `.github/workflows/ci.yml` — CI baseline (SC4)
 - [ ] `docs/adr/0001-framework.md` + `docs/adr/0002-pdf-path.md` — ADR artifacts (SC1/SC2)
-- [ ] `tests/fixtures/*.png` — committed golden baselines, generated after a human/Safari sanity check
-- [ ] Framework install: `pnpm add -D @playwright/test pixelmatch pngjs pdfjs-dist && pnpm exec playwright install chromium`
+- [ ] `tests/fixtures/invoice-torture.preview.png` — committed golden baseline, generated deliberately via the `UPDATE_BASELINES` flag (01-02 task 2), never auto-written by CI
+- [ ] Harness packages installed (01-01 task 1: `pnpm add -D @playwright/test pixelmatch pngjs pdfjs-dist`) and Chromium browser installed (01-02 task 1: `pnpm exec playwright install --with-deps chromium`)
 
 ---
 
