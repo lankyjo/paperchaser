@@ -60,8 +60,16 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
+**Wave 1**
+
 - [ ] 02-01-PLAN.md — Tooling & CI gates: zod/vitest/fake-indexeddb install, test:unit script, CI unit gate
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 02-02-PLAN.md — Schema-first model + totals engine (LINE-03): types.ts restructure, money/totals, DocumentPage engine swap
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
 - [ ] 02-03-PLAN.md — Persistence (STOR-01/02): Dexie version(2) five tables, repos, reload-survival spec
 - [ ] 02-04-PLAN.md — Import/export boundary (STOR-03/04): versioned envelope, structured rejection
 
