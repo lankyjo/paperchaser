@@ -536,22 +536,24 @@ test('document written via Dexie survives a full page reload', async ({ page }) 
 | A8 | Shipping/fee entries carry **required** `taxRateMinor` (0 = untaxed), not `optional()` — "optional tax rate" (D-07) means "may be 0"; required-0 keeps JSON round-trip structural (Pitfall 3). | Code Examples (types.ts) | LOW: if the user literally wants the field absent for untaxed entries, the schema is `z.number().optional().default(0)` — a one-line change; round-trip still works via default. |
 | A9 | Vitest unit tests are colocated under `src/**/__tests__/*.test.ts` — typechecked by `tsc -b` (CI typecheck covers tests), never bundled by `vite build` (build follows the entry graph only). | Standard Stack, Validation Architecture | LOW: alternative is a `tests/unit/` dir + extra tsconfig; colocation matches the "domain core is Node-testable" contract with zero config. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Rounding tie-break mode (half-away-from-zero vs half-even)?**
-   - What we know: D-01..D-08 lock per-line rounding, then summing; the tie mode at exactly 0.5 minor units is unspecified (discussion log records no choice). Intl's default `halfExpand` and invoice practice use half-away-from-zero; half-even (banker's) is used in some accounting systems to avoid bias in large samples.
-   - What's unclear: which mode the user wants — it changes exact cents on .5 ties.
-   - Recommendation: adopt **half-away-from-zero** (matches `Intl` default so Phase 3 display never disagrees with the engine) and confirm during plan review; cheap now, costly after Phase 3 baselines. If the user is indifferent, half-away-from-zero is the default answer.
+> All three questions were resolved at plan review. The adopted answers are pinned by the plan fixtures listed per question; the Assumptions Log entries A1/A5/A6 are no longer open.
 
-2. **Status enum — exactly `'draft' | 'sent' | 'paid'`, receipts default `'paid'`?**
-   - What we know: D-11's example ("invoices/quotes `draft | sent | paid`, receipts start paid") uses "e.g." — the values are illustrative, not exhaustive.
-   - What's unclear: whether v1 needs a `'void'` (cancelled) state or quote-specific states (`'accepted'`/`'declined'`).
-   - Recommendation: ship the three-value enum now (A5); adding a state later is a schema + migration change, so confirm intent at plan review — CONV-01 (quote→invoice conversion, v2) may motivate `'accepted'` later.
+1. **Rounding tie-break mode (half-away-from-zero vs half-even)? — (RESOLVED: half-away-from-zero)**
+   - Adopted answer: **half-away-from-zero** — `roundMinor(value, decimals) = Math.sign(value) * Math.round(Math.abs(value) * 10^d) / 10^d`, matching `Intl.NumberFormat`'s default `halfExpand` so Phase 3 display never disagrees with the engine (A1).
+   - Pinned by: plan 02-02, task 2 — a negative .5-minor-unit tie fixture in `src/document/__tests__/totals.test.ts` asserting `roundMinor(-2.5)` yields -3 (away from zero), not `Math.round`'s half-toward-+∞.
+   - Rationale: D-01..D-08 lock *when* rounding happens, not the tie mode (discussion log records no choice); half-away-from-zero matches invoice practice and the `Intl` default. Cheap to change now, costly after Phase 3 parity baselines bake exact cents.
 
-3. **Document-level discount: single or multiple instances?**
-   - What we know: D-05 says "a document-level discount" (singular); D-08 explicitly pluralizes shipping/fees. PRD §6.7 totals list shows one "Discount" line.
-   - What's unclear: whether a document can carry multiple doc-level discounts (e.g. "10% early-payment" + "€50 voucher").
-   - Recommendation: single instance in v1 (A6); the model field can grow to an array without a migration (Dexie stores are schemaless for non-indexed fields) — only the Zod schema and UI change.
+2. **Status enum — exactly `'draft' | 'sent' | 'paid'`, receipts default `'paid'`? — (RESOLVED: three-value enum)**
+   - Adopted answer: `status: z.enum(['draft', 'sent', 'paid'])` for all three types; receipts default `'paid'` (A5). No `'void'`/`'accepted'`/`'declined'` states in v1 — adding one later is a schema + migration change.
+   - Pinned by: plan 02-02 — the `documentSchema` status enum in `src/document/types.ts` plus `deriveWatermark(status)` fixtures in `src/document/__tests__/totals.test.ts` (draft→'draft', sent/paid→null, D-11).
+   - Rationale: D-11's "e.g." wording left the breadth open; CONV-01 (quote→invoice conversion, v2) may motivate `'accepted'` later, but nothing in this phase needs it.
+
+3. **Document-level discount: single or multiple instances? — (RESOLVED: single instance)**
+   - Adopted answer: **single** document-level discount instance (`discount: discountSchema.optional()`, one per document) (A6); line discounts remain per-line single instances; shipping/fees stay an array (D-08).
+   - Pinned by: plan 02-02 — the `documentSchema` discount field in `src/document/types.ts` plus task 3 discount fixtures in `src/document/__tests__/totals.test.ts` (one document-level discount applied to the subtotal).
+   - Rationale: D-05 says "a document-level discount" (singular) and PRD §6.7 totals list has one "Discount" line; growing to an array later needs no Dexie migration (non-indexed field) — only the Zod schema and UI change.
 
 ## Environment Availability
 
