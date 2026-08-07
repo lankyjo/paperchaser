@@ -47,7 +47,7 @@ export const FIXTURE_MAP: Record<string, DocumentModel> = {
       address: ['Calle de la Fuente 27', '28004 Madrid', 'España'],
     },
     lineItems: TORTURE_LINE_ITEMS,
-    watermark: 'draft',
+    status: 'draft',
   },
   'invoice-simple': {
     id: 'simple-invoice',
@@ -107,6 +107,6 @@ export const FIXTURE_MAP: Record<string, DocumentModel> = {
         taxRateMinor: 1900,
       },
     ],
-    watermark: null,
+    status: 'paid',
   },
 }

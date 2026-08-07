@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 
-import type { DocumentModel, LineItem } from '../document/types'
+import { computeTotals, deriveWatermark } from '../document/totals'
+import type { DocumentModel } from '../document/types'
 
 /**
  * THE single component rendered on screen AND in print (parity by construction,
@@ -15,25 +16,6 @@ const EUR = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' 
 
 function formatMinor(minor: number): string {
   return EUR.format(minor / 100)
-}
-
-interface Totals {
-  subtotalMinor: number
-  taxMinor: number
-  grandTotalMinor: number
-}
-
-/** Integer-minor-units math only — never floats (PITFALLS.md:232). */
-function computeTotals(lineItems: LineItem[]): Totals {
-  let subtotalMinor = 0
-  let taxMinor = 0
-  for (const item of lineItems) {
-    const net = item.quantity * item.unitPriceMinor
-    subtotalMinor += net
-    // taxRateMinor is percent in minor units (1900 = 19.00%) — scale by 10000.
-    taxMinor += Math.round((net * item.taxRateMinor) / 10000)
-  }
-  return { subtotalMinor, taxMinor, grandTotalMinor: subtotalMinor + taxMinor }
 }
 
 const pageStyle: CSSProperties = {
@@ -53,11 +35,11 @@ const pageStyle: CSSProperties = {
 const row: CSSProperties = { borderBottom: '1px solid #e5e7eb' }
 
 export function DocumentPage({ model }: { model: DocumentModel }) {
-  const totals = computeTotals(model.lineItems)
+  const totals = computeTotals(model)
 
   return (
     <div id="print-root" style={pageStyle}>
-      {model.watermark === 'draft' && (
+      {deriveWatermark(model.status) === 'draft' && (
         <div className="watermark" aria-hidden="true">
           DRAFT
         </div>
@@ -101,8 +83,7 @@ export function DocumentPage({ model }: { model: DocumentModel }) {
           </tr>
         </thead>
         <tbody>
-          {model.lineItems.map((item) => {
-            const total = item.quantity * item.unitPriceMinor
+          {model.lineItems.map((item, index) => {
             return (
               <tr key={item.id} style={row}>
                 <td style={{ padding: '6px 0', verticalAlign: 'top' }}>{item.title}</td>
@@ -111,7 +92,9 @@ export function DocumentPage({ model }: { model: DocumentModel }) {
                 <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
                   {formatMinor(item.unitPriceMinor)}
                 </td>
-                <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>{formatMinor(total)}</td>
+                <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
+                  {formatMinor(totals.lineNets[index])}
+                </td>
               </tr>
             )
           })}
