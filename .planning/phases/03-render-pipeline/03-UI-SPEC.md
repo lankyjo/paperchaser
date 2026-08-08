@@ -130,7 +130,7 @@ Accent reserved for: **print-preview primary button, active template indicator, 
 
 ## UI Considerations
 
-Applicable state considerations resolved: 7 covered, 1 backstop, 0 unresolved — or "none applicable" per element kind.
+Applicable state considerations resolved: 10 covered, 3 backstops, 0 unresolved — or "none applicable" per element kind.
 
 | Category | Element(s) | Status | Resolution / Reason |
 |----------|------------|--------|---------------------|
@@ -145,6 +145,17 @@ Applicable state considerations resolved: 7 covered, 1 backstop, 0 unresolved �
 | zero-one-many | template gallery (list-collection) | ✅ dismissed | Fixed curated set of 7 (TEMP-01) — no zero/one/many variance, singular copy never needed |
 | overflow | template gallery (list-collection) | ✅ covered | Grid wraps to 2 columns inside the 320px rail; cards never scroll the rail, rail scrolls as a whole |
 | loading | live preview (interactive-control) | ✅ dismissed | Rendering is synchronous React render of one component — no async fetch, no skeleton needed (offline-first, data in memory) |
+| empty | document content (static-content) | ✅ covered | Blank template + no line items renders a valid empty page (structure intact, TEMP-03) — same render path, no empty-graphic or "no content" overlay needed |
+| zero-one-many | document content (static-content) | ✅ covered | Single-page vs multi-page divergence is the pagination backstop above — same DOM, page stack slices it; no per-page-count special-casing in copy |
+| overflow | print preview (static-content) | ✅ covered | Many pages → vertically stacked page blocks in the dialog with "Page 1 of N" counter; dialog body scrolls, footer stays fixed |
+| overflow | branding header/footer (static-content) | 🧪 backstop | Long header/footer text follows the same wrap rule as document content — covered by the shared long-text backstop (parity harness is the held-out test) |
+| partial | logo upload (media) | ✅ dismissed | File picked but not yet read → native input state only, sub-second synchronous read; no partial-UI needed |
+| overflow | logo upload (media) | ✅ dismissed | Oversized logo constrained to fixed 48px preview chip (CSS object-fit); source image never laid out at natural size |
+| long-text | logo upload (media) | ✅ dismissed | Image element — no text wrapping applies (n/a) |
+| loading | template gallery (list-collection) | ✅ dismissed | Fixed static 7-card set, no fetch — rendered from a constant; nothing to load |
+| error | template gallery (list-collection) | ✅ dismissed | Static curated set cannot fail to render; no error path exists |
+| partial | template gallery (list-collection) | ✅ dismissed | Set is always exactly 7; no partial-render state |
+| error | branding color inputs (interactive-control) | ✅ dismissed | Native `<input type="color">` constrains to valid hex — invalid input impossible; no error state needed |
 
 ---
 
