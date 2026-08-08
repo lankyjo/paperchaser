@@ -36,10 +36,16 @@ import {
  * ===================================================================== */
 
 const FIXTURE = 'invoice-torture'
+/** Templates under parity test — plan 04 extends to all 7 (D-06). */
+const TEMPLATES = ['minimal'] as const
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const FIXTURES_DIR = path.join(HERE, 'fixtures')
-const GOLDEN_PATH = path.join(FIXTURES_DIR, 'invoice-torture.preview.png')
 const ARTIFACTS_DIR = path.join(HERE, 'artifacts')
+
+/** Per-template golden path: tests/fixtures/invoice-torture.{template}.preview.png (D-06). */
+function goldenPathFor(template: string): string {
+  return path.join(FIXTURES_DIR, `invoice-torture.${template}.preview.png`)
+}
 
 /** pixelmatch color threshold: absorbs cross-rasterizer glyph AA noise. */
 const DIFF_THRESHOLD = 0.3
@@ -103,9 +109,14 @@ function nonWhiteFraction(img: PNG): number {
 }
 
 /** The torture fixture's three captures + per-page rasterization. */
-async function captureFixture(page: Page) {
-  await page.goto(`/?fixture=${FIXTURE}`)
+async function captureFixture(page: Page, template = 'minimal') {
+  await page.goto(`/?fixture=${FIXTURE}&template=${template}`)
   await page.waitForSelector('#print-root')
+
+  // Pitfall 4: webfont determinism — page.pdf() can capture before @font-face
+  // swap finishes, which would render a fallback font in the PDF only. Await
+  // fonts.ready once, before any screenshot/PDF capture.
+  await page.evaluate(() => document.fonts.ready)
 
   // The torture fixture's logo is an inline data-URL SVG — no network needed.
   const logo = page.locator('img.document-logo')
@@ -205,29 +216,33 @@ test('fixture: pdf paginates and carries watermark + logo bands', async ({ page 
 })
 
 test('baseline: committed golden preview is sane and drift-free', async ({ page }) => {
-  const { preview } = await captureFixture(page)
-  const update = process.env.UPDATE_BASELINES === '1'
+  // Loop the committed per-template goldens (D-06); 03-01 ships Minimal only.
+  for (const template of TEMPLATES) {
+    const { preview } = await captureFixture(page, template)
+    const goldenPath = goldenPathFor(template)
+    const update = process.env.UPDATE_BASELINES === '1'
 
-  if (update) {
-    // The explicit, reviewed update path (Pitfall 5): writes the golden.
-    // CI never sets this flag — plan 01-03 enforces it.
-    fs.mkdirSync(FIXTURES_DIR, { recursive: true })
-    fs.writeFileSync(GOLDEN_PATH, PNG.sync.write(preview))
-  } else if (!fs.existsSync(GOLDEN_PATH)) {
-    test.skip(true, `golden ${GOLDEN_PATH} not committed yet — run UPDATE_BASELINES=1 after calibration`)
-    return
+    if (update) {
+      // The explicit, reviewed update path (Pitfall 5): writes the golden.
+      // CI never sets this flag — plan 01-03 enforces it.
+      fs.mkdirSync(FIXTURES_DIR, { recursive: true })
+      fs.writeFileSync(goldenPath, PNG.sync.write(preview))
+    } else if (!fs.existsSync(goldenPath)) {
+      test.skip(true, `golden ${goldenPath} not committed yet — run UPDATE_BASELINES=1 after calibration`)
+      return
+    }
+
+    const golden = PNG.sync.read(fs.readFileSync(goldenPath))
+
+    // Baseline sanity (Pitfall 5): a blank or wrong-size golden must fail the
+    // suite every run, or parity "passes" against a wrong baseline forever.
+    expect(golden.width, 'golden width must be 794px (A4@96dpi)').toBe(A4_WIDTH_PX)
+    expect(nonWhiteFraction(golden), 'golden must not be blank').toBeGreaterThan(BASELINE_MIN_NONWHITE)
+
+    // Drift guard: the current preview must match the committed golden.
+    const h = Math.min(preview.height, golden.height)
+    const { fraction, diff } = diffFraction(cropY(preview, 0, h), cropY(golden, 0, h), DIFF_THRESHOLD)
+    if (fraction >= BASELINE_MAX_FRACTION) writeArtifacts(`baseline-drift-${template}`, preview, golden, diff)
+    expect(fraction, `current preview vs committed golden (${template})`).toBeLessThan(BASELINE_MAX_FRACTION)
   }
-
-  const golden = PNG.sync.read(fs.readFileSync(GOLDEN_PATH))
-
-  // Baseline sanity (Pitfall 5): a blank or wrong-size golden must fail the
-  // suite every run, or parity "passes" against a wrong baseline forever.
-  expect(golden.width, 'golden width must be 794px (A4@96dpi)').toBe(A4_WIDTH_PX)
-  expect(nonWhiteFraction(golden), 'golden must not be blank').toBeGreaterThan(BASELINE_MIN_NONWHITE)
-
-  // Drift guard: the current preview must match the committed golden.
-  const h = Math.min(preview.height, golden.height)
-  const { fraction, diff } = diffFraction(cropY(preview, 0, h), cropY(golden, 0, h), DIFF_THRESHOLD)
-  if (fraction >= BASELINE_MAX_FRACTION) writeArtifacts('baseline-drift', preview, golden, diff)
-  expect(fraction, 'current preview vs committed golden').toBeLessThan(BASELINE_MAX_FRACTION)
 })

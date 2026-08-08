@@ -65,6 +65,25 @@ const customerSchema = z.object({
   address: z.array(z.string()),
 })
 
+/**
+ * D-09: render SELECTORS, all OPTIONAL — a missing field resolves at render time
+ * (template → 'minimal', pageSize → 'a4', branding → template defaults), so
+ * Phase-2-era stored documents render immediately with no Dexie migration.
+ */
+const templateIdSchema = z.enum(['blank', 'minimal', 'modern', 'corporate', 'freelancer', 'agency', 'creative'])
+const pageSizeSchema = z.enum(['a4', 'a5', 'a3'])
+const brandingSchema = z
+  .object({
+    primaryColor: z.string(),
+    accentColor: z.string(),
+    headingFont: z.enum(['geist', 'geist-mono', 'source-serif-4']),
+    bodyFont: z.enum(['geist', 'geist-mono', 'source-serif-4']),
+    headerStyle: z.enum(['standard', 'banner', 'compact']),
+    footerStyle: z.enum(['minimal', 'standard', 'detailed']),
+    watermark: z.enum(['auto', 'draft', 'paid']),
+  })
+  .partial()
+
 export const documentSchema = z.object({
   // z.object() default STRIPS unknown keys = D-14 (strict-object reject is NOT used)
   id: z.string(),
@@ -84,6 +103,12 @@ export const documentSchema = z.object({
   discount: discountSchema.optional(),
   /** D-08: multiple shipping/fee entries allowed; absent = none. */
   shippingFees: z.array(shippingFeeSchema).optional(),
+  /** D-09: style-only render selector; absent → 'minimal' at resolve time. */
+  template: templateIdSchema.optional(),
+  /** D-09: paper size selector; absent → 'a4' (PDF-01). */
+  pageSize: pageSizeSchema.optional(),
+  /** D-09: per-document branding overrides; absent → template defaults (D-02). */
+  branding: brandingSchema.optional(),
 })
 
 /** Keeps the Phase 1 exported name (D-15 re-export pattern — fixtures.ts and DocumentPage.tsx import it). */
@@ -93,3 +118,8 @@ export type DocumentModel = z.infer<typeof documentSchema>
 export type LineItem = z.infer<typeof lineItemSchema>
 export type Company = z.infer<typeof companySchema>
 export type Customer = z.infer<typeof customerSchema>
+
+// D-09: render-selector types (consumed by tokens.ts, resolveTokens.ts, DocumentPage).
+export type TemplateId = z.infer<typeof templateIdSchema>
+export type PageSize = z.infer<typeof pageSizeSchema>
+export type Branding = z.infer<typeof brandingSchema>
