@@ -31,8 +31,8 @@ Requirements for initial release. Each maps to roadmap phases. Scope sourced fro
 
 ### Templates
 
-- [ ] **TEMP-01**: Template set covers Blank, Minimal, Modern, Corporate, Freelancer, Agency, Creative
-- [ ] **TEMP-02**: Templates control typography, colors, borders, spacing, and layout style
+- [x] **TEMP-01**: Template set covers Blank, Minimal, Modern, Corporate, Freelancer, Agency, Creative
+- [x] **TEMP-02**: Templates control typography, colors, borders, spacing, and layout style
 - [ ] **TEMP-03**: Applying a template never changes document structure
 
 ### Company Profile
@@ -167,8 +167,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BUIL-08 | Phase 4 | Pending |
 | BUIL-09 | Phase 4 | Pending |
 | BUIL-10 | Phase 3 | Pending |
-| TEMP-01 | Phase 3 | Pending |
-| TEMP-02 | Phase 3 | Pending |
+| TEMP-01 | Phase 3 | Complete |
+| TEMP-02 | Phase 3 | Complete |
 | TEMP-03 | Phase 3 | Pending |
 | COPR-01 | Phase 5 | Pending |
 | COPR-02 | Phase 5 | Pending |

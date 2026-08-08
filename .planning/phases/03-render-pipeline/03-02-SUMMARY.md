@@ -213,3 +213,10 @@ None - no external service configuration required.
 ---
 *Phase: 03-render-pipeline*
 *Completed: 2026-08-08*
+
+## Self-Check: PASSED
+
+- All 13 key files confirmed present on disk (6 new template files, tokens.ts, resolveTokens.ts, tokens.test.ts, routes/index.tsx, RenderBench.tsx, index.css, SUMMARY.md)
+- Commits confirmed in git log: `716f83b` (feat task commit), `1a73434` (docs summary commit)
+- Task `<verify>` green: vitest 13/13, `pnpm typecheck`, `pnpm build`
+- Plan-level wave gate green: `pnpm lint` exit 0 (2 pre-existing out-of-scope warnings), `pnpm test` 4/4 parity incl. golden baseline drift-free
