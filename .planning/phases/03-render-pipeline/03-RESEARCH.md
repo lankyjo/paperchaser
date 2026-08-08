@@ -437,19 +437,19 @@ export function blendColor(hex: string, alpha: number, bg: RGB): RGB {
 | A5 | `@fontsource-variable/geist-mono` and `@fontsource-variable/source-serif-4` import paths (`@fontsource-variable/<name>`) and default `font-display: swap` match the installed `geist` convention | Standard Stack | Wrong import name fails the build loudly (Vite resolves at build); low risk |
 | A6 | STATE.md's "golden-image diff tooling mini-spike" blocker is already resolved by the committed pixelmatch implementation | Don't Hand-Roll | If a re-spike were required it would stall planning; it is not — pixelmatch is installed, calibrated, green |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Currency formatting under English content (de-DE `1.234,56 €` vs `€1,234.56`)?**
+1. **Currency formatting under English content (de-DE `1.234,56 €` vs `€1,234.56`)?** — **(RESOLVED: keep de-DE this phase — 03-01 Task 1 preserves the `Intl.NumberFormat('de-DE', …)` in `DocumentPage.tsx:15`; locale-aware formatting stays MONEY-01 (v2).)**
    - What we know: `Intl.NumberFormat('de-DE', …)` is hardcoded in `DocumentPage.tsx:15`; fixtures are being translated to English (D-05) and goldens regenerated anyway; MONEY-01 (locale-aware formatting) is deferred to v2.
    - What's unclear: whether the English bench should also switch the number locale (scope bump: a locale registry, not just a constant swap).
    - Recommendation: keep de-DE this phase (zero risk to the calibrated document base); confirm with the user in the discuss-phase; if changed, it's a one-line formatter swap + one regeneration, still inside this phase's baseline workflow.
 
-2. **`page` property acceptance on the harness Chromium?**
+2. **`page` property acceptance on the harness Chromium?** — **(RESOLVED: the A5/A3 width smoke assertion `pages[0].width ≈ 794·(width/210)` (A5 ≈ 560, A3 ≈ 1123, ±2px) is added to the page-size plan's structural test — 03-05 Task 1 — proving the format param actually took effect.)**
    - What we know: Baseline 2024 (Dec 2024), Chromium has supported named pages since 85; the installed browsers are 1228/1234 trains (2026).
    - What's unclear: nothing material — but the A5/A3 path has no golden to prove it, only structural assertions.
    - Recommendation: add a tiny smoke assertion to the A5/A3 test that the PDF page **width** equals the A5/A3 format (rasterize and check `pages[0].width` ≈ 794·(148/210) for A5), proving the format param actually took effect.
 
-3. **Watermark on pages ≥ 2 (ADR 0002 first-page-only limitation) in the print-preview dialog?**
+3. **Watermark on pages ≥ 2 (ADR 0002 first-page-only limitation) in the print-preview dialog?** — **(RESOLVED: page-1-only accepted for Phase 3 — the dialog's offset-sliced pages show the watermark in slice 0 only, asserted by 03-05 edge-22 (dialog parity test comment); no per-page watermark repetition.)**
    - What we know: the dialog's offset-sliced pages each contain the full document, so the watermark element appears in slice 0 only (same as the print projection and the harness crops); the real PDF also carries it page-1-only (ADR 0002 measured 0 pixels on pages ≥ 2).
    - What's unclear: whether a future builder should repeat the watermark per page (ADR 0002 explicitly defers per-page repetition to when the builder has real page structure — Phase 4+).
    - Recommendation: accept page-1-only for Phase 3; do not add per-page watermark repetition.
