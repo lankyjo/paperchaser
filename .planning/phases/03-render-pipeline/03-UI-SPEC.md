@@ -64,7 +64,7 @@ Exceptions: document content uses mm/px print units, not the 8px app scale — r
 
 ## Typography
 
-**App chrome** (Geist Variable, 4 sizes / 2 weights):
+**App chrome** (Geist Variable, 4 sizes / 2 weights — the app contract):
 
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
@@ -73,9 +73,13 @@ Exceptions: document content uses mm/px print units, not the 8px app scale — r
 | Heading | 16px | 600 | 1.3 |
 | Display | 20px | 600 | 1.2 |
 
-Note: shadcn base-nova ships some components at 500 weight — inherited as-is where the component defines it; the contract declares 400 + 600.
+Note: shadcn base-nova ships some components at 500 weight — inherited as-is where the component defines it (a pass-through, not a declared weight); the app chrome contract declares exactly 400 + 600.
 
-**Document base** (inherited from current DocumentPage — harness-calibrated, do not change the base):
+**Document (print surface)** — deliberately differentiated type scale. Explicit exception to the app-chrome 4-size/2-weight contract, mirroring the Spacing section's mm exception:
+
+- **Justification:** template identity differentiation (TEMP-02 — each of the 7 templates must be visually distinct at a glance) and existing harness-calibrated golden baselines (tests/fixtures/invoice-torture.preview.png — the document base must NOT move).
+- **Totals (not counted against the app contract):** document base spans 11–24px at weights 400/600/700; per-template display overrides add sizes (18/20/26/28px titles, 9/10px mono labels), so the full print-surface span is 9–28px across weights 400/500/600/700 (500 appears only as the existing mono-label weight, e.g. Agency labels).
+- **Document base** — inherited from current DocumentPage, harness-calibrated, do not change:
 
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
@@ -85,7 +89,7 @@ Note: shadcn base-nova ships some components at 500 weight — inherited as-is w
 | Document title | 24px | 600 | 1.2 |
 | Grand total | 11px | 700 | 1.4 |
 
-Per-template overrides (headings font, display sizes, label treatment) live in the Template Identity section below.
+- Per-template display sizes and label treatments (headings font, title sizes, mono label sizes) are enumerated in the Template Identity section below — **those tables are the single source of truth for template type** (e.g. Minimal title 18px 600, Corporate serif company name 20px, Agency title 28px 700 + 9px/10px mono uppercase labels, Creative display serif italic 26px + 9px mono labels).
 
 ---
 
