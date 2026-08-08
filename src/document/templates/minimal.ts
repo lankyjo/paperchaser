@@ -17,6 +17,8 @@ export const minimalTokens: TemplateTokens = {
     bodyFontId: 'geist',
     titleSize: '18px',
     titleWeight: 600,
+    labelFontId: 'geist', // no mono labels
+    labelLetterspacing: '0.08em', // "INVOICE" 10px 600 letterspaced gray label
   },
   borders: {
     rowRule: '#e5e7eb', // 1px hairline row rules
@@ -24,6 +26,8 @@ export const minimalTokens: TemplateTokens = {
   spacing: {
     sectionGap: '12mm', // generous sections
     pagePadding: '15mm', // harness geometry contract (all templates)
+    bandWidth: '0px', // no decoration band
+    radius: '0px', // no rounded panels
   },
   header: {
     style: 'standard',

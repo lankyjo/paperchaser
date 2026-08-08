@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import { DEMO_DOCUMENT_ID, documentsRepo } from '../db/repos'
-import type { DocumentModel } from '../document/types'
+import type { DocumentModel, PageSize, TemplateId } from '../document/types'
 import { useMountEffect } from '../lib/useMountEffect'
 import { DocumentPage } from './DocumentPage'
 
@@ -12,15 +12,26 @@ import { DocumentPage } from './DocumentPage'
  * Data source (D-11): the ?fixture= harness path renders the whitelisted model
  * directly (T-01-01, byte-identical behavior); otherwise the empty store is
  * seeded once with the English Minimal demo and that seeded document renders.
+ * Optional template/pageSize come from the ?template= / ?size= whitelist
+ * (routes/index.tsx, security V5) and flow straight into DocumentPage's
+ * resolver — unknown values degrade to undefined → 'minimal' / 'a4' (D-09).
  *
  * Screen-only chrome — .app-shell is hidden under print via print.css
  * (visibility) and #print-root's box-shadow is neutralized there; nothing in
  * this file touches the print projection.
  */
-export function RenderBench({ model: fixtureModel }: { model?: DocumentModel }) {
+export function RenderBench({
+  model: fixtureModel,
+  template,
+  pageSize,
+}: {
+  model?: DocumentModel
+  template?: TemplateId
+  pageSize?: PageSize
+}) {
   // Harness path (T-01-01): whitelisted fixture model — render immediately.
   if (fixtureModel !== undefined) {
-    return <BenchShell model={fixtureModel} />
+    return <BenchShell model={fixtureModel} template={template} pageSize={pageSize} />
   }
   // Demo path (D-11): mount the async seed/load only when actually needed.
   return <DemoDocument />
@@ -37,7 +48,15 @@ export function RenderBench({ model: fixtureModel }: { model?: DocumentModel }) 
  * variants) take the chrome out of the printed flow without editing
  * src/styles/print.css — #print-root's subtree is untouched.
  */
-function BenchShell({ model }: { model: DocumentModel }) {
+function BenchShell({
+  model,
+  template,
+  pageSize,
+}: {
+  model: DocumentModel
+  template?: TemplateId
+  pageSize?: PageSize
+}) {
   return (
     <div className="flex min-h-screen flex-col print:min-h-0">
       <header className="flex h-12 shrink-0 items-center px-4 print:hidden">
@@ -45,7 +64,7 @@ function BenchShell({ model }: { model: DocumentModel }) {
       </header>
       <main className="flex flex-1 justify-center overflow-auto px-6 pb-10 print:pb-0">
         <div style={{ boxShadow: '0 4px 24px rgba(0, 0, 0, 0.12)' }}>
-          <DocumentPage model={model} />
+          <DocumentPage model={model} template={template} pageSize={pageSize} />
         </div>
       </main>
     </div>

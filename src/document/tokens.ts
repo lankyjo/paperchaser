@@ -9,13 +9,19 @@
  * Adding a template = adding a token file in src/document/templates/.
  */
 
+import { agencyTokens } from './templates/agency'
+import { blankTokens } from './templates/blank'
+import { corporateTokens } from './templates/corporate'
+import { creativeTokens } from './templates/creative'
+import { freelancerTokens } from './templates/freelancer'
 import { minimalTokens } from './templates/minimal'
+import { modernTokens } from './templates/modern'
 import type { Branding, PageSize, TemplateId } from './types'
 
 export type { Branding, PageSize, TemplateId }
 
-export type FontId = 'geist' | 'geist-mono' | 'source-serif-4'
-export type HeaderStyle = 'standard' | 'banner' | 'compact'
+export type FontId = 'geist' | 'geist-mono' | 'source-serif-4' | 'system'
+export type HeaderStyle = 'standard' | 'banner' | 'compact' | 'standard-offset'
 export type FooterStyle = 'minimal' | 'standard' | 'detailed'
 
 /** FontId → CSS font-family stack (BRND-04; all bundled via @fontsource). */
@@ -23,6 +29,8 @@ export const FONT_STACKS: Record<FontId, string> = {
   geist: "'Geist Variable', sans-serif",
   'geist-mono': "'Geist Mono Variable', monospace",
   'source-serif-4': "'Source Serif 4 Variable', serif",
+  // Blank template identity: system sans (UI-SPEC §Template Identity 1) — never bundled.
+  system: "'Helvetica Neue', Arial, sans-serif",
 }
 
 /** Page sizes (PDF-01/02, Decision 1). A4 is the harness geometry contract. */
@@ -48,6 +56,10 @@ export interface TemplateTokens {
     bodyFontId: FontId
     titleSize: string
     titleWeight: number
+    /** Branding label/meta font (Agency/Creative mono uppercase labels); plan 03 wires it. */
+    labelFontId: FontId
+    /** Letter-spacing for label-style text (Agency 0.12em, Minimal 0.08em). */
+    labelLetterspacing: string
   }
   borders: {
     /** Table row rule color (hairline for Minimal). */
@@ -56,6 +68,12 @@ export interface TemplateTokens {
   spacing: {
     sectionGap: string
     pagePadding: string
+    /** Decoration band width (Modern 4mm top, Agency 8px top, Creative 8mm left); '0px' = no band. */
+    bandWidth: string
+    /** Panel/total-card corner radius (Freelancer/Creative 6px, Modern 4px); '0px' = square. */
+    radius: string
+    /** Creative 18mm left padding (band offset); absent → pagePadding (resolver fallback). */
+    pagePaddingLeft?: string
   }
   header: {
     style: HeaderStyle
@@ -84,11 +102,16 @@ export interface ResolvedTokens extends TemplateTokens {
 }
 
 /**
- * Registry seam (D-12): template token files keyed by TemplateId.
- * This tracer ships Minimal only (TEMP-01 partial); plans 02/03 add the rest.
- * The `Record<TemplateId, …>` type is the contract once all 7 land — the cast
- * documents that the other six are unregistered during the tracer slice.
+ * Registry seam (D-12): template token files keyed by TemplateId — exactly the
+ * 7 ids of the z.enum union in types.ts (TEMP-01; set equality is unit-pinned).
+ * Adding a template = adding a token file + one registry line.
  */
 export const TEMPLATE_REGISTRY: Record<TemplateId, TemplateTokens> = {
+  blank: blankTokens,
   minimal: minimalTokens,
-} as Record<TemplateId, TemplateTokens>
+  modern: modernTokens,
+  corporate: corporateTokens,
+  freelancer: freelancerTokens,
+  agency: agencyTokens,
+  creative: creativeTokens,
+}
