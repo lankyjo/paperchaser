@@ -85,8 +85,24 @@ Plans:
   3. PDF output is identical to the on-screen preview — A4 by default, optional page sizes, automatic pagination, print margins, high resolution, white page — with the golden-image parity harness running in dev/CI to catch any drift (PDF-01, PDF-02, PDF-03, PDF-04, PDF-05, PDF-06, BRND-07).
   4. User can open print preview from the builder and see pagination and styling matching the PDF output (BUIL-10).
 
-**Plans**: TBD (refined during planning)
+**Plans**: 4/4 plans planned
 **UI hint**: yes
+Plans:
+**Wave 1**
+
+- [ ] 03-01-PLAN.md — Tracer: Minimal slice e2e (schema optional fields → token registry → pure resolver → CSS-variable render → parity) + demo seed & bench shell
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 03-02-PLAN.md — Fonts (geist-mono, source-serif-4) + six template token files + 3×3 header/footer presets + template gallery with D-10 re-resolution
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 03-03-PLAN.md — Branding panel (logo/colors/fonts/header/footer/watermark, D-01..D-04) + English fixture migration + 7-template parity loop + golden regeneration
+
+**Wave 4** *(blocked on Waves 2-3 completion)*
+
+- [ ] 03-04-PLAN.md — Named @page rules + A5/A3 page sizes + print-preview dialog (measure-and-slice, D-15) + dialog parity checks
 
 ### Phase 4: Editing UX
 
