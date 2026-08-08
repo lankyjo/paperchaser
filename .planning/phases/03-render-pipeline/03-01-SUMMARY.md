@@ -218,3 +218,7 @@ None - no external service configuration required.
 ---
 *Phase: 03-render-pipeline*
 *Completed: 2026-08-08*
+
+## Self-Check: PASSED
+
+All created files verified on disk (tokens.ts, templates/minimal.ts, resolveTokens.ts, tokens.test.ts, RenderBench.tsx, useMountEffect.ts, invoice-torture.minimal.preview.png, SUMMARY.md); superseded golden removed; commits a6b579a / 14a8fd9 / 6149a42 / 02f23f0 verified in git log.

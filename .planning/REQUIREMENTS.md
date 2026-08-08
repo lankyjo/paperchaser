@@ -74,7 +74,7 @@ Requirements for initial release. Each maps to roadmap phases. Scope sourced fro
 - [ ] **PDF-01**: PDF defaults to A4 page size
 - [ ] **PDF-02**: User can select optional page sizes
 - [ ] **PDF-03**: PDF paginates automatically across pages
-- [ ] **PDF-04**: PDF renders at high resolution
+- [x] **PDF-04**: PDF renders at high resolution
 - [ ] **PDF-05**: PDF respects print margins
 - [ ] **PDF-06**: PDF output is identical to the on-screen preview
 - [ ] **PDF-07**: User can download the PDF
@@ -192,7 +192,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PDF-01 | Phase 3 | Pending |
 | PDF-02 | Phase 3 | Pending |
 | PDF-03 | Phase 3 | Pending |
-| PDF-04 | Phase 3 | Pending |
+| PDF-04 | Phase 3 | Complete |
 | PDF-05 | Phase 3 | Pending |
 | PDF-06 | Phase 3 | Pending |
 | PDF-07 | Phase 6 | Pending |

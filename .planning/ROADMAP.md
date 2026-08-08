@@ -85,12 +85,12 @@ Plans:
   3. PDF output is identical to the on-screen preview — A4 by default, optional page sizes, automatic pagination, print margins, high resolution, white page — with the golden-image parity harness running in dev/CI to catch any drift (PDF-01, PDF-02, PDF-03, PDF-04, PDF-05, PDF-06, BRND-07).
   4. User can open print preview from the builder and see pagination and styling matching the PDF output (BUIL-10).
 
-**Plans**: 5/5 plans planned
+**Plans**: 1/5 plans executed
 **UI hint**: yes
 Plans:
 **Wave 1**
 
-- [ ] 03-01-PLAN.md — Tracer: Minimal slice e2e (schema optional fields → token registry → pure resolver → CSS-variable render → parity) + demo seed & bench shell
+- [x] 03-01-PLAN.md — Tracer: Minimal slice e2e (schema optional fields → token registry → pure resolver → CSS-variable render → parity) + demo seed & bench shell
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -163,7 +163,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|----------------|--------|-----------|
 | 1. Foundation Spike | 3/3 | Complete    | 2026-08-07 |
 | 2. Domain Core & Persistence | 4/4 | Complete    | 2026-08-08 |
-| 3. Render Pipeline | 0/TBD | Not started | - |
+| 3. Render Pipeline | 1/5 | In Progress|  |
 | 4. Editing UX | 0/TBD | Not started | - |
 | 5. Reference Data UX | 0/TBD | Not started | - |
 | 6. Validation, Delivery & Polish | 0/TBD | Not started | - |

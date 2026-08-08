@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 3
-current_phase_name: Render Pipeline
+current_phase: 03
+current_phase_name: render-pipeline
 status: executing
-stopped_at: Phase 3 context gathered
-last_updated: "2026-08-08T14:06:25.342Z"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-08-08T22:27:41.432Z"
 last_activity: 2026-08-08
-last_activity_desc: Phase 02 complete, transitioned to Phase 3
+last_activity_desc: Phase 03 execution started
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 12
-  completed_plans: 7
+  completed_plans: 8
 ---
 
 # Project State
@@ -23,16 +23,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-07)
 
 **Core value:** Create a professional, print-ready business document (invoice, quote, or receipt) in under five minutes with a true WYSIWYG editing experience, entirely offline in the browser.
-**Current focus:** Phase 02 — domain-core-persistence
+**Current focus:** Phase 03 — render-pipeline
 
 ## Current Position
 
-Phase: 3 — Render Pipeline
-Plan: Not started
+Phase: 03 (render-pipeline) — EXECUTING
+Plan: 2 of 5
 Status: Ready to execute
-Last activity: 2026-08-08 — Phase 02 complete, transitioned to Phase 3
+Last activity: 2026-08-08 — Phase 03 execution started
 
-Progress: [██████████] 100%
+Progress: [███████░░░] 67%
 
 ## Performance Metrics
 
@@ -72,6 +72,7 @@ Progress: [██████████] 100%
 | Phase 02 P02 | 11 min | 3 tasks | 6 files |
 | Phase 02 P03 | 8min | 3 tasks | 4 files |
 | Phase 02 P04 | 13min | 2 tasks | 2 files |
+| Phase 03-render-pipeline P01 | 19min | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -111,6 +112,12 @@ Zod 4.4.3 runtime literal-reject code is invalid_value not invalid_literal_value
 MAX_JSON_LENGTH 5M-char raw cap before JSON.parse (T-02-04-DOS) with ponytail upgrade-path comment
 Raw Zod-4 issue-shape read via one cast (public $ZodIssue union hides expected/received/keys)
 
+- [Phase ?]: Resolver contract: resolveTokens(template, branding?) + toCssVars(resolved) in one pure module; missing template→'minimal' / pageSize→'a4' defaults resolve at the DocumentPage/resolver seam (D-08/D-09, PDF-01)
+- [Phase ?]: TEMPLATE_REGISTRY typed Record<TemplateId, TemplateTokens> via cast while the tracer ships Minimal only — test pins Object.keys==['minimal'] (TEMP-01 partial); plans 02/03 fill the rest
+- [Phase ?]: T-01-01 vs D-11: unknown/absent ?fixture= falls through to the seeded demo instead of DEFAULT_FIXTURE='invoice-simple'; whitelist Set preserved, harness path byte-identical
+- [Phase ?]: D-04 single mechanism: .watermark color via inline style={color: resolved.accent}; print.css #1d4ed8 kept as stylesheet fallback only
+- [Phase ?]: Bench chrome print-neutral via Tailwind print: variants (header print:hidden, main print:pb-0, flex-col print:min-h-0) — measured parity break 0.068>0.05 without; no print.css change
+
 ### Pending Todos
 
 [From .planning/todos/pending/ — ideas captured during sessions]
@@ -134,6 +141,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-08T11:41:51.050Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-render-pipeline/03-CONTEXT.md
+Last session: 2026-08-08T22:25:52.785Z
+Stopped at: Completed 03-01-PLAN.md
+Resume file: None
