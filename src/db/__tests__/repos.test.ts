@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import type { DocumentModel } from '../../document/types'
 import { db } from '../db'
-import { catalogRepo, companyRepo, customersRepo, documentsRepo, preferencesRepo } from '../repos'
+import { catalogRepo, companyRepo, customersRepo, DEMO_DOCUMENT_ID, documentsRepo, preferencesRepo } from '../repos'
 
 /** Fixture-shaped document (synthetic data — RESEARCH Security Domain, never real PII). */
 const DOC: DocumentModel = {
@@ -56,6 +56,25 @@ describe('documentsRepo', () => {
     await documentsRepo.put(DOC)
     await documentsRepo.delete(DOC.id)
     expect(await documentsRepo.get(DOC.id)).toBeUndefined()
+  })
+
+  it('seedDemoIfEmpty seeds the English Minimal demo exactly once (D-11 idempotence)', async () => {
+    await documentsRepo.seedDemoIfEmpty()
+    const seeded = await documentsRepo.get(DEMO_DOCUMENT_ID)
+    expect(seeded).toBeDefined()
+    expect(seeded?.template).toBe('minimal')
+    expect(seeded?.id).toBe(DEMO_DOCUMENT_ID)
+
+    // Second call must not duplicate — get/put idempotence keys on the id.
+    await documentsRepo.seedDemoIfEmpty()
+    await documentsRepo.seedDemoIfEmpty()
+    expect(await db.table('documents').where('id').equals(DEMO_DOCUMENT_ID).count()).toBe(1)
+
+    // A pre-existing document with the same id is never overwritten.
+    const custom = { ...DOC, id: DEMO_DOCUMENT_ID, number: 'CUSTOM-1' }
+    await documentsRepo.put(custom)
+    await documentsRepo.seedDemoIfEmpty()
+    expect((await documentsRepo.get(DEMO_DOCUMENT_ID))?.number).toBe('CUSTOM-1')
   })
 })
 

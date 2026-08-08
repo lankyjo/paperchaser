@@ -5,6 +5,7 @@
  */
 import type { Table } from 'dexie'
 
+import { FIXTURE_MAP } from '../document/fixtures'
 import type { Company, Customer, DocumentModel } from '../document/types'
 import { db as rawDb } from './db'
 
@@ -46,12 +47,26 @@ const db = rawDb as unknown as Tables
 /** Singleton company profile key — one record per workspace (STOR-02). */
 const COMPANY_ID = 'company'
 
+/** D-11: the seeded empty-store demo document id — seedDemoIfEmpty keys on it. */
+export const DEMO_DOCUMENT_ID = 'demo-invoice'
+
 export const documentsRepo = {
   put: (doc: DocumentModel) => db.documents.put(doc),
   get: (id: string) => db.documents.get(id),
   delete: (id: string) => db.documents.delete(id),
   /** Index-backed where query — Phase 6 dashboard stats by status. */
   byStatus: (status: DocumentModel['status']) => db.documents.where('status').equals(status).toArray(),
+  /**
+   * D-11: seed the English Minimal demo document once when the store is empty.
+   * Idempotent — the get/put pair keys on DEMO_DOCUMENT_ID, so repeated calls
+   * (e.g. StrictMode double-mount, every bench load) never duplicate.
+   */
+  seedDemoIfEmpty: async (): Promise<void> => {
+    const existing = await db.documents.get(DEMO_DOCUMENT_ID)
+    if (existing === undefined) {
+      await db.documents.put(FIXTURE_MAP['invoice-demo'])
+    }
+  },
 }
 
 export const companyRepo = {

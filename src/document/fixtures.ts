@@ -109,4 +109,55 @@ export const FIXTURE_MAP: Record<string, DocumentModel> = {
     ],
     status: 'paid',
   },
+  /**
+   * D-11: the empty-store demo document — English Minimal, 3 line items,
+   * fictional names/addresses only (T-01-02 synthetic-data rule).
+   * Internal `model.id` is EXACTLY 'demo-invoice' — seedDemoIfEmpty's
+   * get/put idempotence keys on this id (a mismatch would re-seed on every load).
+   */
+  'invoice-demo': {
+    id: 'demo-invoice',
+    type: 'invoice',
+    currency: 'EUR',
+    issueDate: '2026-08-08',
+    number: 'INV-2026-0001',
+    template: 'minimal',
+    status: 'draft',
+    company: {
+      name: 'Northwind Studio',
+      address: ['12 Harbor Lane', 'Portland, OR 97201', 'United States'],
+      email: 'hello@northwind-studio.test',
+      logo: null, // edge-14: no logo → header renders without the img element
+    },
+    customer: {
+      name: 'Acme Coffee Roasters',
+      address: ['300 Main Street', 'Portland, OR 97205', 'United States'],
+    },
+    lineItems: [
+      {
+        id: 'demo-1',
+        title: 'Brand identity design',
+        description: 'Logo, color palette, and typography system',
+        quantity: 1,
+        unitPriceMinor: 120000,
+        taxRateMinor: 1900,
+      },
+      {
+        id: 'demo-2',
+        title: 'Website landing page',
+        description: 'Responsive single-page site',
+        quantity: 1,
+        unitPriceMinor: 85000,
+        taxRateMinor: 1900,
+      },
+      {
+        id: 'demo-3',
+        title: 'Monthly retainer',
+        description: 'Design support and revisions',
+        quantity: 3,
+        unitPriceMinor: 25000,
+        taxRateMinor: 1900,
+      },
+    ],
+  },
 }
