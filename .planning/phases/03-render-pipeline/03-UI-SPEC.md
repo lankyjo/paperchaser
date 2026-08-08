@@ -1,7 +1,8 @@
 ---
 phase: 3
 slug: render-pipeline
-status: draft
+status: approved
+reviewed_at: 2026-08-08
 shadcn_initialized: true
 preset: base-nova (Base UI, neutral base, CSS variables on)
 created: 2026-08-08
