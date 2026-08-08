@@ -21,7 +21,9 @@ Create a professional, print-ready business document (invoice, quote, or receipt
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Totals math: subtotal, tax, shipping, fees, discount, grand total (Validated in Phase 2: domain-core-persistence — single derived engine, per-line rounding in integer minor units, per-currency decimals)
+- [x] Local persistence via IndexedDB (Dexie) for profile, customers, catalog, documents, preferences (Validated in Phase 2 — five-store schema + per-table repos, reload-survival proven)
+- [x] JSON import/export: single document and full workspace backup/restore (Validated in Phase 2 — versioned envelope import/export boundary; workspace backup/restore lands in Phase 6)
 
 ### Active
 
@@ -99,6 +101,15 @@ This document evolves at phase transitions and milestone boundaries.
 2. Core Value check — still the right priority?
 3. Audit Out of Scope — reasons still valid?
 4. Update Context with current state
+---
+
+### Validation Notes
+
+- Single derived totals engine replaces inline copies (LINE-03) — `src/document/totals.ts`
+- Schema-first Zod 4 document model is the source of truth (D-15) — `src/document/types.ts`
+- Dexie `version(2)` five-store schema; repos are the only Dexie touchpoints — `src/db/`
+- Import boundary rejects malformed/envelope-invalid/schema-invalid JSON with structured reasons — `src/document/io.ts`
 
 ---
-*Last updated: 2026-08-07 after Phase 1*
+
+*Last updated: 2026-08-08 after Phase 2*
