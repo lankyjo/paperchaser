@@ -1,8 +1,9 @@
 import { useState } from 'react'
 
 import { DEMO_DOCUMENT_ID, documentsRepo } from '../db/repos'
-import type { DocumentModel, PageSize, TemplateId } from '../document/types'
+import type { Branding, DocumentModel, PageSize, TemplateId } from '../document/types'
 import { useMountEffect } from '../lib/useMountEffect'
+import { BrandingPanel } from './BrandingPanel'
 import { DocumentPage } from './DocumentPage'
 import { TemplateGallery } from './TemplateGallery'
 
@@ -64,16 +65,21 @@ function BenchShell({
   template,
   pageSize,
   onTemplateChange,
+  onBrandingChange,
+  onLogoChange,
 }: {
   model: DocumentModel
   template?: TemplateId
   pageSize?: PageSize
   onTemplateChange?: (template: TemplateId) => void
+  onBrandingChange?: (branding: Partial<Branding> | undefined) => void
+  onLogoChange?: (logo: string | null) => void
 }) {
   // D-10: the template is bench state; branding lives on the model and is
   // passed through untouched on switch (never cleared). The demo path wires
-  // onTemplateChange to write the choice back per-document; the harness path
-  // leaves it undefined (stateless — parity captures #print-root only).
+  // onTemplateChange/onBrandingChange/onLogoChange to write the choice back
+  // per-document; the harness path leaves them undefined (stateless — parity
+  // captures #print-root only).
   const [currentTemplate, setCurrentTemplate] = useState<TemplateId | undefined>(template ?? model.template)
 
   const selectTemplate = (id: TemplateId) => {
@@ -90,6 +96,17 @@ function BenchShell({
         <aside className="w-80 shrink-0 overflow-y-auto border-r border-foreground/10 bg-card p-3 print:hidden">
           <h2 className="mb-3 px-1 text-sm font-semibold">Templates</h2>
           <TemplateGallery selected={currentTemplate ?? 'minimal'} onSelect={selectTemplate} />
+          <div className="mt-6">
+            {/* D-01: branding lives on the document (model.branding + company.logo)
+                — the panel patches the same object DocumentPage reads and the demo
+                path persists via documentsRepo.put (BrandingPanel). */}
+            <BrandingPanel
+              model={model}
+              template={currentTemplate ?? 'minimal'}
+              onBrandingChange={onBrandingChange}
+              onLogoChange={onLogoChange}
+            />
+          </div>
         </aside>
         <div className="flex flex-1 justify-center overflow-auto px-6 pb-10 print:pb-0">
           <div style={{ boxShadow: '0 4px 24px rgba(0, 0, 0, 0.12)' }}>
@@ -123,5 +140,32 @@ function DemoDocument({ pageSize }: { pageSize?: PageSize }) {
     void documentsRepo.put(next)
   }
 
-  return <BenchShell model={model} pageSize={pageSize} onTemplateChange={handleTemplateChange} />
+  // D-01 per-document branding persistence: every panel control patches the
+  // SAME branding object DocumentPage renders and writes it back via
+  // documentsRepo.put (the panel and the renderer read one object).
+  const handleBrandingChange = (branding: Partial<Branding> | undefined) => {
+    const next = { ...model }
+    if (branding === undefined) delete next.branding
+    else next.branding = branding
+    setModel(next)
+    void documentsRepo.put(next)
+  }
+
+  // D-03: the logo lives on company.logo (one source of truth) — the panel
+  // never touches a branding.logo field.
+  const handleLogoChange = (logo: string | null) => {
+    const next = { ...model, company: { ...model.company, logo } }
+    setModel(next)
+    void documentsRepo.put(next)
+  }
+
+  return (
+    <BenchShell
+      model={model}
+      pageSize={pageSize}
+      onTemplateChange={handleTemplateChange}
+      onBrandingChange={handleBrandingChange}
+      onLogoChange={handleLogoChange}
+    />
+  )
 }

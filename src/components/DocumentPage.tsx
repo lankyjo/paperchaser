@@ -103,17 +103,33 @@ export function DocumentPage({
   const HeaderPreset = headerPresets[resolved.header.style]
   const FooterPreset = footerPresets[resolved.footer.style]
 
+  // BRND-06 (edges 11/12/13): three-way watermark resolve. The branding
+  // override wins when set ('draft' → DRAFT, 'paid' → PAID regardless of
+  // status); 'auto' or unset derives from status via deriveWatermark — the
+  // single Phase-2 engine, never reimplemented. NOTE (documented divergence,
+  // UI-SPEC line 205): deriveWatermark is DRAFT-only (totals.ts:90-92 returns
+  // null for 'paid'/'sent'), so 'auto' on a paid document renders NO watermark
+  // and "PAID" appears only via the explicit override.
+  const watermarkText =
+    branding?.watermark === 'draft'
+      ? 'DRAFT'
+      : branding?.watermark === 'paid'
+        ? 'PAID'
+        : deriveWatermark(model.status) === 'draft'
+          ? 'DRAFT'
+          : null
+
   return (
     <div
       id="print-root"
       className={pageSize && pageSize !== 'a4' ? `page-${pageSize}` : undefined}
       style={{ ...pageStyle, ...(vars as CSSProperties) }}
     >
-      {deriveWatermark(model.status) === 'draft' && (
+      {watermarkText !== null && (
         // D-04: watermark color follows the resolved brand accent (inline style
         // is the single mechanism; print.css keeps #1d4ed8 as stylesheet fallback).
         <div className="watermark" aria-hidden="true" style={{ color: resolved.accent }}>
-          DRAFT
+          {watermarkText}
         </div>
       )}
 
