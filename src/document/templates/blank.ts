@@ -15,6 +15,7 @@ export const blankTokens: TemplateTokens = {
     accent: null, // "no accent" (UI-SPEC)
     border: '#d1d5db',
     fill: '#ffffff',
+    muted: '#6b7280', // neutral gray — footer text stays minimal
   },
   fonts: {
     headingFontId: 'system', // "Helvetica Neue", Arial

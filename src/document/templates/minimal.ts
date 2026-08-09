@@ -11,6 +11,7 @@ export const minimalTokens: TemplateTokens = {
     accent: null, // Minimal defines no brand accent (D-04 chain resolves it)
     border: '#e5e7eb',
     fill: '#ffffff',
+    muted: '#6b7280', // secondary gray (UI-SPEC) — parity-critical footer color
   },
   fonts: {
     headingFontId: 'geist',

@@ -50,6 +50,8 @@ export interface TemplateTokens {
     accent: string | null
     border: string
     fill: string
+    /** Secondary/muted text color (footer blurb, small print) — UI-SPEC "secondary gray" role. */
+    muted: string
   }
   fonts: {
     headingFontId: FontId

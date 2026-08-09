@@ -14,6 +14,7 @@ export const corporateTokens: TemplateTokens = {
     accent: null, // D-04 chain resolves to navy
     border: '#d1d5db',
     fill: '#ffffff',
+    muted: '#4b5563', // gray (UI-SPEC)
   },
   fonts: {
     headingFontId: 'source-serif-4', // serif headings 600

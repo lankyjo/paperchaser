@@ -15,6 +15,7 @@ export const agencyTokens: TemplateTokens = {
     accent: null, // D-04 chain resolves to primary
     border: '#f3f4f6',
     fill: '#ffffff',
+    muted: '#6b7280', // mono small print gray
   },
   fonts: {
     headingFontId: 'geist',

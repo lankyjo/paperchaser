@@ -14,6 +14,7 @@ export const freelancerTokens: TemplateTokens = {
     accent: null, // D-04 chain resolves to orange
     border: '#e7e5e4',
     fill: '#fafaf9',
+    muted: '#78716c', // warm gray (UI-SPEC)
   },
   fonts: {
     headingFontId: 'geist',

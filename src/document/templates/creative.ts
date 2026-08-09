@@ -14,6 +14,7 @@ export const creativeTokens: TemplateTokens = {
     accent: null, // D-04 chain resolves to violet
     border: '#e4e4e7', // row rules
     fill: '#f5f3ff',
+    muted: '#a1a1aa', // warm gray (UI-SPEC)
   },
   fonts: {
     headingFontId: 'source-serif-4', // display serif

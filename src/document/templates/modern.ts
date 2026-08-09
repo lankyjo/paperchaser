@@ -14,6 +14,7 @@ export const modernTokens: TemplateTokens = {
     accent: null, // D-04 chain resolves to primary
     border: '#e2e8f0',
     fill: '#f8fafc',
+    muted: '#6b7280', // gray blurb
   },
   fonts: {
     headingFontId: 'geist',
