@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 03
 current_phase_name: render-pipeline
 status: executing
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-08-08T23:45:26.752Z"
+stopped_at: Completed 03-03-PLAN.md
+last_updated: "2026-08-09T00:39:14.218Z"
 last_activity: 2026-08-08
 last_activity_desc: Phase 03 execution started
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 12
-  completed_plans: 9
+  completed_plans: 10
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-08-07)
 ## Current Position
 
 Phase: 03 (render-pipeline) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 Status: Ready to execute
 Last activity: 2026-08-08 — Phase 03 execution started
 
-Progress: [████████░░] 75%
+Progress: [████████░░] 83%
 
 ## Performance Metrics
 
@@ -74,6 +74,7 @@ Progress: [████████░░] 75%
 | Phase 02 P04 | 13min | 2 tasks | 2 files |
 | Phase 03-render-pipeline P01 | 19min | 2 tasks | 13 files |
 | Phase 03-render-pipeline P02 | 24min | 2 tasks | 15 files |
+| Phase 03-render-pipeline P03 | 25min | 2 tasks | 17 files |
 
 ## Accumulated Context
 
@@ -118,6 +119,7 @@ Raw Zod-4 issue-shape read via one cast (public $ZodIssue union hides expected/r
 - [Phase ?]: T-01-01 vs D-11: unknown/absent ?fixture= falls through to the seeded demo instead of DEFAULT_FIXTURE='invoice-simple'; whitelist Set preserved, harness path byte-identical
 - [Phase ?]: D-04 single mechanism: .watermark color via inline style={color: resolved.accent}; print.css #1d4ed8 kept as stylesheet fallback only
 - [Phase ?]: Bench chrome print-neutral via Tailwind print: variants (header print:hidden, main print:pb-0, flex-col print:min-h-0) — measured parity break 0.068>0.05 without; no print.css change
+- [Phase 03-render-pipeline]: palette.muted added to the token shape (Rule 2): the pre-preset footer hardcoded #6b7280 (Minimal's secondary gray per UI-SPEC) — presets are forbidden hardcoded hexes, so the footer gray became a token; the parity golden pins the value for Minimal — Satisfies the no-hardcoded-hex acceptance grep while keeping the minimal golden byte-identical
 
 ### Pending Todos
 
@@ -142,6 +144,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-08T23:45:26.727Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-08-09T00:39:01.932Z
+Stopped at: Completed 03-03-PLAN.md
 Resume file: None

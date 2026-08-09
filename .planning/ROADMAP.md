@@ -98,7 +98,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 03-03-PLAN.md — 3×3 header/footer presets + TemplateGallery + DocumentPage/RenderBench wiring + D-10 re-resolution
+- [x] 03-03-PLAN.md — 3×3 header/footer presets + TemplateGallery + DocumentPage/RenderBench wiring + D-10 re-resolution
 
 **Wave 4** *(blocked on Waves 2-3 completion)*
 
