@@ -104,12 +104,15 @@ export function PrintPreviewDialog({
   const totalH = measuredH > 0 ? measuredH : pageH
   const sliceCount = Math.max(1, Math.ceil(totalH / pageH))
 
+  // UI-SPEC page stack: white pages, gray gap + shadow between blocks. NO
+  // border — the block screenshot must be a pure white page edge-to-edge so
+  // dialog-vs-PDF pixel diffs (Task-3 parity) see only content (the PDF page
+  // has no border ring).
   const blockStyle: CSSProperties = {
     width: pageW,
     height: pageH,
     overflow: 'hidden',
     background: '#ffffff',
-    border: '1px solid var(--border)',
     boxShadow: '0 2px 12px rgba(0, 0, 0, 0.15)',
   }
 
