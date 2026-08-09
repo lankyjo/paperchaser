@@ -61,13 +61,13 @@ Requirements for initial release. Each maps to roadmap phases. Scope sourced fro
 
 ### Branding
 
-- [ ] **BRND-01**: User can set a logo on the document
-- [ ] **BRND-02**: User can set a primary brand color
-- [ ] **BRND-03**: User can set an accent brand color
-- [ ] **BRND-04**: User can choose fonts
-- [ ] **BRND-05**: User can configure header/footer style
-- [ ] **BRND-06**: User can apply a Draft or Paid watermark
-- [ ] **BRND-07**: PDF output always renders on a white page
+- [x] **BRND-01**: User can set a logo on the document
+- [x] **BRND-02**: User can set a primary brand color
+- [x] **BRND-03**: User can set an accent brand color
+- [x] **BRND-04**: User can choose fonts
+- [x] **BRND-05**: User can configure header/footer style
+- [x] **BRND-06**: User can apply a Draft or Paid watermark
+- [x] **BRND-07**: PDF output always renders on a white page
 
 ### PDF Generation
 
@@ -76,7 +76,7 @@ Requirements for initial release. Each maps to roadmap phases. Scope sourced fro
 - [ ] **PDF-03**: PDF paginates automatically across pages
 - [x] **PDF-04**: PDF renders at high resolution
 - [ ] **PDF-05**: PDF respects print margins
-- [ ] **PDF-06**: PDF output is identical to the on-screen preview
+- [x] **PDF-06**: PDF output is identical to the on-screen preview
 - [ ] **PDF-07**: User can download the PDF
 - [ ] **PDF-08**: User can print via the browser
 
@@ -182,19 +182,19 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LINE-01 | Phase 4 | Pending |
 | LINE-02 | Phase 4 | Pending |
 | LINE-03 | Phase 2 | Complete |
-| BRND-01 | Phase 3 | Pending |
-| BRND-02 | Phase 3 | Pending |
-| BRND-03 | Phase 3 | Pending |
-| BRND-04 | Phase 3 | Pending |
-| BRND-05 | Phase 3 | Pending |
-| BRND-06 | Phase 3 | Pending |
-| BRND-07 | Phase 3 | Pending |
+| BRND-01 | Phase 3 | Complete |
+| BRND-02 | Phase 3 | Complete |
+| BRND-03 | Phase 3 | Complete |
+| BRND-04 | Phase 3 | Complete |
+| BRND-05 | Phase 3 | Complete |
+| BRND-06 | Phase 3 | Complete |
+| BRND-07 | Phase 3 | Complete |
 | PDF-01 | Phase 3 | Pending |
 | PDF-02 | Phase 3 | Pending |
 | PDF-03 | Phase 3 | Pending |
 | PDF-04 | Phase 3 | Complete |
 | PDF-05 | Phase 3 | Pending |
-| PDF-06 | Phase 3 | Pending |
+| PDF-06 | Phase 3 | Complete |
 | PDF-07 | Phase 6 | Pending |
 | PDF-08 | Phase 6 | Pending |
 | STOR-01 | Phase 2 | Complete |

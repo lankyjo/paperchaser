@@ -102,7 +102,7 @@ Plans:
 
 **Wave 4** *(blocked on Waves 2-3 completion)*
 
-- [ ] 03-04-PLAN.md — Branding panel (logo/colors/fonts/header/footer/watermark, D-01..D-04) + English fixture migration + 7-template parity loop + golden regeneration
+- [x] 03-04-PLAN.md — Branding panel (logo/colors/fonts/header/footer/watermark, D-01..D-04) + English fixture migration + 7-template parity loop + golden regeneration
 
 **Wave 5** *(blocked on Waves 3-4 completion)*
 

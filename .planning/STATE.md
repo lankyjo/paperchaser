@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 03
 current_phase_name: render-pipeline
 status: executing
-stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-08-09T00:39:14.218Z"
+stopped_at: Completed 03-04-PLAN.md
+last_updated: "2026-08-09T07:16:03.399Z"
 last_activity: 2026-08-08
 last_activity_desc: Phase 03 execution started
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 12
-  completed_plans: 10
+  completed_plans: 11
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-08-07)
 ## Current Position
 
 Phase: 03 (render-pipeline) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-08-08 — Phase 03 execution started
 
-Progress: [████████░░] 83%
+Progress: [█████████░] 92%
 
 ## Performance Metrics
 
@@ -75,6 +75,7 @@ Progress: [████████░░] 83%
 | Phase 03-render-pipeline P01 | 19min | 2 tasks | 13 files |
 | Phase 03-render-pipeline P02 | 24min | 2 tasks | 15 files |
 | Phase 03-render-pipeline P03 | 25min | 2 tasks | 17 files |
+| Phase 03-render-pipeline P04 | 6h | 3 tasks | 21 files |
 
 ## Accumulated Context
 
@@ -120,6 +121,11 @@ Raw Zod-4 issue-shape read via one cast (public $ZodIssue union hides expected/r
 - [Phase ?]: D-04 single mechanism: .watermark color via inline style={color: resolved.accent}; print.css #1d4ed8 kept as stylesheet fallback only
 - [Phase ?]: Bench chrome print-neutral via Tailwind print: variants (header print:hidden, main print:pb-0, flex-col print:min-h-0) — measured parity break 0.068>0.05 without; no print.css change
 - [Phase 03-render-pipeline]: palette.muted added to the token shape (Rule 2): the pre-preset footer hardcoded #6b7280 (Minimal's secondary gray per UI-SPEC) — presets are forbidden hardcoded hexes, so the footer gray became a token; the parity golden pins the value for Minimal — Satisfies the no-hardcoded-hex acceptance grep while keeping the minimal golden byte-identical
+- [Phase 03-render-pipeline]: Watermark three-way resolve in DocumentPage: 'draft'|'paid'|'auto' — 'auto' delegates to deriveWatermark(status) (DRAFT-only engine, untouched); PAID renders only via the explicit 'paid' override (UI-SPEC line 205 divergence documented)
+- [Phase 03-render-pipeline]: Logo stored on company.logo (D-03) — no separate branding.logo field
+- [Phase 03-render-pipeline]: D-05 done in place: fixture ids + LOGO_DATA_URL unchanged (protects FIXTURE_KEYS routing + harness LOGO_COLOR)
+- [Phase 03-render-pipeline]: Harness calibration constants derive per template from resolveTokens (accent blend, rowRule thead border, logo size by header preset) — fixed constants fail every non-Minimal template (Pitfall 1)
+- [Phase 03-render-pipeline]: de-DE Intl.NumberFormat intentionally unchanged — locale formatting deferred to MONEY-01 v2
 
 ### Pending Todos
 
@@ -144,6 +150,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-09T00:39:01.932Z
-Stopped at: Completed 03-03-PLAN.md
+Last session: 2026-08-09T07:16:03.332Z
+Stopped at: Completed 03-04-PLAN.md
 Resume file: None
