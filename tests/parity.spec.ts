@@ -320,3 +320,88 @@ test('baseline: committed golden previews are sane and drift-free (all 7 templat
     expect(fraction, `${template} current preview vs committed golden`).toBeLessThan(BASELINE_MAX_FRACTION)
   }
 })
+
+test('fixture: A5/A3 page sizes paginate with correct geometry (structural, D-07)', async ({ page }) => {
+  // D-07: A5/A3 get NO golden baselines — structural assertions only, through
+  // the same ≥2-page torture path. Per format:
+  //  - Width smoke (RESEARCH Open Question 2 RESOLVED): rasterizing at 96dpi
+  //    (scale 96/72 — raster.ts) makes the PNG width the page width in CSS px;
+  //    it must equal 794·(w/210) — A5 ≈ 560, A3 ≈ 1123 — proving
+  //    page.pdf({ format }) took effect (format wins over CSS @page size by
+  //    default, playwright-core preferCSSPageSize=false).
+  //  - Pagination: A5 renders ≥ 2 pages (edge-16); A3 renders FEWER pages than
+  //    A4 for the same fixture (edge-17 — bigger page, same content).
+  //  - Repeated thead on pages ≥ 2 (edge-23) and single-occurrence watermark
+  //    (edge-22, ADR 0002) under the SAME break rules (PDF-03) — the bands
+  //    are DERIVED from the measured continuous element (Pitfall 1: the fixed
+  //    A4-calibrated bands do not map to other sizes).
+  // A4 baseline count for edge-17 (same fixture, same capture path) — must
+  // complete BEFORE the loop navigates the shared page for A5/A3.
+  await page.goto(`/?fixture=${FIXTURE}`)
+  await page.waitForSelector('#print-root')
+  await page.evaluate(() => document.fonts.ready)
+  await page.emulateMedia({ media: 'print' })
+  const a4NumPages = (await rasterizePdf(await page.pdf({ format: 'A4', printBackground: true }), A4_WIDTH_PX)).numPages
+
+  const sizes = [
+    { size: 'A5' as const, format: 'A5', expectedWidth: Math.round((A4_WIDTH_PX * 148) / 210) },
+    { size: 'A3' as const, format: 'A3', expectedWidth: Math.round((A4_WIDTH_PX * 297) / 210) },
+  ]
+
+  for (const { size, format, expectedWidth } of sizes) {
+    await page.goto(`/?fixture=${FIXTURE}&size=${size.toLowerCase()}`)
+    await page.waitForSelector('#print-root')
+    await page.evaluate(() => document.fonts.ready)
+    await page.emulateMedia({ media: 'print' })
+
+    // 96dpi rasterization: the page PNG width IS the paper width in px.
+    const pdf = await page.pdf({ format, printBackground: true })
+    const { pages, numPages } = await rasterizePdf(pdf, A4_WIDTH_PX, { scale: 96 / 72 })
+
+    expect(
+      pages[0].width,
+      `${size} page width ≈ ${expectedWidth}px (794·w/210 — format took effect)`,
+    ).toBeGreaterThanOrEqual(expectedWidth - 2)
+    expect(pages[0].width, `${size} page width ≈ ${expectedWidth}px (794·w/210)`).toBeLessThanOrEqual(
+      expectedWidth + 2,
+    )
+
+    if (size === 'A5') {
+      expect(numPages, `A5 pagination ≥ 2 on the torture fixture (edge-16)`).toBeGreaterThanOrEqual(2)
+    } else {
+      expect(numPages, `A3 fewer pages than A4 (edge-17)`).toBeLessThan(a4NumPages)
+    }
+
+    // edge-23: repeated thead strip on every page ≥ 2 (border color follows
+    // the resolved rowRule — theadBorderFor('minimal'), Pitfall 1).
+    const theadBorder = theadBorderFor('minimal')
+    for (let i = 1; i < pages.length; i++) {
+      const borderPx = countPixelsInRange(pages[i], { y: 0, h: THEAD_CHECK_PX }, theadBorder, THEAD_BORDER_TOL)
+      expect(borderPx, `${size} page ${i + 1} repeated-thead separator pixels`).toBeGreaterThanOrEqual(THEAD_FLOOR)
+    }
+
+    // edge-22 (size-agnostic form): the watermark is ONE absolutely-positioned
+    // element (top:40%), and Chromium does NOT repeat it across paginated
+    // pages (ADR 0002). Its exact paged-media placement varies with page size
+    // (measured: A4 sits inside page 1; A5 straddles the 1|2 boundary — 32px
+    // sliver on page 1, 2528px bulk on page 2), so a fixed band cannot locate
+    // it across sizes. The robust assertion is per-page DOMINANCE: exactly one
+    // page carries the accent-blend pixels above the calibrated floor, and it
+    // exceeds WATERMARK_RATIO × every other page. Blend target = the derived
+    // resolved-accent blend (Pitfall 1, watermarkBlendFor — same as the A4
+    // test; blueDominant rejects gray AA everywhere else).
+    const blend = watermarkBlendFor('minimal')
+    const blueDominant = blend.b - blend.r > 8
+    const counts = pages.map((p) =>
+      countPixelsInRange(p, { y: 0, h: p.height }, blend, WATERMARK_TOL, { blueDominant }),
+    )
+    const sorted = [...counts].sort((a, b) => b - a)
+    expect(
+      sorted[0],
+      `${size} watermark blend pixels (per-page ${JSON.stringify(counts)})`,
+    ).toBeGreaterThanOrEqual(WATERMARK_FLOOR)
+    expect(sorted[0], `${size} watermark single-page occurrence (ADR 0002)`).toBeGreaterThan(
+      WATERMARK_RATIO * (sorted[1] ?? 0),
+    )
+  }
+})

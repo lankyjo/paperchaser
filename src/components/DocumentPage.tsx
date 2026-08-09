@@ -1,6 +1,7 @@
 import type { ComponentType, CSSProperties } from 'react'
 
 import { computeTotals, deriveWatermark } from '../document/totals'
+import { PAGE_SIZES } from '../document/tokens'
 import type { ResolvedTokens } from '../document/tokens'
 import type { FooterStyle, HeaderStyle } from '../document/tokens'
 import type { Branding, DocumentModel, PageSize, TemplateId } from '../document/types'
@@ -38,18 +39,26 @@ function formatMinor(minor: number): string {
 // Geometry contract (harness-measured, plan 01-02): 210mm × min-297mm A4 block
 // with 15mm padding — content sits exactly 15mm from the page edge in preview,
 // print, and PDF. BRND-07: background stays #ffffff in both projections.
-const pageStyle: CSSProperties = {
-  width: '210mm',
-  minHeight: '297mm',
-  margin: '0 auto',
-  padding: '15mm',
-  boxSizing: 'border-box',
-  background: '#ffffff',
-  color: 'var(--tpl-ink)',
-  fontFamily: 'var(--tpl-font-body)',
-  fontSize: '11px',
-  lineHeight: 1.5,
-  position: 'relative',
+// PDF-02 (plan 03-05): the geometry is now page-size-dependent — A5 (148×210)
+// and A3 (297×420) per the PAGE_SIZES registry (one source of truth for the mm
+// dimensions; DocumentPage consumes the same record the bench Select reads).
+// Padding stays 15mm for ALL sizes (PDF-05: the page block carries the margin
+// contract; @page margin stays 0 — no double offset).
+function pageStyleFor(pageSize: PageSize): CSSProperties {
+  const g = PAGE_SIZES[pageSize]
+  return {
+    width: g.width,
+    minHeight: g.height,
+    margin: '0 auto',
+    padding: '15mm',
+    boxSizing: 'border-box',
+    background: '#ffffff',
+    color: 'var(--tpl-ink)',
+    fontFamily: 'var(--tpl-font-body)',
+    fontSize: '11px',
+    lineHeight: 1.5,
+    position: 'relative',
+  }
 }
 
 const row: CSSProperties = { borderBottom: '1px solid var(--tpl-row-rule)' }
@@ -123,7 +132,7 @@ export function DocumentPage({
     <div
       id="print-root"
       className={pageSize && pageSize !== 'a4' ? `page-${pageSize}` : undefined}
-      style={{ ...pageStyle, ...(vars as CSSProperties) }}
+      style={{ ...pageStyleFor(pageSize ?? 'a4'), ...(vars as CSSProperties) }}
     >
       {watermarkText !== null && (
         // D-04: watermark color follows the resolved brand accent (inline style

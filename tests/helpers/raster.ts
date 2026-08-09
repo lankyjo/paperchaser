@@ -91,17 +91,25 @@ export function cropY(img: PNG, y0: number, h: number): PNG {
  * Rasterize a PDF buffer to per-page PNGs at targetWidth (794 = A4@96dpi).
  * The viewport scale is derived from page points so CSS-pixel screenshots and
  * PDF-point rasterizations share one coordinate space (Pitfall 3).
+ *
+ * plan 03-05 (A5/A3 structural test): pass `opts.scale` to rasterize at an
+ * EXPLICIT scale instead — 96/72 rasterizes at 96dpi CSS pixels, so the
+ * output PNG width IS the page width in px (A5 148mm → 560, A3 297mm → 1123)
+ * and can be asserted against 794·(w/210) to prove page.pdf({format}) took
+ * effect (RESEARCH Open Question 2 RESOLVED). The default stays
+ * width-normalization for the A4 diff paths.
  */
 export async function rasterizePdf(
   pdfBuffer: Buffer,
   targetWidth: number,
+  opts: { scale?: number } = {},
 ): Promise<{ pages: PNG[]; numPages: number }> {
   const doc = await getDocument({ data: new Uint8Array(pdfBuffer), useSystemFonts: true }).promise
   const pages: PNG[] = []
   for (let i = 1; i <= doc.numPages; i++) {
     const page = await doc.getPage(i)
     const base = page.getViewport({ scale: 1 })
-    const scale = targetWidth / base.width
+    const scale = opts.scale ?? targetWidth / base.width
     const viewport = page.getViewport({ scale })
     const canvas = createCanvas(Math.ceil(viewport.width), Math.ceil(viewport.height))
     const ctx = canvas.getContext('2d')

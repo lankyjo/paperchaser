@@ -19,6 +19,32 @@
   margin: 0;
 }
 
+/* PDF-02 (plan 03-05): named page rules for A5/A3. The page context takes
+   ONLY size/margin/page-orientation descriptors — never CSS variables or
+   colors (MDN @page; RESEARCH Pitfall 2). The inherited `page` property on
+   #print-root selects the paper, so the className and the @page name MUST
+   match ('a5' <-> @page a5) or window.print() silently falls back to the
+   unnamed A4 default (Pitfall 2). A4 stays the unnamed default (PDF-01);
+   harness page.pdf({ format }) agrees by default (format wins, playwright
+   preferCSSPageSize=false). */
+@page a5 {
+  size: A5;
+  margin: 0;
+}
+
+@page a3 {
+  size: A3;
+  margin: 0;
+}
+
+#print-root.page-a5 {
+  page: a5;
+}
+
+#print-root.page-a3 {
+  page: a3;
+}
+
 /* Watermark overlay — shared by BOTH projections. On screen it is the WYSIWYG
    draft mark over the canvas; in print it is the absolute overlay at top:40%.
    Styling it only inside @media print made the screen projection render "DRAFT"

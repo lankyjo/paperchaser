@@ -1,11 +1,13 @@
 import { useState } from 'react'
 
 import { DEMO_DOCUMENT_ID, documentsRepo } from '../db/repos'
+import { PAGE_SIZES } from '../document/tokens'
 import type { Branding, DocumentModel, PageSize, TemplateId } from '../document/types'
 import { useMountEffect } from '../lib/useMountEffect'
 import { BrandingPanel } from './BrandingPanel'
 import { DocumentPage } from './DocumentPage'
 import { TemplateGallery } from './TemplateGallery'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 
 /**
  * Render bench shell (Phase-3 surface, NOT the Phase-4 builder): brand header +
@@ -82,6 +84,11 @@ function BenchShell({
   // captures #print-root only).
   const [currentTemplate, setCurrentTemplate] = useState<TemplateId | undefined>(template ?? model.template)
 
+  // PDF-01/02 (plan 03-05): page size is bench state too — default 'a4'
+  // (PDF-01), initialized from the route ?size= whitelist / model.pageSize
+  // when present. Changes apply instantly (WYSIWYG) to the canvas block.
+  const [currentPageSize, setCurrentPageSize] = useState<PageSize>(pageSize ?? model.pageSize ?? 'a4')
+
   const selectTemplate = (id: TemplateId) => {
     setCurrentTemplate(id)
     onTemplateChange?.(id)
@@ -89,8 +96,25 @@ function BenchShell({
 
   return (
     <div className="flex min-h-screen flex-col print:min-h-0">
-      <header className="flex h-12 shrink-0 items-center px-4 print:hidden">
+      <header className="flex h-12 shrink-0 items-center justify-between px-4 print:hidden">
         <span className="text-base font-semibold tracking-tight">Paperchaser</span>
+        <Select
+          value={currentPageSize}
+          onValueChange={(next) => {
+            if (next !== null && (next === 'a4' || next === 'a5' || next === 'a3')) setCurrentPageSize(next)
+          }}
+        >
+          <SelectTrigger size="sm" aria-label="Page size">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.entries(PAGE_SIZES).map(([id, size]) => (
+              <SelectItem key={id} value={id}>
+                {size.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </header>
       <main className="flex flex-1 overflow-hidden print:min-h-0">
         <aside className="w-80 shrink-0 overflow-y-auto border-r border-foreground/10 bg-card p-3 print:hidden">
@@ -110,7 +134,12 @@ function BenchShell({
         </aside>
         <div className="flex flex-1 justify-center overflow-auto px-6 pb-10 print:pb-0">
           <div style={{ boxShadow: '0 4px 24px rgba(0, 0, 0, 0.12)' }}>
-            <DocumentPage model={model} template={currentTemplate} branding={model.branding} pageSize={pageSize} />
+            <DocumentPage
+              model={model}
+              template={currentTemplate}
+              branding={model.branding}
+              pageSize={currentPageSize}
+            />
           </div>
         </div>
       </main>
