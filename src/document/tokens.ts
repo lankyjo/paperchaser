@@ -33,6 +33,17 @@ export const FONT_STACKS: Record<FontId, string> = {
   system: "'Helvetica Neue', Arial, sans-serif",
 }
 
+/**
+ * D-05: English document title by type (UI-SPEC language decision — the
+ * rendered document copy is English). The header presets render this; the
+ * type enum lives in types.ts ('invoice' | 'quote' | 'receipt').
+ */
+export const DOC_TITLES: Record<'invoice' | 'quote' | 'receipt', string> = {
+  invoice: 'Invoice',
+  quote: 'Quote',
+  receipt: 'Receipt',
+}
+
 /** Page sizes (PDF-01/02, Decision 1). A4 is the harness geometry contract. */
 export const PAGE_SIZES: Record<PageSize, { label: string; width: string; height: string }> = {
   a4: { label: 'A4', width: '210mm', height: '297mm' },

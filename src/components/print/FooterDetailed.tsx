@@ -10,7 +10,7 @@ import type { DocumentModel } from '../../document/types'
  * The model has no bank-details fields yet (Phase 5 company profile) — the
  * grid renders only the existing footer copy and real model data
  * (company.email); a bank/IBAN label-value row lands with the profile.
- * Copy stays the pre-preset German lines (D-05 English migration is plan 04).
+ * Copy is the D-05 English payment/thanks lines (plan 04).
  * Colors come from tokens — no hardcoded hexes. All text renders as React
  * text nodes (T-03-04).
  */
@@ -20,8 +20,8 @@ export function FooterDetailed({ tokens, model }: { tokens: ResolvedTokens; mode
       <div style={{ borderTop: `2px solid ${tokens.palette.border}`, marginBottom: '1px' }} />
       <div style={{ borderTop: `1px solid ${tokens.palette.border}`, marginBottom: '4mm' }} />
       <div style={{ color: tokens.palette.muted, fontSize: '10px', lineHeight: 1.6 }}>
-        <div>Überweisung innerhalb 14 Tage auf das in der Rechnung genannte Konto.</div>
-        <div>Vielen Dank für Ihren Auftrag.</div>
+        <div>Please transfer within 14 days to the bank account stated on the invoice.</div>
+        <div>Thank you for your business.</div>
         <div>{model.company.email}</div>
       </div>
     </footer>

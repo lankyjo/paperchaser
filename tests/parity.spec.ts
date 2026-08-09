@@ -4,9 +4,12 @@ import * as path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { PNG } from 'pngjs'
 
+import { resolveTokens } from '../src/document/resolveTokens'
+
 import {
   A4_HEIGHT_PX,
   A4_WIDTH_PX,
+  blendColor,
   countPixelsInRange,
   cropY,
   diffFraction,
@@ -16,7 +19,8 @@ import {
 } from './helpers/raster'
 
 /* ========================================================================
- * Golden-image parity harness (plan 01-02) — ROADMAP SC3 proof.
+ * Golden-image parity harness (plan 01-02) — ROADMAP SC3 proof, extended by
+ * plan 04 (D-06) to loop ALL 7 templates × the torture fixture.
  *
  * One fixture document, three captures, pairwise pixel diff:
  *   1. on-screen preview (screen media)
@@ -36,8 +40,8 @@ import {
  * ===================================================================== */
 
 const FIXTURE = 'invoice-torture'
-/** Templates under parity test — plan 04 extends to all 7 (D-06). */
-const TEMPLATES = ['minimal'] as const
+/** D-06: every template under parity test — 7 preview goldens + PDF comparisons. */
+const TEMPLATES = ['blank', 'minimal', 'modern', 'corporate', 'freelancer', 'agency', 'creative'] as const
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const FIXTURES_DIR = path.join(HERE, 'fixtures')
 const ARTIFACTS_DIR = path.join(HERE, 'artifacts')
@@ -63,9 +67,8 @@ const PDF_PAGE1_MAX_FRACTION = 0.05
 const PDF_PAGE_N_MAX_FRACTION = 0.06
 const THEAD_STRIP_PX = 26
 const MAX_BREAK_SHIFT_PX = 100
-
-/** Watermark: fixture brand #1d4ed8 at opacity 0.15 over white ≈ (221,228,249). */
-const WATERMARK_BLEND: RGB = { r: 221, g: 228, b: 249 }
+/** Watermark geometry (D-04): fixed 64px / rotate(-30°) / opacity 0.15. */
+const WATERMARK_ALPHA = 0.15
 const WATERMARK_TOL = 25
 /**
  * Watermark band on the rasterized PDF page. top:40% resolves against the
@@ -81,16 +84,65 @@ const WATERMARK_RATIO = 3
 const LOGO_COLOR: RGB = { r: 29, g: 78, b: 216 }
 const LOGO_TOL = 20
 const LOGO_BAND = { y: 0, h: Math.round(0.12 * A4_HEIGHT_PX) }
-const LOGO_FLOOR = 1000
+/**
+ * LOGO_FLOOR was calibrated on the Minimal 48px Standard-header logo (plan
+ * 01-02). The header presets render the mark at different sizes (Standard /
+ * standard-offset 48px, Banner 40px, Compact 24px), so the floor must scale
+ * with the resolved header style's logo area — the same Pitfall-1 principle
+ * as the watermark blend: a fixed constant fails every non-48px header
+ * (measured: Blank's 24px Compact logo lands ~483 pixels vs floor 1000).
+ */
+const LOGO_FLOOR_48PX = 1000
+/** Header preset → rendered logo size in px (matches the preset components). */
+const LOGO_SIZE_BY_HEADER: Record<string, number> = {
+  standard: 48,
+  banner: 40,
+  compact: 24,
+  'standard-offset': 48,
+}
 
-/** Repeated-thead presence: border-separator color (#e5e7eb) in the top strip of pages >= 2. */
-const THEAD_BORDER: RGB = { r: 229, g: 231, b: 235 }
+function logoFloorFor(template: (typeof TEMPLATES)[number]): number {
+  const size = LOGO_SIZE_BY_HEADER[resolveTokens(template).header.style] ?? 48
+  return Math.round(LOGO_FLOOR_48PX * (size / 48) ** 2)
+}
+
+/** Repeated-thead presence: border-separator color (the row rule) in the top strip of pages >= 2. */
 const THEAD_BORDER_TOL = 6
 const THEAD_FLOOR = 30
+/**
+ * Presence-check window for the repeated thead. The thead row is ~30px tall
+ * plus a fragmentainer offset (measured: the full-width row-rule line lands at
+ * y≈46 on pages >= 2 for every template), so the window must reach it — the
+ * original 26px strip only caught Minimal's gray-text AA coincidence, not the
+ * actual border line (measured: Blank scores 6 px inside 26px vs 688 at 50px).
+ * THEAD_STRIP_PX (26, the print-vs-PDF crop) stays untouched.
+ */
+const THEAD_CHECK_PX = 55
 
 /** Baseline: current preview vs committed golden (same renderer → near 0). */
 const BASELINE_MAX_FRACTION = 0.005
 const BASELINE_MIN_NONWHITE = 0.01
+
+/**
+ * D-04 harness: the watermark band target is DERIVED from each template's
+ * RESOLVED accent (the same resolver the app uses — never a hardcoded blend
+ * constant, Pitfall 1). The white background is the page's BRND-07 white.
+ */
+function watermarkBlendFor(template: (typeof TEMPLATES)[number]): RGB {
+  const resolved = resolveTokens(template)
+  return blendColor(resolved.accent, WATERMARK_ALPHA, { r: 255, g: 255, b: 255 })
+}
+
+/**
+ * Pitfall 1 applied to the repeated-thead check too: the thead separator is
+ * drawn with each template's rowRule token, so the band color follows the
+ * resolved row rule per template — a hardcoded #e5e7eb would fail every
+ * template whose row rule differs (corporate #d1d5db, agency #f3f4f6, ...).
+ */
+function theadBorderFor(template: (typeof TEMPLATES)[number]): RGB {
+  const c = parseInt(resolveTokens(template).borders.rowRule.slice(1), 16)
+  return { r: (c >> 16) & 255, g: (c >> 8) & 255, b: c & 255 }
+}
 
 function writeArtifacts(name: string, a: PNG, b: PNG, diff: PNG): void {
   fs.mkdirSync(ARTIFACTS_DIR, { recursive: true })
@@ -115,7 +167,7 @@ async function captureFixture(page: Page, template = 'minimal') {
 
   // Pitfall 4: webfont determinism — page.pdf() can capture before @font-face
   // swap finishes, which would render a fallback font in the PDF only. Await
-  // fonts.ready once, before any screenshot/PDF capture.
+  // fonts.ready once, before any screenshot/PDF capture (edge-26, all templates).
   await page.evaluate(() => document.fonts.ready)
 
   // The torture fixture's logo is an inline data-URL SVG — no network needed.
@@ -136,87 +188,109 @@ async function captureFixture(page: Page, template = 'minimal') {
   return { preview, printShot, pages, numPages }
 }
 
-test('fixture: preview matches print projection', async ({ page }) => {
-  const { preview, printShot } = await captureFixture(page)
-  const h = Math.min(preview.height, printShot.height)
-  const { fraction, diff } = diffFraction(cropY(preview, 0, h), cropY(printShot, 0, h), DIFF_THRESHOLD)
-  if (fraction >= PREVIEW_VS_PRINT_MAX_FRACTION) {
-    writeArtifacts('preview-vs-print', preview, printShot, diff)
+test('fixture: preview matches print projection (all 7 templates)', async ({ page }) => {
+  for (const template of TEMPLATES) {
+    const { preview, printShot } = await captureFixture(page, template)
+    const h = Math.min(preview.height, printShot.height)
+    const { fraction, diff } = diffFraction(cropY(preview, 0, h), cropY(printShot, 0, h), DIFF_THRESHOLD)
+    if (fraction >= PREVIEW_VS_PRINT_MAX_FRACTION) {
+      writeArtifacts(`preview-vs-print-${template}`, preview, printShot, diff)
+    }
+    expect(fraction, `${template}: preview vs print (heights ${preview.height}/${printShot.height})`).toBeLessThan(
+      PREVIEW_VS_PRINT_MAX_FRACTION,
+    )
   }
-  expect(fraction, `preview vs print projection (heights ${preview.height}/${printShot.height})`).toBeLessThan(
-    PREVIEW_VS_PRINT_MAX_FRACTION,
-  )
 })
 
-test('fixture: print projection matches PDF per page', async ({ page }) => {
-  const { printShot, pages } = await captureFixture(page)
+test('fixture: print projection matches PDF per page (all 7 templates)', async ({ page }) => {
+  for (const template of TEMPLATES) {
+    const { printShot, pages } = await captureFixture(page, template)
 
-  for (let i = 0; i < pages.length; i++) {
-    const slice = cropY(printShot, i * A4_HEIGHT_PX, A4_HEIGHT_PX)
-    const pdfPage = pages[i]
-    const label = `page ${i + 1}`
+    for (let i = 0; i < pages.length; i++) {
+      const slice = cropY(printShot, i * A4_HEIGHT_PX, A4_HEIGHT_PX)
+      const pdfPage = pages[i]
+      const label = `${template} page ${i + 1}`
 
-    if (i === 0) {
-      // Page 1 aligns exactly with the slice top (dy = 0 — no shift search).
-      const { fraction, diff } = diffFraction(slice, pdfPage, DIFF_THRESHOLD)
-      if (fraction >= PDF_PAGE1_MAX_FRACTION) writeArtifacts(`print-vs-pdf-${label}`, slice, pdfPage, diff)
-      expect(fraction, label).toBeLessThan(PDF_PAGE1_MAX_FRACTION)
-    } else {
-      // Pages >= 2: the PDF repeats the thead (paged-media) and places the
-      // page break at a row boundary (break-inside: avoid) — neither exists in
-      // the continuous projection. Crop the thead strip off the PDF page and
-      // search the bounded break shift that aligns the slice.
-      const pdfBody = cropY(pdfPage, THEAD_STRIP_PX, A4_HEIGHT_PX)
-      let best = { dy: 0, fraction: 1, diff: null as PNG | null }
-      for (let dy = 0; dy <= MAX_BREAK_SHIFT_PX; dy += 2) {
-        const { fraction, diff } = diffFraction(cropY(slice, dy, A4_HEIGHT_PX), pdfBody, DIFF_THRESHOLD)
-        if (fraction < best.fraction) best = { dy, fraction, diff }
+      if (i === 0) {
+        // Page 1 aligns exactly with the slice top (dy = 0 — no shift search).
+        const { fraction, diff } = diffFraction(slice, pdfPage, DIFF_THRESHOLD)
+        if (fraction >= PDF_PAGE1_MAX_FRACTION) writeArtifacts(`print-vs-pdf-${label}`, slice, pdfPage, diff)
+        expect(fraction, label).toBeLessThan(PDF_PAGE1_MAX_FRACTION)
+      } else {
+        // Pages >= 2: the PDF repeats the thead (paged-media) and places the
+        // page break at a row boundary (break-inside: avoid) — neither exists in
+        // the continuous projection. Crop the thead strip off the PDF page and
+        // search the bounded break shift that aligns the slice.
+        const pdfBody = cropY(pdfPage, THEAD_STRIP_PX, A4_HEIGHT_PX)
+        let best = { dy: 0, fraction: 1, diff: null as PNG | null }
+        for (let dy = 0; dy <= MAX_BREAK_SHIFT_PX; dy += 2) {
+          const { fraction, diff } = diffFraction(cropY(slice, dy, A4_HEIGHT_PX), pdfBody, DIFF_THRESHOLD)
+          if (fraction < best.fraction) best = { dy, fraction, diff }
+        }
+        if (best.diff !== null && best.fraction >= PDF_PAGE_N_MAX_FRACTION) {
+          writeArtifacts(`print-vs-pdf-${label}`, slice, pdfPage, best.diff)
+        }
+        expect(best.fraction, `${label} (thead strip excluded, break-shift dy=${best.dy})`).toBeLessThan(
+          PDF_PAGE_N_MAX_FRACTION,
+        )
       }
-      if (best.diff !== null && best.fraction >= PDF_PAGE_N_MAX_FRACTION) {
-        writeArtifacts(`print-vs-pdf-${label}`, slice, pdfPage, best.diff)
-      }
-      expect(best.fraction, `${label} (thead strip excluded, break-shift dy=${best.dy})`).toBeLessThan(
-        PDF_PAGE_N_MAX_FRACTION,
-      )
     }
   }
 })
 
-test('fixture: pdf paginates and carries watermark + logo bands', async ({ page }) => {
-  const { pages, numPages } = await captureFixture(page)
+test('fixture: pdf paginates and carries watermark + logo bands (all 7 templates)', async ({ page }) => {
+  for (const template of TEMPLATES) {
+    const { pages, numPages } = await captureFixture(page, template)
+    const blend = watermarkBlendFor(template)
+    const theadBorder = theadBorderFor(template)
+    // The blueDominant AA-rejection filter only applies when the derived
+    // watermark blend is itself blue-dominant (b > r) — a warm accent
+    // (freelancer orange) yields a warm blend where blue-dominance is
+    // meaningless and would reject the real watermark pixels.
+    const blueDominant = blend.b - blend.r > 8
 
-  // Pagination: the 18-item torture fixture is sized to span >= 2 pages.
-  expect(numPages).toBeGreaterThanOrEqual(2)
+    // Pagination: the 18-item torture fixture is sized to span >= 2 pages.
+    expect(numPages, `${template} pagination`).toBeGreaterThanOrEqual(2)
 
-  // Watermark: renders on PDF page 1 above a calibrated floor and above
-  // 3x the max count on pages >= 2 (Chromium does NOT repeat a single
-  // absolutely-positioned element across paginated pages — the measured
-  // first-page-only behavior ADR 0002 records).
-  const page1Watermark = countPixelsInRange(pages[0], WATERMARK_BAND, WATERMARK_BLEND, WATERMARK_TOL, {
-    blueDominant: true,
-  })
-  const otherPagesWatermark = pages
-    .slice(1)
-    .map((p) => countPixelsInRange(p, WATERMARK_BAND, WATERMARK_BLEND, WATERMARK_TOL, { blueDominant: true }))
-  const maxOther = Math.max(0, ...otherPagesWatermark)
-  expect(page1Watermark, `page 1 watermark blend pixels (band rows ${WATERMARK_BAND.y}-${WATERMARK_BAND.y + WATERMARK_BAND.h})`).toBeGreaterThanOrEqual(
-    WATERMARK_FLOOR,
-  )
-  expect(page1Watermark, 'page 1 watermark must exceed 3x max(pages >= 2)').toBeGreaterThan(WATERMARK_RATIO * maxOther)
+    // Watermark: renders on PDF page 1 above a calibrated floor and above
+    // 3x the max count on pages >= 2 (Chromium does NOT repeat a single
+    // absolutely-positioned element across paginated pages — the measured
+    // first-page-only behavior ADR 0002 records). Blend target is the
+    // per-template resolved accent (D-04), never a hardcoded constant.
+    const page1Watermark = countPixelsInRange(pages[0], WATERMARK_BAND, blend, WATERMARK_TOL, {
+      blueDominant,
+    })
+    const otherPagesWatermark = pages
+      .slice(1)
+      .map((p) => countPixelsInRange(p, WATERMARK_BAND, blend, WATERMARK_TOL, { blueDominant }))
+    const maxOther = Math.max(0, ...otherPagesWatermark)
+    expect(
+      page1Watermark,
+      `${template} page 1 watermark blend pixels (accent ${blend.r},${blend.g},${blend.b}; band rows ${WATERMARK_BAND.y}-${WATERMARK_BAND.y + WATERMARK_BAND.h})`,
+    ).toBeGreaterThanOrEqual(WATERMARK_FLOOR)
+    expect(page1Watermark, `${template} page 1 watermark must exceed 3x max(pages >= 2)`).toBeGreaterThan(
+      WATERMARK_RATIO * maxOther,
+    )
 
-  // Logo: the solid brand-color mark survives into the PDF (deterministic population).
-  const logoCount = countPixelsInRange(pages[0], LOGO_BAND, LOGO_COLOR, LOGO_TOL)
-  expect(logoCount, `page 1 logo brand-color pixels (top ${LOGO_BAND.h}px)`).toBeGreaterThanOrEqual(LOGO_FLOOR)
+    // Logo: the solid brand-color mark survives into the PDF (deterministic
+    // population). Floor scales with the header preset's logo size (48/40/24px).
+    const logoCount = countPixelsInRange(pages[0], LOGO_BAND, LOGO_COLOR, LOGO_TOL)
+    expect(
+      logoCount,
+      `${template} page 1 logo brand-color pixels (top ${LOGO_BAND.h}px, floor ${logoFloorFor(template)})`,
+    ).toBeGreaterThanOrEqual(logoFloorFor(template))
 
-  // Repeated thead: each page >= 2 carries the header separator strip.
-  for (let i = 1; i < pages.length; i++) {
-    const borderPx = countPixelsInRange(pages[i], { y: 0, h: THEAD_STRIP_PX }, THEAD_BORDER, THEAD_BORDER_TOL)
-    expect(borderPx, `page ${i + 1} repeated-thead separator pixels`).toBeGreaterThanOrEqual(THEAD_FLOOR)
+    // Repeated thead: each page >= 2 carries the header separator strip (the
+    // full-width row-rule line lands ~46px down — THEAD_CHECK_PX reaches it).
+    for (let i = 1; i < pages.length; i++) {
+      const borderPx = countPixelsInRange(pages[i], { y: 0, h: THEAD_CHECK_PX }, theadBorder, THEAD_BORDER_TOL)
+      expect(borderPx, `${template} page ${i + 1} repeated-thead separator pixels`).toBeGreaterThanOrEqual(THEAD_FLOOR)
+    }
   }
 })
 
-test('baseline: committed golden preview is sane and drift-free', async ({ page }) => {
-  // Loop the committed per-template goldens (D-06); 03-01 ships Minimal only.
+test('baseline: committed golden previews are sane and drift-free (all 7 templates)', async ({ page }) => {
+  // D-06: one committed golden per template; the loop writes + verifies each.
   for (const template of TEMPLATES) {
     const { preview } = await captureFixture(page, template)
     const goldenPath = goldenPathFor(template)
@@ -236,13 +310,13 @@ test('baseline: committed golden preview is sane and drift-free', async ({ page 
 
     // Baseline sanity (Pitfall 5): a blank or wrong-size golden must fail the
     // suite every run, or parity "passes" against a wrong baseline forever.
-    expect(golden.width, 'golden width must be 794px (A4@96dpi)').toBe(A4_WIDTH_PX)
-    expect(nonWhiteFraction(golden), 'golden must not be blank').toBeGreaterThan(BASELINE_MIN_NONWHITE)
+    expect(golden.width, `${template} golden width must be 794px (A4@96dpi)`).toBe(A4_WIDTH_PX)
+    expect(nonWhiteFraction(golden), `${template} golden must not be blank`).toBeGreaterThan(BASELINE_MIN_NONWHITE)
 
     // Drift guard: the current preview must match the committed golden.
     const h = Math.min(preview.height, golden.height)
     const { fraction, diff } = diffFraction(cropY(preview, 0, h), cropY(golden, 0, h), DIFF_THRESHOLD)
     if (fraction >= BASELINE_MAX_FRACTION) writeArtifacts(`baseline-drift-${template}`, preview, golden, diff)
-    expect(fraction, `current preview vs committed golden (${template})`).toBeLessThan(BASELINE_MAX_FRACTION)
+    expect(fraction, `${template} current preview vs committed golden`).toBeLessThan(BASELINE_MAX_FRACTION)
   }
 })

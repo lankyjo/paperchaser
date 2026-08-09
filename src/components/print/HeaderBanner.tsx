@@ -1,5 +1,5 @@
 import type { ResolvedTokens } from '../../document/tokens'
-import { FONT_STACKS } from '../../document/tokens'
+import { DOC_TITLES, FONT_STACKS } from '../../document/tokens'
 import type { DocumentModel } from '../../document/types'
 
 /**
@@ -50,7 +50,7 @@ export function HeaderBanner({ tokens, model }: { tokens: ResolvedTokens; model:
             opacity: 1,
           }}
         >
-          Rechnung
+          {DOC_TITLES[model.type]}
         </div>
         <div>
           {model.number} · {model.issueDate}

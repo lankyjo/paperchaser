@@ -1,5 +1,5 @@
 import type { ResolvedTokens } from '../../document/tokens'
-import { FONT_STACKS } from '../../document/tokens'
+import { DOC_TITLES, FONT_STACKS } from '../../document/tokens'
 import type { DocumentModel } from '../../document/types'
 
 /**
@@ -26,7 +26,7 @@ export function HeaderCompact({ tokens, model }: { tokens: ResolvedTokens; model
         </div>
         <div style={{ textAlign: 'right' }}>
           <span style={{ fontSize: 'var(--tpl-title-size)', fontWeight: 'var(--tpl-title-weight)', textTransform: 'uppercase' }}>
-            Rechnung
+            {DOC_TITLES[model.type]}
           </span>
           <span style={{ marginLeft: '8px' }}>
             {model.number} · {model.issueDate}

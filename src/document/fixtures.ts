@@ -3,6 +3,10 @@ import type { DocumentModel } from './types'
 /**
  * Synthetic fixture data only — never real customer PII (RESEARCH Security Domain,
  * threat T-01-02). Every name/address below is fictional.
+ *
+ * D-05: content translated to English IN PLACE — fixture ids, shape, and
+ * LOGO_DATA_URL unchanged (routes FIXTURE_KEYS and the harness LOGO_COLOR
+ * depend on them); only content strings differ from the original German set.
  */
 
 /** Self-contained 96x96 rounded-square SVG mark: solid brand color + white "PC" monogram. */
@@ -19,11 +23,11 @@ const LOGO_DATA_URL =
 /** 18 line items sized so the A4 @15mm print projection paginates to >= 2 pages. */
 const TORTURE_LINE_ITEMS = Array.from({ length: 18 }, (_, i) => ({
   id: `torture-${i + 1}`,
-  title: `Druckdienstleistung ${i + 1}`,
+  title: `Print service ${i + 1}`,
   description:
-    'Laufender Text mit Umlauten (Müller, Überweisung, Fußgänger) und langen, ' +
-    'umbrechenden Beschreibungen, die den Zeilenumbruch im A4-Format erzwingen — ' +
-    'Absatz eins bis drei, damit die Tabelle mehrseitig paginiert wird.',
+    'Running text with long, wrapping descriptions that force line breaks in the ' +
+    'A4 layout — paragraphs one through three, so the table paginates across ' +
+    'multiple pages without truncation or ellipsis.',
   quantity: i % 3 === 0 ? 3 : 1,
   unitPriceMinor: 12500 + i * 1375,
   taxRateMinor: 1900,
@@ -35,16 +39,16 @@ export const FIXTURE_MAP: Record<string, DocumentModel> = {
     type: 'invoice',
     currency: 'EUR',
     issueDate: '2026-08-07',
-    number: 'RE-2026-0142',
+    number: 'INV-2026-0142',
     company: {
-      name: 'Gesellschaft für innovative Drucktechnologien und Dokumentenmanagement mbH',
-      address: ['Müllerstraße 12', '10115 Berlin', 'Deutschland'],
-      email: 'rechnung@beispiel-druckerei.test',
+      name: 'Innovative Print Technologies and Document Management GmbH',
+      address: ['12 Miller Street', 'Berlin 10115', 'Germany'],
+      email: 'billing@example-printers.test',
       logo: LOGO_DATA_URL,
     },
     customer: {
       name: 'José Álvarez García',
-      address: ['Calle de la Fuente 27', '28004 Madrid', 'España'],
+      address: ['Calle de la Fuente 27', '28004 Madrid', 'Spain'],
     },
     lineItems: TORTURE_LINE_ITEMS,
     status: 'draft',
@@ -54,54 +58,54 @@ export const FIXTURE_MAP: Record<string, DocumentModel> = {
     type: 'invoice',
     currency: 'EUR',
     issueDate: '2026-08-07',
-    number: 'RE-2026-0001',
+    number: 'INV-2026-0001',
     company: {
-      name: 'Müller GmbH',
-      address: ['Industriestraße 5', '60327 Frankfurt am Main', 'Deutschland'],
-      email: 'kontakt@mueller-beispiel.test',
+      name: 'Miller Print Studio',
+      address: ['5 Industry Street', 'Frankfurt am Main 60327', 'Germany'],
+      email: 'hello@miller-studio.test',
       logo: null,
     },
     customer: {
-      name: 'Beispiel Kundin',
-      address: ['Beispielweg 9', '80331 München', 'Deutschland'],
+      name: 'Example Customer',
+      address: ['9 Sample Way', 'Munich 80331', 'Germany'],
     },
     lineItems: [
       {
         id: 'simple-1',
-        title: 'Beratung',
-        description: 'Strategieberatung, 2 Stunden',
+        title: 'Consulting',
+        description: 'Strategy consulting, 2 hours',
         quantity: 2,
         unitPriceMinor: 90000,
         taxRateMinor: 1900,
       },
       {
         id: 'simple-2',
-        title: 'Entwurf',
-        description: 'Gestaltungsentwurf Briefkopf',
+        title: 'Design',
+        description: 'Letterhead design draft',
         quantity: 1,
         unitPriceMinor: 45000,
         taxRateMinor: 1900,
       },
       {
         id: 'simple-3',
-        title: 'Druck',
-        description: 'Farbdruck A4, 50 Exemplare',
+        title: 'Printing',
+        description: 'Color print A4, 50 copies',
         quantity: 50,
         unitPriceMinor: 120,
         taxRateMinor: 1900,
       },
       {
         id: 'simple-4',
-        title: 'Porto',
-        description: 'Versand per Post',
+        title: 'Postage',
+        description: 'Shipment by post',
         quantity: 1,
         unitPriceMinor: 590,
         taxRateMinor: 0,
       },
       {
         id: 'simple-5',
-        title: 'Korrektur',
-        description: 'Korrekturschleife Abschlussfassung',
+        title: 'Revision',
+        description: 'Revision pass on the final version',
         quantity: 1,
         unitPriceMinor: 30000,
         taxRateMinor: 1900,

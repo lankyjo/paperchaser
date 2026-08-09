@@ -130,6 +130,23 @@ export function diffFraction(a: PNG, b: PNG, threshold: number): DiffResult {
 }
 
 /**
+ * Blend a hex foreground color at `alpha` over a solid `bg` per channel,
+ * rounded (RESEARCH Pattern 4, D-04). The harness derives each template's
+ * watermark band target from its RESOLVED accent (blendColor(accent, 0.15,
+ * white)) — never a hardcoded blend constant (Pitfall 1: a fixed blend breaks
+ * for the 6 templates whose accent ≠ #1d4ed8).
+ */
+export function blendColor(hex: string, alpha: number, bg: RGB): RGB {
+  const c = parseInt(hex.slice(1), 16)
+  const fg = { r: (c >> 16) & 255, g: (c >> 8) & 255, b: c & 255 }
+  return {
+    r: Math.round(fg.r * alpha + bg.r * (1 - alpha)),
+    g: Math.round(fg.g * alpha + bg.g * (1 - alpha)),
+    b: Math.round(fg.b * alpha + bg.b * (1 - alpha)),
+  }
+}
+
+/**
  * Count pixels inside `band` whose channels are within `tol` of `target`.
  * `blueDominant` additionally requires b - r > 8 — this rejects neutral-gray
  * anti-aliasing of near-black table text that would otherwise match a light

@@ -1,5 +1,5 @@
 import type { ResolvedTokens } from '../../document/tokens'
-import { FONT_STACKS } from '../../document/tokens'
+import { DOC_TITLES, FONT_STACKS } from '../../document/tokens'
 import type { DocumentModel } from '../../document/types'
 
 /**
@@ -15,9 +15,8 @@ import type { DocumentModel } from '../../document/types'
  * (Anti-Pattern 1). All text renders as React text nodes (T-03-04:
  * escaped by default).
  *
- * The title label keeps the pre-preset copy ("Rechnung") — D-05 English
- * fixture migration in plan 04 owns copy changes, and the parity golden pins
- * this text byte-identically.
+ * The title derives from the document type (DOC_TITLES, D-05 English copy)
+ * and renders in the heading font with uppercase treatment.
  */
 export function HeaderStandard({ tokens, model }: { tokens: ResolvedTokens; model: DocumentModel }) {
   return (
@@ -51,7 +50,7 @@ export function HeaderStandard({ tokens, model }: { tokens: ResolvedTokens; mode
             textTransform: 'uppercase',
           }}
         >
-          Rechnung
+          {DOC_TITLES[model.type]}
         </h2>
         <div>
           {model.number} · {model.issueDate}

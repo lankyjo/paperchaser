@@ -136,7 +136,7 @@ export function DocumentPage({
       <HeaderPreset tokens={resolved} model={model} />
 
       <section style={{ marginBottom: 'var(--tpl-section-gap)' }}>
-        <h3 style={{ margin: '0 0 4px' }}>Rechnungsempfänger</h3>
+        <h3 style={{ margin: '0 0 4px' }}>Bill to</h3>
         <div>{model.customer.name}</div>
         {model.customer.address.map((line) => (
           <div key={line}>{line}</div>
@@ -146,11 +146,11 @@ export function DocumentPage({
       <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 'var(--tpl-section-gap)' }}>
         <thead>
           <tr style={row}>
-            <th style={{ textAlign: 'left', padding: '6px 0' }}>Position</th>
-            <th style={{ textAlign: 'left', padding: '6px 0' }}>Beschreibung</th>
-            <th style={{ textAlign: 'right', padding: '6px 0' }}>Menge</th>
-            <th style={{ textAlign: 'right', padding: '6px 0' }}>Einzelpreis</th>
-            <th style={{ textAlign: 'right', padding: '6px 0' }}>Gesamt</th>
+            <th style={{ textAlign: 'left', padding: '6px 0' }}>Item</th>
+            <th style={{ textAlign: 'left', padding: '6px 0' }}>Description</th>
+            <th style={{ textAlign: 'right', padding: '6px 0' }}>Qty</th>
+            <th style={{ textAlign: 'right', padding: '6px 0' }}>Unit price</th>
+            <th style={{ textAlign: 'right', padding: '6px 0' }}>Amount</th>
           </tr>
         </thead>
         <tbody>
@@ -174,15 +174,15 @@ export function DocumentPage({
 
       <section style={{ maxWidth: '90mm', marginLeft: 'auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span>Zwischensumme</span>
+          <span>Subtotal</span>
           <span>{formatMinor(totals.subtotalMinor)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span>Steuern</span>
+          <span>Tax</span>
           <span>{formatMinor(totals.taxMinor)}</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, marginTop: '4px' }}>
-          <span>Gesamtsumme</span>
+          <span>Grand total</span>
           <span>{formatMinor(totals.grandTotalMinor)}</span>
         </div>
       </section>
