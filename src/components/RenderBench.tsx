@@ -6,7 +6,9 @@ import type { Branding, DocumentModel, PageSize, TemplateId } from '../document/
 import { useMountEffect } from '../lib/useMountEffect'
 import { BrandingPanel } from './BrandingPanel'
 import { DocumentPage } from './DocumentPage'
+import { PrintPreviewDialog } from './PrintPreviewDialog'
 import { TemplateGallery } from './TemplateGallery'
+import { Button } from './ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 
 /**
@@ -89,6 +91,9 @@ function BenchShell({
   // when present. Changes apply instantly (WYSIWYG) to the canvas block.
   const [currentPageSize, setCurrentPageSize] = useState<PageSize>(pageSize ?? model.pageSize ?? 'a4')
 
+  // BUIL-10: the print-preview dialog trigger (bench header primary CTA).
+  const [previewOpen, setPreviewOpen] = useState(false)
+
   const selectTemplate = (id: TemplateId) => {
     setCurrentTemplate(id)
     onTemplateChange?.(id)
@@ -98,23 +103,26 @@ function BenchShell({
     <div className="flex min-h-screen flex-col print:min-h-0">
       <header className="flex h-12 shrink-0 items-center justify-between px-4 print:hidden">
         <span className="text-base font-semibold tracking-tight">Paperchaser</span>
-        <Select
-          value={currentPageSize}
-          onValueChange={(next) => {
-            if (next !== null && (next === 'a4' || next === 'a5' || next === 'a3')) setCurrentPageSize(next)
-          }}
-        >
-          <SelectTrigger size="sm" aria-label="Page size">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.entries(PAGE_SIZES).map(([id, size]) => (
-              <SelectItem key={id} value={id}>
-                {size.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2">
+          <Select
+            value={currentPageSize}
+            onValueChange={(next) => {
+              if (next !== null && (next === 'a4' || next === 'a5' || next === 'a3')) setCurrentPageSize(next)
+            }}
+          >
+            <SelectTrigger size="sm" aria-label="Page size">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(PAGE_SIZES).map(([id, size]) => (
+                <SelectItem key={id} value={id}>
+                  {size.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button onClick={() => setPreviewOpen(true)}>Print preview</Button>
+        </div>
       </header>
       <main className="flex flex-1 overflow-hidden print:min-h-0">
         <aside className="w-80 shrink-0 overflow-y-auto border-r border-foreground/10 bg-card p-3 print:hidden">
@@ -143,6 +151,17 @@ function BenchShell({
           </div>
         </div>
       </main>
+
+      {/* BUIL-10: measure-and-slice print preview (D-15) — the dialog slices
+          the SAME DocumentPage instance the canvas renders. */}
+      <PrintPreviewDialog
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        model={model}
+        template={currentTemplate}
+        branding={model.branding}
+        pageSize={currentPageSize}
+      />
     </div>
   )
 }

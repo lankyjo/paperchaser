@@ -51,6 +51,20 @@ export const PAGE_SIZES: Record<PageSize, { label: string; width: string; height
   a3: { label: 'A3', width: '297mm', height: '420mm' },
 }
 
+/**
+ * Page geometry in CSS pixels at 96dpi (plan 03-05, D-15) — the harness raster
+ * constants (A4 794×1123, tests/helpers/raster.ts) scaled by ISO aspect for
+ * A5/A3: never hardcoded per-size px, always derived from the A4 constants.
+ * The print-preview dialog slices page blocks by these; the harness diffs the
+ * SAME crops (dialog page i == cropY(printShot, i·pageH, pageH)), so the
+ * dialog stays verifiable with the calibrated 0.05/0.06 fractions.
+ */
+export const PAGE_SIZE_PX: Record<PageSize, { width: number; height: number }> = {
+  a4: { width: 794, height: 1123 },
+  a5: { width: Math.round(794 * (148 / 210)), height: Math.round(1123 * (148 / 210)) },
+  a3: { width: Math.round(794 * (297 / 210)), height: Math.round(1123 * (297 / 210)) },
+}
+
 /** A template's style identity — values VERBATIM from the UI-SPEC identity tables. */
 export interface TemplateTokens {
   palette: {
