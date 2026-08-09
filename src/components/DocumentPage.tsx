@@ -1,8 +1,16 @@
-import type { CSSProperties } from 'react'
+import type { ComponentType, CSSProperties } from 'react'
 
 import { computeTotals, deriveWatermark } from '../document/totals'
+import type { ResolvedTokens } from '../document/tokens'
+import type { FooterStyle, HeaderStyle } from '../document/tokens'
 import type { Branding, DocumentModel, PageSize, TemplateId } from '../document/types'
 import { resolveTokens, toCssVars } from '../document/resolveTokens'
+import { FooterDetailed } from './print/FooterDetailed'
+import { FooterMinimal } from './print/FooterMinimal'
+import { FooterStandard } from './print/FooterStandard'
+import { HeaderBanner } from './print/HeaderBanner'
+import { HeaderCompact } from './print/HeaderCompact'
+import { HeaderStandard } from './print/HeaderStandard'
 
 /**
  * THE single component rendered on screen AND in print (parity by construction,
@@ -16,8 +24,9 @@ import { resolveTokens, toCssVars } from '../document/resolveTokens'
  * --tpl-* CSS custom properties on #print-root (cast through CSSProperties —
  * React's type lacks the `--*` index signature); the stylesheet reads the
  * variables and the print projection inherits them from the same element.
- * NO branch on templateId exists anywhere in this component (RESEARCH
- * Anti-Pattern 1): a missing token field is the smell to fix, not an if.
+ * NO branch on the document's template exists anywhere in this component
+ * (RESEARCH Anti-Pattern 1): a missing token field is the smell to fix, not
+ * an if.
  */
 
 const EUR = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' })
@@ -45,6 +54,34 @@ const pageStyle: CSSProperties = {
 
 const row: CSSProperties = { borderBottom: '1px solid var(--tpl-row-rule)' }
 
+/** Preset props — the resolved token set and the model both presets render. */
+interface PresetProps {
+  tokens: ResolvedTokens
+  model: DocumentModel
+}
+
+/**
+ * BRND-05: the 3×3 preset matrix, keyed by the RESOLVED STYLE token
+ * (resolved.header.style / resolved.footer.style) — never by the document's
+ * template id (Anti-Pattern 1: a switch on the template is the smell; a
+ * switch on the resolved style is the contract). The 4th HeaderStyle member,
+ * 'standard-offset' (Creative's default), is the Standard layout with the
+ * token-driven 18mm left offset applied at the page level, so it selects the
+ * same component.
+ */
+const headerPresets: Record<HeaderStyle, ComponentType<PresetProps>> = {
+  standard: HeaderStandard,
+  banner: HeaderBanner,
+  compact: HeaderCompact,
+  'standard-offset': HeaderStandard,
+}
+
+const footerPresets: Record<FooterStyle, ComponentType<PresetProps>> = {
+  minimal: FooterMinimal,
+  standard: FooterStandard,
+  detailed: FooterDetailed,
+}
+
 export function DocumentPage({
   model,
   template,
@@ -62,6 +99,10 @@ export function DocumentPage({
   const vars = toCssVars(resolved)
   const totals = computeTotals(model)
 
+  // BRND-05: preset selection by the resolved style token (never template id).
+  const HeaderPreset = headerPresets[resolved.header.style]
+  const FooterPreset = footerPresets[resolved.footer.style]
+
   return (
     <div
       id="print-root"
@@ -76,33 +117,7 @@ export function DocumentPage({
         </div>
       )}
 
-      <header style={{ display: 'flex', justifyContent: 'space-between', gap: '12mm', marginBottom: 'var(--tpl-section-gap)' }}>
-        <div>
-          {model.company.logo !== null && (
-            <img src={model.company.logo} alt="" className="document-logo" style={{ width: 48, height: 48 }} />
-          )}
-          <h1 style={{ fontSize: '20px', margin: '4px 0' }}>{model.company.name}</h1>
-          {model.company.address.map((line) => (
-            <div key={line}>{line}</div>
-          ))}
-          <div>{model.company.email}</div>
-        </div>
-        <div style={{ textAlign: 'right' }}>
-          <h2
-            style={{
-              fontSize: 'var(--tpl-title-size)',
-              fontWeight: 'var(--tpl-title-weight)',
-              margin: 0,
-              textTransform: 'uppercase',
-            }}
-          >
-            Rechnung
-          </h2>
-          <div>
-            {model.number} · {model.issueDate}
-          </div>
-        </div>
-      </header>
+      <HeaderPreset tokens={resolved} model={model} />
 
       <section style={{ marginBottom: 'var(--tpl-section-gap)' }}>
         <h3 style={{ margin: '0 0 4px' }}>Rechnungsempfänger</h3>
@@ -156,10 +171,7 @@ export function DocumentPage({
         </div>
       </section>
 
-      <footer style={{ marginTop: 'var(--tpl-section-gap)', color: '#6b7280' }}>
-        <div>Überweisung innerhalb 14 Tage auf das in der Rechnung genannte Konto.</div>
-        <div>Vielen Dank für Ihren Auftrag.</div>
-      </footer>
+      <FooterPreset tokens={resolved} model={model} />
     </div>
   )
 }
