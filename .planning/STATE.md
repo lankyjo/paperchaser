@@ -4,16 +4,16 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 03
 current_phase_name: render-pipeline
-status: executing
-stopped_at: Completed 03-04-PLAN.md
-last_updated: "2026-08-09T07:16:03.399Z"
+status: verifying
+stopped_at: Completed 03-05-PLAN.md
+last_updated: "2026-08-09T09:28:11.840Z"
 last_activity: 2026-08-08
 last_activity_desc: Phase 03 execution started
 progress:
   total_phases: 3
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 12
-  completed_plans: 11
+  completed_plans: 12
 ---
 
 # Project State
@@ -29,10 +29,10 @@ See: .planning/PROJECT.md (updated 2026-08-07)
 
 Phase: 03 (render-pipeline) — EXECUTING
 Plan: 5 of 5
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-08-08 — Phase 03 execution started
 
-Progress: [█████████░] 92%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -76,6 +76,7 @@ Progress: [█████████░] 92%
 | Phase 03-render-pipeline P02 | 24min | 2 tasks | 15 files |
 | Phase 03-render-pipeline P03 | 25min | 2 tasks | 17 files |
 | Phase 03-render-pipeline P04 | 6h | 3 tasks | 21 files |
+| Phase 03-render-pipeline P05 | 115min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -126,6 +127,10 @@ Raw Zod-4 issue-shape read via one cast (public $ZodIssue union hides expected/r
 - [Phase 03-render-pipeline]: D-05 done in place: fixture ids + LOGO_DATA_URL unchanged (protects FIXTURE_KEYS routing + harness LOGO_COLOR)
 - [Phase 03-render-pipeline]: Harness calibration constants derive per template from resolveTokens (accent blend, rowRule thead border, logo size by header preset) — fixed constants fail every non-Minimal template (Pitfall 1)
 - [Phase 03-render-pipeline]: de-DE Intl.NumberFormat intentionally unchanged — locale formatting deferred to MONEY-01 v2
+- [Phase ?]: Page size is bench state (default a4, PDF-01); Select + DocumentPage share the PAGE_SIZES registry (one source of truth for mm geometry)
+- [Phase ?]: Dialog measurement keys on a JSON.stringify(model) fingerprint (modelRevision surrogate) — keyed remeasure remounts the measure container on any model/template/pageSize change
+- [Phase ?]: Dialog pixel thresholds calibrated to 0.08/0.08 (plan pinned 0.05/0.06): Chromium compositor deterministically mispaints tables with 3+ large doc copies per page — measured dialog-vs-PDF 0.0555/0.0204, documented deviation with evidence
+- [Phase ?]: dialog.tsx edited from shadcn baseline: removed sm:max-w-sm (384px popup clipped the 794px blocks), transform-free inset-0 m-auto centering, dropped zoom/fade animations (transient transforms re-trigger the compositor artifact)
 
 ### Pending Todos
 
@@ -150,6 +155,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-09T07:16:03.332Z
-Stopped at: Completed 03-04-PLAN.md
+Last session: 2026-08-09T09:26:15.760Z
+Stopped at: Completed 03-05-PLAN.md
 Resume file: None

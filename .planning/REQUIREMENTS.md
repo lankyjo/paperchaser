@@ -27,7 +27,7 @@ Requirements for initial release. Each maps to roadmap phases. Scope sourced fro
 - [ ] **BUIL-07**: User can undo and redo edits
 - [ ] **BUIL-08**: Document auto-saves as the user works
 - [ ] **BUIL-09**: User can zoom the canvas
-- [ ] **BUIL-10**: User can open print preview from the builder
+- [x] **BUIL-10**: User can open print preview from the builder
 
 ### Templates
 
@@ -71,11 +71,11 @@ Requirements for initial release. Each maps to roadmap phases. Scope sourced fro
 
 ### PDF Generation
 
-- [ ] **PDF-01**: PDF defaults to A4 page size
-- [ ] **PDF-02**: User can select optional page sizes
-- [ ] **PDF-03**: PDF paginates automatically across pages
+- [x] **PDF-01**: PDF defaults to A4 page size
+- [x] **PDF-02**: User can select optional page sizes
+- [x] **PDF-03**: PDF paginates automatically across pages
 - [x] **PDF-04**: PDF renders at high resolution
-- [ ] **PDF-05**: PDF respects print margins
+- [x] **PDF-05**: PDF respects print margins
 - [x] **PDF-06**: PDF output is identical to the on-screen preview
 - [ ] **PDF-07**: User can download the PDF
 - [ ] **PDF-08**: User can print via the browser
@@ -166,7 +166,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BUIL-07 | Phase 4 | Pending |
 | BUIL-08 | Phase 4 | Pending |
 | BUIL-09 | Phase 4 | Pending |
-| BUIL-10 | Phase 3 | Pending |
+| BUIL-10 | Phase 3 | Complete |
 | TEMP-01 | Phase 3 | Complete |
 | TEMP-02 | Phase 3 | Complete |
 | TEMP-03 | Phase 3 | Complete |
@@ -189,11 +189,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BRND-05 | Phase 3 | Complete |
 | BRND-06 | Phase 3 | Complete |
 | BRND-07 | Phase 3 | Complete |
-| PDF-01 | Phase 3 | Pending |
-| PDF-02 | Phase 3 | Pending |
-| PDF-03 | Phase 3 | Pending |
+| PDF-01 | Phase 3 | Complete |
+| PDF-02 | Phase 3 | Complete |
+| PDF-03 | Phase 3 | Complete |
 | PDF-04 | Phase 3 | Complete |
-| PDF-05 | Phase 3 | Pending |
+| PDF-05 | Phase 3 | Complete |
 | PDF-06 | Phase 3 | Complete |
 | PDF-07 | Phase 6 | Pending |
 | PDF-08 | Phase 6 | Pending |

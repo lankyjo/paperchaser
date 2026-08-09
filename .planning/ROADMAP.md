@@ -85,7 +85,7 @@ Plans:
   3. PDF output is identical to the on-screen preview — A4 by default, optional page sizes, automatic pagination, print margins, high resolution, white page — with the golden-image parity harness running in dev/CI to catch any drift (PDF-01, PDF-02, PDF-03, PDF-04, PDF-05, PDF-06, BRND-07).
   4. User can open print preview from the builder and see pagination and styling matching the PDF output (BUIL-10).
 
-**Plans**: 2/5 plans executed
+**Plans**: 5/5 plans executed
 **UI hint**: yes
 Plans:
 **Wave 1**
@@ -106,7 +106,7 @@ Plans:
 
 **Wave 5** *(blocked on Waves 3-4 completion)*
 
-- [ ] 03-05-PLAN.md — Named @page rules + A5/A3 page sizes + print-preview dialog (measure-and-slice, D-15) + dialog parity checks
+- [x] 03-05-PLAN.md — Named @page rules + A5/A3 page sizes + print-preview dialog (measure-and-slice, D-15) + dialog parity checks
 
 ### Phase 4: Editing UX
 
@@ -163,7 +163,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|----------------|--------|-----------|
 | 1. Foundation Spike | 3/3 | Complete    | 2026-08-07 |
 | 2. Domain Core & Persistence | 4/4 | Complete    | 2026-08-08 |
-| 3. Render Pipeline | 2/5 | In Progress|  |
+| 3. Render Pipeline | 5/5 | In Progress|  |
 | 4. Editing UX | 0/TBD | Not started | - |
 | 5. Reference Data UX | 0/TBD | Not started | - |
 | 6. Validation, Delivery & Polish | 0/TBD | Not started | - |
