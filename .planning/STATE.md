@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 4
 current_phase_name: Editing UX
 status: executing
-stopped_at: Phase 4 UI-SPEC approved
-last_updated: "2026-08-10T14:41:37.663Z"
+stopped_at: Completed 04-editing-ux-01-PLAN.md
+last_updated: "2026-08-10T15:39:29.744Z"
 last_activity: 2026-08-09
 last_activity_desc: Phase 3 complete, transitioned to Phase 4
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 17
-  completed_plans: 12
+  completed_plans: 13
 ---
 
 # Project State
@@ -32,7 +32,7 @@ Plan: Not started
 Status: Ready to execute
 Last activity: 2026-08-09 — Phase 3 complete, transitioned to Phase 4
 
-Progress: [██████████] 100%
+Progress: [████████░░] 76%
 
 ## Performance Metrics
 
@@ -78,6 +78,7 @@ Progress: [██████████] 100%
 | Phase 03-render-pipeline P03 | 25min | 2 tasks | 17 files |
 | Phase 03-render-pipeline P04 | 6h | 3 tasks | 21 files |
 | Phase 03-render-pipeline P05 | 115min | 3 tasks | 8 files |
+| Phase 04-editing-ux P01 | 52min | 3 tasks | 16 files |
 
 ## Accumulated Context
 
@@ -132,6 +133,9 @@ Raw Zod-4 issue-shape read via one cast (public $ZodIssue union hides expected/r
 - [Phase ?]: Dialog measurement keys on a JSON.stringify(model) fingerprint (modelRevision surrogate) — keyed remeasure remounts the measure container on any model/template/pageSize change
 - [Phase ?]: Dialog pixel thresholds calibrated to 0.08/0.08 (plan pinned 0.05/0.06): Chromium compositor deterministically mispaints tables with 3+ large doc copies per page — measured dialog-vs-PDF 0.0555/0.0204, documented deviation with evidence
 - [Phase ?]: dialog.tsx edited from shadcn baseline: removed sm:max-w-sm (384px popup clipped the 794px blocks), transform-free inset-0 m-auto centering, dropped zoom/fade animations (transient transforms re-trigger the compositor artifact)
+- [Phase ?]: Rich-text AST stored as node-array JSON (not HTML strings) — ProseMirror/Tiptap compatible
+- [Phase ?]: Text fields are z.union([z.string(), richTextDocSchema]) for backward compat; renderer uses getPlainText()
+- [Phase ?]: Envelope version bumped to z.literal(2); v1 imports rejected (no silent coercion)
 
 ### Pending Todos
 
@@ -156,6 +160,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-10T13:35:06.183Z
-Stopped at: Phase 4 UI-SPEC approved
-Resume file: /mnt/storage/Documents/PERSONAL/paperchaser/.planning/phases/04-editing-ux/04-UI-SPEC.md
+Last session: 2026-08-10T15:39:29.716Z
+Stopped at: Completed 04-editing-ux-01-PLAN.md
+Resume file: None

@@ -121,12 +121,12 @@ Plans:
   4. User can zoom the canvas (BUIL-09).
   5. On mobile, the builder uses bottom sheets, drawers, and a sticky live preview, and the same editing actions work with touch (BUIL-02).
 
-**Plans**: 5 plans
+**Plans**: 1/5 plans executed
 **UI hint**: yes
 Plans:
 **Wave 1**
 
-- [ ] 04-01-PLAN.md — [BLOCKING schema gate] Domain model update: rich-text JSON AST schemas, optional line-item image, block-visibility settings, Dexie version(3) migration, fixture regeneration, envelope v2 bump
+- [x] 04-01-PLAN.md — [BLOCKING schema gate] Domain model update: rich-text JSON AST schemas, optional line-item image, block-visibility settings, Dexie version(3) migration, fixture regeneration, envelope v2 bump
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -184,6 +184,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Foundation Spike | 3/3 | Complete    | 2026-08-07 |
 | 2. Domain Core & Persistence | 4/4 | Complete    | 2026-08-08 |
 | 3. Render Pipeline | 5/5 | Complete    | 2026-08-09 |
-| 4. Editing UX | 0/TBD | Not started | - |
+| 4. Editing UX | 1/5 | In Progress|  |
 | 5. Reference Data UX | 0/TBD | Not started | - |
 | 6. Validation, Delivery & Polish | 0/TBD | Not started | - |
