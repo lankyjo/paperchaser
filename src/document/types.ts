@@ -10,6 +10,10 @@ import * as z from 'zod'
 
 import { CURRENCY_DECIMALS } from './money'
 import { richTextDocSchema } from './richtext'
+import type { RichTextDoc } from './richtext'
+
+// Re-export for fixtures.ts and other consumers
+export type { RichTextDoc }
 
 /** D-06/D-07: text fields accept plain string (legacy) or rich-text AST node array. */
 const textFieldSchema = z.union([z.string(), richTextDocSchema])
