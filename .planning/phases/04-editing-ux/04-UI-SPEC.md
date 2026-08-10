@@ -126,7 +126,7 @@ English throughout (Phase 3 language decision holds). Editing is direct manipula
 | Save indicator | "Saved" (idle, muted) / "Saving…" (in-flight, muted) / failure = destructive "Not saved" badge + toast (D-16/D-17) |
 | Destructive confirmation — delete line item | "Delete item?" — "Removes {title or 'this item'} and its amount from the totals." Actions: "Delete" (destructive) / "Cancel" |
 | Destructive confirmation — remove link | In the link popover, "Remove link" (destructive text button) — no confirmation (reversible via undo) |
-| Link editor (floating toolbar) | Label "Link", input placeholder "https://example.com", actions "Apply" (primary) / "Remove" (destructive) |
+| Link editor (floating toolbar) | Label "Link", input placeholder "https://example.com", actions "Apply link" (primary) / "Remove link" (destructive) |
 | Block visibility toggle | Toggle labeled with block name, e.g. "Show footer"; off-state hides the block on canvas and print (persisted per-document, D-30). No confirmation — instant + undoable |
 | Undo/redo empty history | No UI: shortcuts no-op silently (D-18); if buttons added, disabled state (dismissed, see UI Considerations) |
 
@@ -276,4 +276,4 @@ Layout stacks vertically: **top header (back, undo/redo, save indicator, preview
 - [ ] Dimension 5 Spacing: PASS
 - [ ] Dimension 6 Registry Safety: PASS
 
-**Approval:** {pending / approved YYYY-MM-DD}
+**Approval:** approved 2026-08-10
