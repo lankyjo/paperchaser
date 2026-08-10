@@ -1,5 +1,7 @@
 import Dexie from 'dexie'
 
+import { migrateV2ToV3 } from '../document/migrate'
+
 /**
  * Dexie versioning discipline (PITFALLS.md:78 — never alter a shipped version
  * line): version(1) is the frozen Phase 1 empty stub; version(2) owns the real
@@ -20,3 +22,20 @@ db.version(2).stores({
   documents: 'id, type, status, updatedAt', // Phase 6 dashboard: stats by status, recent by updatedAt
   preferences: 'key', // KV
 })
+
+// D-29: version(3) rewrites stored v2 docs with AST-wrapped text fields.
+// The stores() schema strings are identical to v2 — the version bump alone
+// triggers the upgrade callback (RESEARCH Pitfall 4 verified by persistence spec).
+db.version(3)
+  .stores({
+    company: 'id',
+    customers: 'id, name',
+    catalog: 'id, name',
+    documents: 'id, type, status, updatedAt',
+    preferences: 'key',
+  })
+  .upgrade((trans) => {
+    return trans.table('documents').toCollection().modify((doc) => {
+      migrateV2ToV3(doc)
+    })
+  })

@@ -19,7 +19,7 @@ import type { DocumentModel } from './types'
  */
 export const envelopeSchema = z.object({
   format: z.literal('paperchaser-document'),
-  version: z.literal(1),
+  version: z.literal(2),
   document: documentSchema,
 })
 
@@ -43,7 +43,7 @@ export const MAX_JSON_LENGTH = 5_000_000
  */
 export function exportDocument(doc: DocumentModel): string {
   documentSchema.parse(doc)
-  return JSON.stringify({ format: 'paperchaser-document', version: 1, document: doc })
+  return JSON.stringify({ format: 'paperchaser-document', version: 2, document: doc })
 }
 
 /**
@@ -65,23 +65,31 @@ export function parseDocument(json: string): ParseResult {
     // Zod 4 issue shape: { code, path, message, expected?, received?, keys? }. The public
     // $ZodIssue union does not expose expected/received/keys statically (RESEARCH skeleton's
     // direct access does not typecheck against zod 4.4.3), so read the raw issue shape.
-    const first = parsed.error.issues[0] as unknown as {
+    const issues = parsed.error.issues as unknown as Array<{
       code: string
       path: (string | number)[]
       expected?: string
       received?: string
       keys?: string[]
-    }
+    }>
+
+    // Zod 4 may report multiple issues — prefer the first document-level
+    // issue for schema_mismatch; fall back to envelope-level otherwise.
+    const docIssue = issues.find((i) => i.path[0] === 'document')
+    const first = docIssue ?? issues[0]
+
     const { path } = first
     if (first.code === 'unrecognized_keys') {
+      // Unrecognized keys at the document level are a schema_mismatch,
+      // not an envelope-level reject. Only envelope-level extras are invalid_envelope.
+      if (path[0] === 'document') {
+        return { ok: false, error: { code: 'schema_mismatch', path, keys: first.keys } }
+      }
       return { ok: false, error: { code: 'invalid_envelope', path, keys: first.keys } }
     }
     if (path[0] !== 'document') {
-      // Envelope-level reject: the envelope schema has only format/version/document keys,
-      // so any issue outside the document branch is a literal mismatch (wrong format/version).
       return { ok: false, error: { code: 'invalid_envelope', path, expected: first.expected, received: first.received } }
     }
-    // Document-branch issue: name the exact field, document-prefixed, per UI-SPEC E1.
     return { ok: false, error: { code: 'schema_mismatch', path, expected: first.expected, received: first.received } }
   }
   return { ok: true, document: parsed.data.document }

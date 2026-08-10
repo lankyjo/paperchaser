@@ -10,7 +10,7 @@ describe('envelope export — STOR-03 (D-13)', () => {
     const parsed = JSON.parse(exported) as Record<string, unknown>
     expect(Object.keys(parsed).sort()).toEqual(['document', 'format', 'version'])
     expect(parsed.format).toBe('paperchaser-document')
-    expect(parsed.version).toBe(1)
+    expect(parsed.version).toBe(2)
     expect(parsed.document).toEqual(FIXTURE_MAP['invoice-simple'])
   })
 })
@@ -31,7 +31,7 @@ describe('boundary rejection — STOR-04', () => {
   })
 
   it('rejects a wrong format literal with invalid_envelope', () => {
-    const envelope = { format: 'other-format', version: 1, document: FIXTURE_MAP['invoice-simple'] }
+    const envelope = { format: 'other-format', version: 2, document: FIXTURE_MAP['invoice-simple'] }
     expect(parseDocument(JSON.stringify(envelope))).toEqual({
       ok: false,
       error: { code: 'invalid_envelope', path: ['format'] },
@@ -39,7 +39,7 @@ describe('boundary rejection — STOR-04', () => {
   })
 
   it('rejects a wrong version literal with invalid_envelope', () => {
-    const envelope = { format: 'paperchaser-document', version: 2, document: FIXTURE_MAP['invoice-simple'] }
+    const envelope = { format: 'paperchaser-document', version: 1, document: FIXTURE_MAP['invoice-simple'] }
     expect(parseDocument(JSON.stringify(envelope))).toEqual({
       ok: false,
       error: { code: 'invalid_envelope', path: ['version'] },
@@ -49,7 +49,7 @@ describe('boundary rejection — STOR-04', () => {
   it('rejects a missing required document field with schema_mismatch naming the exact field', () => {
     const doc = FIXTURE_MAP['invoice-simple']
     // JSON.stringify drops the undefined property — the envelope arrives without lineItems.
-    const envelope = { format: 'paperchaser-document', version: 1, document: { ...doc, lineItems: undefined } }
+    const envelope = { format: 'paperchaser-document', version: 2, document: { ...doc, lineItems: undefined } }
     const result = parseDocument(JSON.stringify(envelope))
     if (result.ok) throw new Error('expected a rejection')
     const error = result.error
@@ -89,7 +89,7 @@ describe('boundary rejection — STOR-04', () => {
   it('strips unknown extra fields from the document branch (D-14)', () => {
     const envelope = {
       format: 'paperchaser-document',
-      version: 1,
+      version: 2,
       document: { ...FIXTURE_MAP['invoice-simple'], extraTopField: 'x' },
     }
     const result = parseDocument(JSON.stringify(envelope))
@@ -155,7 +155,7 @@ describe('boundary hardening — precision, size guard, breadth, nested strip, l
     const doc = FIXTURE_MAP['invoice-simple']
     const envelope = {
       format: 'paperchaser-document',
-      version: 1,
+      version: 2,
       document: {
         ...doc,
         company: { ...doc.company, extraCompanyField: 'x' },
