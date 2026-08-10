@@ -121,8 +121,28 @@ Plans:
   4. User can zoom the canvas (BUIL-09).
   5. On mobile, the builder uses bottom sheets, drawers, and a sticky live preview, and the same editing actions work with touch (BUIL-02).
 
-**Plans**: TBD (refined during planning)
+**Plans**: 5 plans
 **UI hint**: yes
+Plans:
+**Wave 1**
+
+- [ ] 04-01-PLAN.md — [BLOCKING schema gate] Domain model update: rich-text JSON AST schemas, optional line-item image, block-visibility settings, Dexie version(3) migration, fixture regeneration, envelope v2 bump
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 04-02-PLAN.md — [Tracer] One inline text edit end-to-end: contentEditable cell on customer name, three-pane builder shell, model-snapshot history + debounced auto-save, save indicator, parity extension
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 04-03-PLAN.md — Rich-text formatting (B/I/U/list/link), floating toolbar, DOM→AST serializer, paste-strip policy, editing chrome (selection rings, hover outlines, empty-cell placeholders)
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [ ] 04-04-PLAN.md — Numeric cells (filtered contentEditable + minor-unit conversion), @dnd-kit line-item reorder, duplicate/delete with confirm, outline pane, properties pane, line-item image field
+
+**Wave 5** *(blocked on Wave 4 completion)*
+
+- [ ] 04-05-PLAN.md — Canvas zoom (CSS transform, desktop-only), mobile builder (<1024px stacked layout, sticky preview, Base UI Dialog bottom sheet), touch up/down reorder, 04-MOBILE-SPEC.md artifact
 
 ### Phase 5: Reference Data UX
 
