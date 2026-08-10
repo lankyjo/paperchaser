@@ -19,7 +19,7 @@ export interface Discount {
 
 // D-07/D-08; taxRateMinor 0 = untaxed
 export interface ShippingFee {
-  label: string
+  label: string | import('./richtext').RichTextDoc
   amountMinor: number
   taxRateMinor: number
 }

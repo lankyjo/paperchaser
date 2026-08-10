@@ -1,6 +1,7 @@
 import type { ResolvedTokens } from '../../document/tokens'
 import { DOC_TITLES, FONT_STACKS } from '../../document/tokens'
 import type { DocumentModel } from '../../document/types'
+import { getPlainText } from '../../document/richtext'
 
 /**
  * HeaderStandard — the split layout header preset (BRND-05): company block
@@ -33,12 +34,12 @@ export function HeaderStandard({ tokens, model }: { tokens: ResolvedTokens; mode
           <img src={model.company.logo} alt="" className="document-logo" style={{ width: 48, height: 48 }} />
         )}
         <h1 style={{ fontSize: '20px', margin: '4px 0', fontFamily: FONT_STACKS[tokens.fonts.headingFontId] }}>
-          {model.company.name}
+          {getPlainText(model.company.name)}
         </h1>
         {model.company.address.map((line) => (
-          <div key={line}>{line}</div>
+          <div key={getPlainText(line)}>{getPlainText(line)}</div>
         ))}
-        <div>{model.company.email}</div>
+        <div>{getPlainText(model.company.email)}</div>
       </div>
       <div style={{ textAlign: 'right' }}>
         <h2
@@ -53,7 +54,7 @@ export function HeaderStandard({ tokens, model }: { tokens: ResolvedTokens; mode
           {DOC_TITLES[model.type]}
         </h2>
         <div>
-          {model.number} · {model.issueDate}
+          {getPlainText(model.number)} · {model.issueDate}
         </div>
       </div>
     </header>

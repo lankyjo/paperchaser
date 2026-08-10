@@ -1,5 +1,6 @@
 import type { ResolvedTokens } from '../../document/tokens'
 import type { DocumentModel } from '../../document/types'
+import { getPlainText } from '../../document/richtext'
 
 /**
  * FooterDetailed — double rule + small-print grid preset (BRND-05): a 2px
@@ -22,7 +23,7 @@ export function FooterDetailed({ tokens, model }: { tokens: ResolvedTokens; mode
       <div style={{ color: tokens.palette.muted, fontSize: '10px', lineHeight: 1.6 }}>
         <div>Please transfer within 14 days to the bank account stated on the invoice.</div>
         <div>Thank you for your business.</div>
-        <div>{model.company.email}</div>
+        <div>{getPlainText(model.company.email)}</div>
       </div>
     </footer>
   )

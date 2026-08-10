@@ -6,6 +6,7 @@ import type { ResolvedTokens } from '../document/tokens'
 import type { FooterStyle, HeaderStyle } from '../document/tokens'
 import type { Branding, DocumentModel, PageSize, TemplateId } from '../document/types'
 import { resolveTokens, toCssVars } from '../document/resolveTokens'
+import { getPlainText } from '../document/richtext'
 import { FooterDetailed } from './print/FooterDetailed'
 import { FooterMinimal } from './print/FooterMinimal'
 import { FooterStandard } from './print/FooterStandard'
@@ -146,9 +147,9 @@ export function DocumentPage({
 
       <section style={{ marginBottom: 'var(--tpl-section-gap)' }}>
         <h3 style={{ margin: '0 0 4px' }}>Bill to</h3>
-        <div>{model.customer.name}</div>
+        <div>{getPlainText(model.customer.name)}</div>
         {model.customer.address.map((line) => (
-          <div key={line}>{line}</div>
+          <div key={getPlainText(line)}>{getPlainText(line)}</div>
         ))}
       </section>
 
@@ -166,8 +167,8 @@ export function DocumentPage({
           {model.lineItems.map((item, index) => {
             return (
               <tr key={item.id} style={row}>
-                <td style={{ padding: '6px 0', verticalAlign: 'top' }}>{item.title}</td>
-                <td style={{ padding: '6px 0', verticalAlign: 'top' }}>{item.description}</td>
+                <td style={{ padding: '6px 0', verticalAlign: 'top' }}>{getPlainText(item.title)}</td>
+                <td style={{ padding: '6px 0', verticalAlign: 'top' }}>{getPlainText(item.description)}</td>
                 <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>{item.quantity}</td>
                 <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
                   {formatMinor(item.unitPriceMinor)}

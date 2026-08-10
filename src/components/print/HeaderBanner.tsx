@@ -1,6 +1,7 @@
 import type { ResolvedTokens } from '../../document/tokens'
 import { DOC_TITLES, FONT_STACKS } from '../../document/tokens'
 import type { DocumentModel } from '../../document/types'
+import { getPlainText } from '../../document/richtext'
 
 /**
  * HeaderBanner — the full-width primary-color band header preset (BRND-05):
@@ -37,7 +38,7 @@ export function HeaderBanner({ tokens, model }: { tokens: ResolvedTokens; model:
           <img src={model.company.logo} alt="" className="document-logo" style={{ width: 40, height: 40 }} />
         )}
         <span style={{ fontSize: '20px', fontWeight: 600, fontFamily: FONT_STACKS[tokens.fonts.headingFontId] }}>
-          {model.company.name}
+          {getPlainText(model.company.name)}
         </span>
       </div>
       <div style={{ textAlign: 'right', color: 'white', opacity: 0.9 }}>
@@ -53,7 +54,7 @@ export function HeaderBanner({ tokens, model }: { tokens: ResolvedTokens; model:
           {DOC_TITLES[model.type]}
         </div>
         <div>
-          {model.number} · {model.issueDate}
+          {getPlainText(model.number)} · {model.issueDate}
         </div>
       </div>
     </header>

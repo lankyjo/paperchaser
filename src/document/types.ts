@@ -9,6 +9,10 @@
 import * as z from 'zod'
 
 import { CURRENCY_DECIMALS } from './money'
+import { richTextDocSchema } from './richtext'
+
+/** D-06/D-07: text fields accept plain string (legacy) or rich-text AST node array. */
+const textFieldSchema = z.union([z.string(), richTextDocSchema])
 
 /**
  * D-06: discount instances are percent (value in minor units of percent,
@@ -24,15 +28,25 @@ const discountSchema = z.object({
  * 0 = untaxed (Pitfall 3 — keeps JSON round-trip structural, not value-luck).
  */
 const shippingFeeSchema = z.object({
-  label: z.string(),
+  label: textFieldSchema,
   amountMinor: z.int().nonnegative(),
   taxRateMinor: z.int().nonnegative(),
 })
 
+/**
+ * T-04-04-LINE-IMAGE: line-item image is self-contained (data: URL) only —
+ * reuses the logoSchema pattern. External http(s) URLs are rejected.
+ */
+const lineItemImageSchema = z
+  .string()
+  .refine((value) => value.startsWith('data:'), {
+    message: 'line item image must be a self-contained data: URL',
+  })
+
 const lineItemSchema = z.object({
   id: z.string(),
-  title: z.string(),
-  description: z.string(),
+  title: textFieldSchema,
+  description: textFieldSchema,
   quantity: z.number().nonnegative(),
   /** Unit price in integer minor units (cents). Never floats — PITFALLS.md:232. */
   unitPriceMinor: z.int().nonnegative(),
@@ -40,6 +54,8 @@ const lineItemSchema = z.object({
   taxRateMinor: z.int().nonnegative(),
   /** D-06: per-line discount; absent = no discount. */
   discount: discountSchema.optional(),
+  /** LINE-01: optional self-contained image on the line item. */
+  image: lineItemImageSchema.optional(),
 })
 
 /**
@@ -54,15 +70,15 @@ const logoSchema = z
   })
 
 const companySchema = z.object({
-  name: z.string(),
-  address: z.array(z.string()),
-  email: z.email(),
+  name: textFieldSchema,
+  address: z.array(textFieldSchema),
+  email: textFieldSchema,
   logo: logoSchema,
 })
 
 const customerSchema = z.object({
-  name: z.string(),
-  address: z.array(z.string()),
+  name: textFieldSchema,
+  address: z.array(textFieldSchema),
 })
 
 /**
@@ -93,7 +109,7 @@ export const documentSchema = z.object({
   currency: z.enum(Object.keys(CURRENCY_DECIMALS) as [string, ...string[]]),
   /** Zod 4 top-level format — enforces YYYY-MM-DD. */
   issueDate: z.iso.date(),
-  number: z.string(),
+  number: textFieldSchema,
   /** D-11: explicit status; watermark derives from it, never stored. */
   status: z.enum(['draft', 'sent', 'paid']),
   company: companySchema,
@@ -109,6 +125,21 @@ export const documentSchema = z.object({
   pageSize: pageSizeSchema.optional(),
   /** D-09: per-document branding overrides; absent → template defaults (D-02). */
   branding: brandingSchema.optional(),
+  /** D-30: block visibility settings per-document — persisted across reloads. */
+  settings: z
+    .object({
+      blockVisibility: z
+        .object({
+          header: z.boolean(),
+          billTo: z.boolean(),
+          items: z.boolean(),
+          totals: z.boolean(),
+          footer: z.boolean(),
+        })
+        .partial()
+        .optional(),
+    })
+    .optional(),
 })
 
 /** Keeps the Phase 1 exported name (D-15 re-export pattern — fixtures.ts and DocumentPage.tsx import it). */

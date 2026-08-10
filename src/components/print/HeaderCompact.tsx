@@ -1,6 +1,7 @@
 import type { ResolvedTokens } from '../../document/tokens'
 import { DOC_TITLES, FONT_STACKS } from '../../document/tokens'
 import type { DocumentModel } from '../../document/types'
+import { getPlainText } from '../../document/richtext'
 
 /**
  * HeaderCompact — the single-line header preset (BRND-05): logo + company
@@ -21,7 +22,7 @@ export function HeaderCompact({ tokens, model }: { tokens: ResolvedTokens; model
             <img src={model.company.logo} alt="" className="document-logo" style={{ width: 24, height: 24 }} />
           )}
           <span style={{ fontSize: '16px', fontWeight: 600, fontFamily: FONT_STACKS[tokens.fonts.headingFontId] }}>
-            {model.company.name}
+            {getPlainText(model.company.name)}
           </span>
         </div>
         <div style={{ textAlign: 'right' }}>
@@ -29,7 +30,7 @@ export function HeaderCompact({ tokens, model }: { tokens: ResolvedTokens; model
             {DOC_TITLES[model.type]}
           </span>
           <span style={{ marginLeft: '8px' }}>
-            {model.number} · {model.issueDate}
+            {getPlainText(model.number)} · {model.issueDate}
           </span>
         </div>
       </div>
