@@ -1,7 +1,8 @@
-import { useRef, type KeyboardEvent } from 'react'
+import { useRef, useState, type KeyboardEvent } from 'react'
 import type { RichTextDoc } from '../../document/richtext'
 import { AstView } from './AstView'
-import { getPlainText } from '../../document/richtext'
+import { domToAst, getPlainText } from '../../document/richtext'
+import { FloatingToolbar } from './FloatingToolbar'
 
 /**
  * Uncontrolled contentEditable cell — plain text ONLY in the tracer
@@ -19,23 +20,32 @@ import { getPlainText } from '../../document/richtext'
 
 interface RichTextCellProps {
   text: string | RichTextDoc
-  onCommit: (plainText: string) => void
+  onCommit: (next: RichTextDoc) => void
   onCancel?: () => void
+  placeholder?: string
 }
 
-export function RichTextCell({ text, onCommit, onCancel }: RichTextCellProps) {
+export function RichTextCell({ text, onCommit, onCancel, placeholder = 'Type here' }: RichTextCellProps) {
   const ref = useRef<HTMLDivElement>(null)
   const cancelling = useRef(false)
+  const [focused, setFocused] = useState(false)
+
+  const isEmpty = getPlainText(text).trim().length === 0
 
   const commit = () => {
+    setFocused(false)
     if (cancelling.current) {
       cancelling.current = false
       return
     }
     if (ref.current) {
-      const plain = ref.current.textContent ?? ''
-      // Skip no-op commits (history push would be wasted)
-      if (plain !== getPlainText(text)) onCommit(plain)
+      const doc = domToAst(ref.current)
+      const plainNow = getPlainText(doc)
+      const plainPrev = getPlainText(text)
+      const astPrev =
+        typeof text === 'string' ? [{ type: 'paragraph' as const, content: [{ type: 'text' as const, text }] }] : text
+      const isSame = plainNow === plainPrev && JSON.stringify(doc) === JSON.stringify(astPrev)
+      if (!isSame) onCommit(doc)
     }
   }
 
@@ -47,9 +57,13 @@ export function RichTextCell({ text, onCommit, onCancel }: RichTextCellProps) {
       ref.current?.blur()
     } else if (e.key === 'Escape') {
       e.preventDefault()
-      // Restore original text in DOM and cancel — don't commit
+      // Restore original DOM and cancel — don't commit
       cancelling.current = true
-      if (ref.current) ref.current.textContent = getPlainText(text)
+      if (ref.current) {
+        // Re-render AstView content by resetting text; the keyed parent will remount anyway
+        // but we restore immediately for visual cancellation before blur
+        ref.current.textContent = getPlainText(text)
+      }
       ref.current?.blur()
       onCancel?.()
     }
@@ -68,16 +82,22 @@ export function RichTextCell({ text, onCommit, onCancel }: RichTextCellProps) {
   }
 
   return (
-    <div
-      ref={ref}
-      contentEditable
-      suppressContentEditableWarning
-      onBlur={commit}
-      onKeyDown={handleKeyDown}
-      onPaste={handlePaste}
-      style={{ outline: 'none' }}
-    >
-      <AstView value={text} />
-    </div>
+    <>
+      <div
+        ref={ref}
+        contentEditable
+        suppressContentEditableWarning
+        onFocus={() => setFocused(true)}
+        onBlur={commit}
+        onKeyDown={handleKeyDown}
+        onPaste={handlePaste}
+        data-placeholder={isEmpty ? placeholder : undefined}
+        className={`edit-cell ${isEmpty ? 'is-empty' : ''}`}
+        style={{ outline: 'none' }}
+      >
+        <AstView value={text} />
+      </div>
+      {focused && <FloatingToolbar targetRef={ref} />}
+    </>
   )
 }

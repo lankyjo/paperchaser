@@ -137,3 +137,33 @@ body {
     @apply font-sans;
   }
 }
+
+/* Editing chrome (04-03): placeholder + hover/focus rings — screen only, never in print */
+@layer utilities {
+  [data-placeholder]:empty::before {
+    content: attr(data-placeholder);
+    color: var(--muted-foreground);
+    font-style: italic;
+    pointer-events: none;
+  }
+  /* Hover outline: 1px --ring, focus ring: 2px --primary + 2px white gap — applied via RichTextCell's wrapper when editable */
+  .edit-cell:hover {
+    outline: 1px solid var(--ring);
+    outline-offset: 1px;
+  }
+  .edit-cell:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px white;
+  }
+  @media print {
+    [data-placeholder]:empty::before {
+      content: none;
+    }
+    .edit-cell:hover,
+    .edit-cell:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+}

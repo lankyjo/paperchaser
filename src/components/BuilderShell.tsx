@@ -125,6 +125,9 @@ function BuilderShellInner({
     commit({ ...model, customer: { ...model.customer, name } })
   }
 
+  // Generic rich-text commit from DocumentPage (04-03: all cells route through here)
+  const handleCommit = (next: DocumentModel) => commit(next)
+
   const saveIndicator = () => {
     switch (saveState) {
       case 'saving':
@@ -225,6 +228,7 @@ function BuilderShellInner({
               pageSize={currentPageSize}
               editable={editable}
               onCustomerNameCommit={editable ? handleCustomerNameCommit : undefined}
+              onCommit={editable ? handleCommit : undefined}
             />
           </div>
         </div>

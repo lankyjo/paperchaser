@@ -101,6 +101,7 @@ export function DocumentPage({
   pageSize,
   editable = false,
   onCustomerNameCommit,
+  onCommit,
 }: {
   model: DocumentModel
   template?: TemplateId
@@ -108,6 +109,7 @@ export function DocumentPage({
   pageSize?: PageSize
   editable?: boolean
   onCustomerNameCommit?: (name: RichTextDoc) => void
+  onCommit?: (next: DocumentModel) => void
 }) {
   // D-08/D-09: a missing template resolves to Minimal here; the resolver and
   // registry stay the single seam for template defaults.
@@ -121,8 +123,22 @@ export function DocumentPage({
 
   // D-30: block visibility — absent settings → show all (default visible).
   const bv = model.settings?.blockVisibility ?? {}
-  // Z-ponytail: single-text AST wrap for plain string commits
-  const wrapPlain = (text: string): RichTextDoc => [{ type: 'paragraph', content: [{ type: 'text', text }] }]
+
+  // Helpers for rich-text commits — each creates a new model with the field replaced.
+  // Legacy onCustomerNameCommit kept for 04-02 compatibility; onCommit is the generic path for 04-03+.
+  const handleCustomerNameCommit = (next: RichTextDoc) => {
+    if (onCustomerNameCommit) onCustomerNameCommit(next)
+    else onCommit?.({ ...model, customer: { ...model.customer, name: next } })
+  }
+  const handleCustomerAddressCommit = (idx: number, next: RichTextDoc) => {
+    const addr = [...model.customer.address]
+    addr[idx] = next
+    onCommit?.({ ...model, customer: { ...model.customer, address: addr } })
+  }
+  const handleLineTitleCommit = (id: string, next: RichTextDoc) =>
+    onCommit?.({ ...model, lineItems: model.lineItems.map((li) => (li.id === id ? { ...li, title: next } : li)) })
+  const handleLineDescCommit = (id: string, next: RichTextDoc) =>
+    onCommit?.({ ...model, lineItems: model.lineItems.map((li) => (li.id === id ? { ...li, description: next } : li)) })
 
   // BRND-06 (edges 11/12/13): three-way watermark resolve. The branding
   // override wins when set ('draft' → DRAFT, 'paid' → PAID regardless of
@@ -159,21 +175,29 @@ export function DocumentPage({
       {bv.billTo !== false && (
         <section style={{ marginBottom: 'var(--tpl-section-gap)' }}>
           <h3 style={{ margin: '0 0 4px' }}>Bill to</h3>
-          {editable && onCustomerNameCommit ? (
-            // D-01/D-11: contentEditable on the SAME cell the view renders,
-            // keyed by field so caret survives re-render after commit (D-10).
-            <RichTextCell
-              key={getPlainText(model.customer.name)}
-              text={model.customer.name}
-              onCommit={(plain) => onCustomerNameCommit(wrapPlain(plain))}
-            />
+          {editable ? (
+            <>
+              <RichTextCell
+                key={`customer-name-${getPlainText(model.customer.name)}`}
+                text={model.customer.name}
+                onCommit={handleCustomerNameCommit}
+              />
+              {model.customer.address.map((line, idx) => (
+                <RichTextCell
+                  key={`customer-addr-${idx}-${getPlainText(line)}`}
+                  text={line}
+                  onCommit={(next) => handleCustomerAddressCommit(idx, next)}
+                />
+              ))}
+            </>
           ) : (
-            // View mode: identical to pre-editor rendering (golden-preserving).
-            <div>{getPlainText(model.customer.name)}</div>
+            <>
+              <div>{getPlainText(model.customer.name)}</div>
+              {model.customer.address.map((line) => (
+                <div key={getPlainText(line)}>{getPlainText(line)}</div>
+              ))}
+            </>
           )}
-          {model.customer.address.map((line) => (
-            <div key={getPlainText(line)}>{getPlainText(line)}</div>
-          ))}
         </section>
       )}
 
@@ -192,8 +216,28 @@ export function DocumentPage({
             {model.lineItems.map((item, index) => {
               return (
                 <tr key={item.id} style={row}>
-                  <td style={{ padding: '6px 0', verticalAlign: 'top' }}>{getPlainText(item.title)}</td>
-                  <td style={{ padding: '6px 0', verticalAlign: 'top' }}>{getPlainText(item.description)}</td>
+                  <td style={{ padding: '6px 0', verticalAlign: 'top' }}>
+                    {editable && onCommit ? (
+                      <RichTextCell
+                        key={`title-${item.id}-${getPlainText(item.title)}`}
+                        text={item.title}
+                        onCommit={(next) => handleLineTitleCommit(item.id, next)}
+                      />
+                    ) : (
+                      getPlainText(item.title)
+                    )}
+                  </td>
+                  <td style={{ padding: '6px 0', verticalAlign: 'top' }}>
+                    {editable && onCommit ? (
+                      <RichTextCell
+                        key={`desc-${item.id}-${getPlainText(item.description)}`}
+                        text={item.description}
+                        onCommit={(next) => handleLineDescCommit(item.id, next)}
+                      />
+                    ) : (
+                      getPlainText(item.description)
+                    )}
+                  </td>
                   <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>{item.quantity}</td>
                   <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
                     {formatMinor(item.unitPriceMinor)}
