@@ -63,7 +63,8 @@ function BuilderShellInner({
   pageSize?: PageSize
   editable?: boolean
 }) {
-  const { model, commit, undo, redo, saveState, retrySave, handleKeyDown } = useHistory(initialModel)
+  const { model, commit, undo, redo, saveState, retrySave, canUndo, canRedo, handleKeyDown } =
+    useHistory(initialModel)
 
   const [currentTemplate, setCurrentTemplate] = useState<TemplateId | undefined>(
     initialTemplate ?? model.template,
@@ -77,8 +78,8 @@ function BuilderShellInner({
   const [selectedBlockId, setSelectedBlockId] = useState<BlockId | null>(null)
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null)
 
-  const pastEmpty = true // ponytail: history refs aren't exposed from useHistory yet — buttons always enabled for now
-  const futureEmpty = true
+  const pastEmpty = !canUndo
+  const futureEmpty = !canRedo
 
   // Template change routes through commit (D-13: all model changes undoable)
   const handleTemplateChange = (template: TemplateId) => {

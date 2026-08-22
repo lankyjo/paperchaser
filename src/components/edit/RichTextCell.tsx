@@ -1,6 +1,7 @@
 import { useRef, type KeyboardEvent } from 'react'
 import type { RichTextDoc } from '../../document/richtext'
 import { AstView } from './AstView'
+import { getPlainText } from '../../document/richtext'
 
 /**
  * Uncontrolled contentEditable cell — plain text ONLY in the tracer
@@ -24,11 +25,17 @@ interface RichTextCellProps {
 
 export function RichTextCell({ text, onCommit, onCancel }: RichTextCellProps) {
   const ref = useRef<HTMLDivElement>(null)
+  const cancelling = useRef(false)
 
   const commit = () => {
+    if (cancelling.current) {
+      cancelling.current = false
+      return
+    }
     if (ref.current) {
       const plain = ref.current.textContent ?? ''
-      onCommit(plain)
+      // Skip no-op commits (history push would be wasted)
+      if (plain !== getPlainText(text)) onCommit(plain)
     }
   }
 
@@ -36,8 +43,14 @@ export function RichTextCell({ text, onCommit, onCancel }: RichTextCellProps) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       commit()
+      // Blur to exit edit chrome after Enter commit (D-10)
+      ref.current?.blur()
     } else if (e.key === 'Escape') {
       e.preventDefault()
+      // Restore original text in DOM and cancel — don't commit
+      cancelling.current = true
+      if (ref.current) ref.current.textContent = getPlainText(text)
+      ref.current?.blur()
       onCancel?.()
     }
   }

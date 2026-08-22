@@ -27,6 +27,8 @@ interface UseHistory {
   redo: () => void
   saveState: SaveState
   retrySave: () => void
+  canUndo: boolean
+  canRedo: boolean
   /** Call from builder-root onKeyDown for Ctrl+Z / Ctrl+Shift+Z. */
   handleKeyDown: (e: KeyboardEvent) => void
 }
@@ -38,8 +40,10 @@ export function useHistory(initial: DocumentModel): UseHistory {
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const modelRef = useRef<DocumentModel>(initial)
   const [saveState, setSaveState] = useState<SaveState>('saved')
+  const [version, setVersion] = useState(0)
 
   // Keep modelRef in sync so the debounced closure always sees the latest.
+  // eslint-disable-next-line react-hooks/refs -- sync ref during render without effect (house rule: no useEffect)
   modelRef.current = model
 
   const scheduleSave = (next: DocumentModel) => {
@@ -60,6 +64,7 @@ export function useHistory(initial: DocumentModel): UseHistory {
     past.current = [...past.current.slice(-49), modelRef.current]
     future.current = []
     setModel(next)
+    setVersion((v) => v + 1)
     scheduleSave(next)
   }
 
@@ -68,6 +73,7 @@ export function useHistory(initial: DocumentModel): UseHistory {
     if (!prev) return
     future.current.push(modelRef.current)
     setModel(prev)
+    setVersion((v) => v + 1)
     scheduleSave(prev)
   }
 
@@ -76,6 +82,7 @@ export function useHistory(initial: DocumentModel): UseHistory {
     if (!next) return
     past.current.push(modelRef.current)
     setModel(next)
+    setVersion((v) => v + 1)
     scheduleSave(next)
   }
 
@@ -98,5 +105,10 @@ export function useHistory(initial: DocumentModel): UseHistory {
     }
   }
 
-  return { model, commit, undo, redo, saveState, retrySave, handleKeyDown }
+  // Derive undo/redo availability from refs + version tick (refs alone don't trigger renders)
+  void version
+  const canUndo = past.current.length > 0
+  const canRedo = future.current.length > 0
+
+  return { model, commit, undo, redo, saveState, retrySave, canUndo, canRedo, handleKeyDown }
 }
