@@ -134,7 +134,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 04-03-PLAN.md — Rich-text formatting (B/I/U/list/link), floating toolbar, DOM→AST serializer, paste-strip policy, editing chrome (selection rings, hover outlines, empty-cell placeholders)
+- [x] 04-03-PLAN.md — Rich-text formatting (B/I/U/list/link), floating toolbar, DOM→AST serializer, paste-strip policy, editing chrome (selection rings, hover outlines, empty-cell placeholders)
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
