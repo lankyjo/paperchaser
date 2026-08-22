@@ -121,7 +121,7 @@ Plans:
   4. User can zoom the canvas (BUIL-09).
   5. On mobile, the builder uses bottom sheets, drawers, and a sticky live preview, and the same editing actions work with touch (BUIL-02).
 
-**Plans**: 1/5 plans executed
+**Plans**: 2/5 plans executed
 **UI hint**: yes
 Plans:
 **Wave 1**
@@ -130,7 +130,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 04-02-PLAN.md — [Tracer] One inline text edit end-to-end: contentEditable cell on customer name, three-pane builder shell, model-snapshot history + debounced auto-save, save indicator, parity extension
+- [x] 04-02-PLAN.md — [Tracer] One inline text edit end-to-end: contentEditable cell on customer name, three-pane builder shell, model-snapshot history + debounced auto-save, save indicator, parity extension
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -184,6 +184,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Foundation Spike | 3/3 | Complete    | 2026-08-07 |
 | 2. Domain Core & Persistence | 4/4 | Complete    | 2026-08-08 |
 | 3. Render Pipeline | 5/5 | Complete    | 2026-08-09 |
-| 4. Editing UX | 1/5 | In Progress|  |
+| 4. Editing UX | 2/5 | In Progress|  |
 | 5. Reference Data UX | 0/TBD | Not started | - |
 | 6. Validation, Delivery & Polish | 0/TBD | Not started | - |
