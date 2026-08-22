@@ -121,7 +121,7 @@ Plans:
   4. User can zoom the canvas (BUIL-09).
   5. On mobile, the builder uses bottom sheets, drawers, and a sticky live preview, and the same editing actions work with touch (BUIL-02).
 
-**Plans**: 2/5 plans executed
+**Plans**: 5/5 plans executed
 **UI hint**: yes
 Plans:
 **Wave 1**
@@ -138,11 +138,11 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 04-04-PLAN.md — Numeric cells (filtered contentEditable + minor-unit conversion), @dnd-kit line-item reorder, duplicate/delete with confirm, outline pane, properties pane, line-item image field
+- [x] 04-04-PLAN.md — Numeric cells (filtered contentEditable + minor-unit conversion), @dnd-kit line-item reorder, duplicate/delete with confirm, outline pane, properties pane, line-item image field
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
-- [ ] 04-05-PLAN.md — Canvas zoom (CSS transform, desktop-only), mobile builder (<1024px stacked layout, sticky preview, Base UI Dialog bottom sheet), touch up/down reorder, 04-MOBILE-SPEC.md artifact
+- [x] 04-05-PLAN.md — Canvas zoom (CSS transform, desktop-only), mobile builder (<1024px stacked layout, sticky preview, Base UI Dialog bottom sheet), touch up/down reorder, 04-MOBILE-SPEC.md artifact
 
 ### Phase 5: Reference Data UX
 
@@ -184,6 +184,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Foundation Spike | 3/3 | Complete    | 2026-08-07 |
 | 2. Domain Core & Persistence | 4/4 | Complete    | 2026-08-08 |
 | 3. Render Pipeline | 5/5 | Complete    | 2026-08-09 |
-| 4. Editing UX | 2/5 | In Progress|  |
+| 4. Editing UX | 5/5 | In Progress|  |
 | 5. Reference Data UX | 0/TBD | Not started | - |
 | 6. Validation, Delivery & Polish | 0/TBD | Not started | - |

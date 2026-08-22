@@ -18,15 +18,15 @@ Requirements for initial release. Each maps to roadmap phases. Scope sourced fro
 
 ### Document Builder
 
-- [ ] **BUIL-01**: Desktop builder has three panes: left (sections/outline/layers), center (live canvas), right (element properties, styling, document settings)
-- [ ] **BUIL-02**: Mobile builder uses bottom sheets, drawers, full-screen editors, and sticky live preview
+- [x] **BUIL-01**: Desktop builder has three panes: left (sections/outline/layers), center (live canvas), right (element properties, styling, document settings)
+- [x] **BUIL-02**: Mobile builder uses bottom sheets, drawers, full-screen editors, and sticky live preview
 - [x] **BUIL-03**: User can edit the document live on the canvas (WYSIWYG)
-- [ ] **BUIL-04**: User can reorder sections by drag-and-drop
-- [ ] **BUIL-05**: User can reorder line items by drag-and-drop
+- [x] **BUIL-04**: User can reorder sections by drag-and-drop
+- [x] **BUIL-05**: User can reorder line items by drag-and-drop
 - [x] **BUIL-06**: User can edit content inline without leaving the canvas
-- [ ] **BUIL-07**: User can undo and redo edits
-- [ ] **BUIL-08**: Document auto-saves as the user works
-- [ ] **BUIL-09**: User can zoom the canvas
+- [x] **BUIL-07**: User can undo and redo edits
+- [x] **BUIL-08**: Document auto-saves as the user works
+- [x] **BUIL-09**: User can zoom the canvas
 - [x] **BUIL-10**: User can open print preview from the builder
 
 ### Templates
@@ -56,7 +56,7 @@ Requirements for initial release. Each maps to roadmap phases. Scope sourced fro
 ### Line Items & Totals
 
 - [x] **LINE-01**: Line item supports title, description, quantity, unit price, discount, tax, optional image
-- [ ] **LINE-02**: User can duplicate, delete, reorder, and collapse line items
+- [x] **LINE-02**: User can duplicate, delete, reorder, and collapse line items
 - [x] **LINE-03**: Totals (subtotal, tax, shipping, fees, discount, grand total) are computed correctly and never go out of sync
 
 ### Branding
@@ -157,15 +157,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DASH-04 | Phase 6 | Pending |
 | DASH-05 | Phase 6 | Pending |
 | DASH-06 | Phase 6 | Pending |
-| BUIL-01 | Phase 4 | Pending |
-| BUIL-02 | Phase 4 | Pending |
+| BUIL-01 | Phase 4 | Complete |
+| BUIL-02 | Phase 4 | Complete |
 | BUIL-03 | Phase 4 | Complete |
-| BUIL-04 | Phase 4 | Pending |
-| BUIL-05 | Phase 4 | Pending |
+| BUIL-04 | Phase 4 | Complete |
+| BUIL-05 | Phase 4 | Complete |
 | BUIL-06 | Phase 4 | Complete |
-| BUIL-07 | Phase 4 | Pending |
-| BUIL-08 | Phase 4 | Pending |
-| BUIL-09 | Phase 4 | Pending |
+| BUIL-07 | Phase 4 | Complete |
+| BUIL-08 | Phase 4 | Complete |
+| BUIL-09 | Phase 4 | Complete |
 | BUIL-10 | Phase 3 | Complete |
 | TEMP-01 | Phase 3 | Complete |
 | TEMP-02 | Phase 3 | Complete |
@@ -180,7 +180,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CATL-02 | Phase 5 | Pending |
 | CATL-03 | Phase 5 | Pending |
 | LINE-01 | Phase 4 | Complete |
-| LINE-02 | Phase 4 | Pending |
+| LINE-02 | Phase 4 | Complete |
 | LINE-03 | Phase 2 | Complete |
 | BRND-01 | Phase 3 | Complete |
 | BRND-02 | Phase 3 | Complete |
