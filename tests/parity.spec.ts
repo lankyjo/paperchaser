@@ -489,3 +489,50 @@ test('fixture: print-preview dialog slices match the PDF pages (minimal, BUIL-10
     }
   }
 })
+
+/** D-11: edit-mode #print-root DOM matches view-mode goldens (unfocused — no caret, no chrome). */
+test('fixture: edit-mode preview matches committed golden (all 7 templates, D-11)', async ({ page }) => {
+  for (const template of TEMPLATES) {
+    await page.goto(`/?fixture=${FIXTURE}&template=${template}`)
+    await page.waitForSelector('#print-root')
+    await page.evaluate(() => document.fonts.ready)
+
+    // Blur any focused element to remove caret/focus ring before capture.
+    await page.evaluate(() => {
+      if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
+    })
+
+    const preview = normalize(
+      PNG.sync.read(await page.locator('#print-root').screenshot()),
+      A4_WIDTH_PX,
+    )
+
+    // Compare against the committed golden — must be pixel-identical
+    // (single-paragraph AST wrapper is visually lossless).
+    const goldenPath = goldenPathFor(template)
+    if (!fs.existsSync(goldenPath)) {
+      test.skip(true, `golden ${goldenPath} not committed yet — run UPDATE_BASELINES=1 after calibration`)
+      return
+    }
+    const golden = PNG.sync.read(fs.readFileSync(goldenPath))
+
+    const h = Math.min(preview.height, golden.height)
+    const { fraction, diff } = diffFraction(cropY(preview, 0, h), cropY(golden, 0, h), DIFF_THRESHOLD)
+    if (fraction >= BASELINE_MAX_FRACTION) {
+      writeArtifacts(`edit-mode-drift-${template}`, preview, golden, diff)
+    }
+    expect(fraction, `${template} edit-mode preview vs committed golden`).toBeLessThan(BASELINE_MAX_FRACTION)
+  }
+})
+
+/** D-11: print projection has no editing artifacts (no contentEditable, no chrome). */
+test('fixture: print projection has no editing artifacts (D-11)', async ({ page }) => {
+  await page.goto(`/?fixture=${FIXTURE}`)
+  await page.waitForSelector('#print-root')
+  await page.evaluate(() => document.fonts.ready)
+  await page.emulateMedia({ media: 'print' })
+
+  // Structural assertion: no [contenteditable] elements in print media.
+  const editableCount = await page.locator('#print-root [contenteditable]').count()
+  expect(editableCount, 'print projection must have zero contentEditable elements').toBe(0)
+})

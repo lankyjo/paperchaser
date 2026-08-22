@@ -5,8 +5,10 @@ import { PAGE_SIZES } from '../document/tokens'
 import type { ResolvedTokens } from '../document/tokens'
 import type { FooterStyle, HeaderStyle } from '../document/tokens'
 import type { Branding, DocumentModel, PageSize, TemplateId } from '../document/types'
+import type { RichTextDoc } from '../document/richtext'
 import { resolveTokens, toCssVars } from '../document/resolveTokens'
 import { getPlainText } from '../document/richtext'
+import { RichTextCell } from './edit/RichTextCell'
 import { FooterDetailed } from './print/FooterDetailed'
 import { FooterMinimal } from './print/FooterMinimal'
 import { FooterStandard } from './print/FooterStandard'
@@ -97,11 +99,15 @@ export function DocumentPage({
   template,
   branding,
   pageSize,
+  editable = false,
+  onCustomerNameCommit,
 }: {
   model: DocumentModel
   template?: TemplateId
   branding?: Partial<Branding>
   pageSize?: PageSize
+  editable?: boolean
+  onCustomerNameCommit?: (name: RichTextDoc) => void
 }) {
   // D-08/D-09: a missing template resolves to Minimal here; the resolver and
   // registry stay the single seam for template defaults.
@@ -112,6 +118,11 @@ export function DocumentPage({
   // BRND-05: preset selection by the resolved style token (never template id).
   const HeaderPreset = headerPresets[resolved.header.style]
   const FooterPreset = footerPresets[resolved.footer.style]
+
+  // D-30: block visibility — absent settings → show all (default visible).
+  const bv = model.settings?.blockVisibility ?? {}
+  // Z-ponytail: single-text AST wrap for plain string commits
+  const wrapPlain = (text: string): RichTextDoc => [{ type: 'paragraph', content: [{ type: 'text', text }] }]
 
   // BRND-06 (edges 11/12/13): three-way watermark resolve. The branding
   // override wins when set ('draft' → DRAFT, 'paid' → PAID regardless of
@@ -143,61 +154,78 @@ export function DocumentPage({
         </div>
       )}
 
-      <HeaderPreset tokens={resolved} model={model} />
+      {bv.header !== false && <HeaderPreset tokens={resolved} model={model} />}
 
-      <section style={{ marginBottom: 'var(--tpl-section-gap)' }}>
-        <h3 style={{ margin: '0 0 4px' }}>Bill to</h3>
-        <div>{getPlainText(model.customer.name)}</div>
-        {model.customer.address.map((line) => (
-          <div key={getPlainText(line)}>{getPlainText(line)}</div>
-        ))}
-      </section>
+      {bv.billTo !== false && (
+        <section style={{ marginBottom: 'var(--tpl-section-gap)' }}>
+          <h3 style={{ margin: '0 0 4px' }}>Bill to</h3>
+          {editable && onCustomerNameCommit ? (
+            // D-01/D-11: contentEditable on the SAME cell the view renders,
+            // keyed by field so caret survives re-render after commit (D-10).
+            <RichTextCell
+              key={getPlainText(model.customer.name)}
+              text={model.customer.name}
+              onCommit={(plain) => onCustomerNameCommit(wrapPlain(plain))}
+            />
+          ) : (
+            // View mode: identical to pre-editor rendering (golden-preserving).
+            <div>{getPlainText(model.customer.name)}</div>
+          )}
+          {model.customer.address.map((line) => (
+            <div key={getPlainText(line)}>{getPlainText(line)}</div>
+          ))}
+        </section>
+      )}
 
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 'var(--tpl-section-gap)' }}>
-        <thead>
-          <tr style={row}>
-            <th style={{ textAlign: 'left', padding: '6px 0' }}>Item</th>
-            <th style={{ textAlign: 'left', padding: '6px 0' }}>Description</th>
-            <th style={{ textAlign: 'right', padding: '6px 0' }}>Qty</th>
-            <th style={{ textAlign: 'right', padding: '6px 0' }}>Unit price</th>
-            <th style={{ textAlign: 'right', padding: '6px 0' }}>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {model.lineItems.map((item, index) => {
-            return (
-              <tr key={item.id} style={row}>
-                <td style={{ padding: '6px 0', verticalAlign: 'top' }}>{getPlainText(item.title)}</td>
-                <td style={{ padding: '6px 0', verticalAlign: 'top' }}>{getPlainText(item.description)}</td>
-                <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>{item.quantity}</td>
-                <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
-                  {formatMinor(item.unitPriceMinor)}
-                </td>
-                <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
-                  {formatMinor(totals.lineNets[index])}
-                </td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+      {bv.items !== false && (
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 'var(--tpl-section-gap)' }}>
+          <thead>
+            <tr style={row}>
+              <th style={{ textAlign: 'left', padding: '6px 0' }}>Item</th>
+              <th style={{ textAlign: 'left', padding: '6px 0' }}>Description</th>
+              <th style={{ textAlign: 'right', padding: '6px 0' }}>Qty</th>
+              <th style={{ textAlign: 'right', padding: '6px 0' }}>Unit price</th>
+              <th style={{ textAlign: 'right', padding: '6px 0' }}>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {model.lineItems.map((item, index) => {
+              return (
+                <tr key={item.id} style={row}>
+                  <td style={{ padding: '6px 0', verticalAlign: 'top' }}>{getPlainText(item.title)}</td>
+                  <td style={{ padding: '6px 0', verticalAlign: 'top' }}>{getPlainText(item.description)}</td>
+                  <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>{item.quantity}</td>
+                  <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
+                    {formatMinor(item.unitPriceMinor)}
+                  </td>
+                  <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
+                    {formatMinor(totals.lineNets[index])}
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      )}
 
-      <section style={{ maxWidth: '90mm', marginLeft: 'auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span>Subtotal</span>
-          <span>{formatMinor(totals.subtotalMinor)}</span>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span>Tax</span>
-          <span>{formatMinor(totals.taxMinor)}</span>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, marginTop: '4px' }}>
-          <span>Grand total</span>
-          <span>{formatMinor(totals.grandTotalMinor)}</span>
-        </div>
-      </section>
+      {bv.totals !== false && (
+        <section style={{ maxWidth: '90mm', marginLeft: 'auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span>Subtotal</span>
+            <span>{formatMinor(totals.subtotalMinor)}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span>Tax</span>
+            <span>{formatMinor(totals.taxMinor)}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, marginTop: '4px' }}>
+            <span>Grand total</span>
+            <span>{formatMinor(totals.grandTotalMinor)}</span>
+          </div>
+        </section>
+      )}
 
-      <FooterPreset tokens={resolved} model={model} />
+      {bv.footer !== false && <FooterPreset tokens={resolved} model={model} />}
     </div>
   )
 }

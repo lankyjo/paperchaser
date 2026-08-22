@@ -1,4 +1,4 @@
-import { RenderBench } from '../components/RenderBench'
+import { BuilderShell } from '../components/BuilderShell'
 import { FIXTURE_MAP } from '../document/fixtures'
 import { PAGE_SIZES, TEMPLATE_REGISTRY } from '../document/tokens'
 import type { PageSize, TemplateId } from '../document/types'
@@ -34,6 +34,6 @@ export function IndexPage() {
     rawSize !== null && SIZE_KEYS.has(rawSize) ? (rawSize as PageSize) : undefined
 
   return (
-    <RenderBench model={key !== null ? FIXTURE_MAP[key] : undefined} template={template} pageSize={pageSize} />
+    <BuilderShell model={key !== null ? FIXTURE_MAP[key] : undefined} template={template} pageSize={pageSize} />
   )
 }
