@@ -8,6 +8,7 @@ import type { Branding, DocumentModel, PageSize, TemplateId } from '../document/
 import type { RichTextDoc } from '../document/richtext'
 import { resolveTokens, toCssVars } from '../document/resolveTokens'
 import { getPlainText } from '../document/richtext'
+import { NumericCell } from './edit/NumericCell'
 import { RichTextCell } from './edit/RichTextCell'
 import { FooterDetailed } from './print/FooterDetailed'
 import { FooterMinimal } from './print/FooterMinimal'
@@ -139,6 +140,10 @@ export function DocumentPage({
     onCommit?.({ ...model, lineItems: model.lineItems.map((li) => (li.id === id ? { ...li, title: next } : li)) })
   const handleLineDescCommit = (id: string, next: RichTextDoc) =>
     onCommit?.({ ...model, lineItems: model.lineItems.map((li) => (li.id === id ? { ...li, description: next } : li)) })
+  const handleQuantityCommit = (id: string, quantity: number) =>
+    onCommit?.({ ...model, lineItems: model.lineItems.map((li) => (li.id === id ? { ...li, quantity } : li)) })
+  const handleUnitPriceCommit = (id: string, valueMinor: number) =>
+    onCommit?.({ ...model, lineItems: model.lineItems.map((li) => (li.id === id ? { ...li, unitPriceMinor: valueMinor } : li)) })
 
   // BRND-06 (edges 11/12/13): three-way watermark resolve. The branding
   // override wins when set ('draft' → DRAFT, 'paid' → PAID regardless of
@@ -226,6 +231,13 @@ export function DocumentPage({
                     ) : (
                       getPlainText(item.title)
                     )}
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        alt=""
+                        style={{ marginTop: 4, maxHeight: 60, maxWidth: 80, objectFit: 'contain', display: 'block' }}
+                      />
+                    ) : null}
                   </td>
                   <td style={{ padding: '6px 0', verticalAlign: 'top' }}>
                     {editable && onCommit ? (
@@ -238,9 +250,19 @@ export function DocumentPage({
                       getPlainText(item.description)
                     )}
                   </td>
-                  <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>{item.quantity}</td>
                   <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
-                    {formatMinor(item.unitPriceMinor)}
+                    {editable && onCommit ? (
+                      <NumericCell quantity={item.quantity} currency={model.currency} onCommit={(q) => handleQuantityCommit(item.id, q)} />
+                    ) : (
+                      item.quantity
+                    )}
+                  </td>
+                  <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
+                    {editable && onCommit ? (
+                      <NumericCell valueMinor={item.unitPriceMinor} currency={model.currency} onCommit={(v) => handleUnitPriceCommit(item.id, v)} />
+                    ) : (
+                      formatMinor(item.unitPriceMinor)
+                    )}
                   </td>
                   <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
                     {formatMinor(totals.lineNets[index])}
