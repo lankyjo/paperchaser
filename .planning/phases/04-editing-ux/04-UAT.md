@@ -321,7 +321,7 @@ blocked: 0
   resolved_at: 2026-08-24
 - gap_id: G-04-14
   truth: "App shows clear editing state so user knows when they are editing (not constantly ambiguous)"
-  status: failed
+  status: resolved
   reason: "User reported: no editing state?? it is just constantly in editing"
   severity: major
   test: 33
@@ -334,9 +334,11 @@ blocked: 0
   missing:
     - "Make editing state explicit: persistent subtle paper outline or background tint when editable, plus stronger header badge visible on all breakpoints, and optional view toggle (ponytail: badge is minimal, full toggle add when requested)"
   debug_session: ".planning/debug/04-editing-state.md"
+  resolved_by: "04-08-PLAN.md"
+  resolved_at: 2026-08-24
 - gap_id: G-04-15
   truth: "Highlighting text shows floating toolbar 32px above the highlighted element, centered, not below or offset"
-  status: failed
+  status: resolved
   reason: "User reported: t text formatting bar still not on top of highlighted element — screenshot shows toolbar below Coffee line, not above"
   severity: major
   test: 34
@@ -350,9 +352,11 @@ blocked: 0
     - "Increase flip buffer to consider header height (48px) and ensure above placement is preferred when rect.top > toolbarH + 24; only flip if actually clipped by viewport top"
     - "Add 2px arrow or shadow anchor to make above/below unambiguous"
   debug_session: ".planning/debug/04-toolbar-top.md"
+  resolved_by: "04-08-PLAN.md"
+  resolved_at: 2026-08-24
 - gap_id: G-04-16
   truth: "On mobile (<1024px), formatting tools are discoverable when text is selected/focused"
-  status: failed
+  status: resolved
   reason: "User reported: still no tool bar for mobile, i dont know what i need to click to display tools. can we have like a mobile footer or domething. (optional)"
   severity: major
   test: 35
@@ -366,6 +370,8 @@ blocked: 0
     - "Add mobile footer bar (sticky bottom, safe-area inset, 44px touch targets) that appears when any RichTextCell focused on <1024px, shows B/I/U/list/link + Done, syncs with execCommand state"
     - "Keep floating toolbar as desktop, footer as mobile fallback (ponytail: footer is minimal 5 buttons, hide when not focused)"
   debug_session: ".planning/debug/04-mobile-toolbar.md"
+  resolved_by: "04-08-PLAN.md"
+  resolved_at: 2026-08-24
 
 ## Deferred Follow-Ups
 
