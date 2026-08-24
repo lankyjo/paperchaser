@@ -1,0 +1,267 @@
+---
+status: complete
+phase: 04-editing-ux
+source: ["04-01-SUMMARY.md", "04-02-SUMMARY.md", "04-03-SUMMARY.md", "04-04-SUMMARY.md", "04-05-SUMMARY.md"]
+started: 2026-08-22T21:15:00Z
+updated: 2026-08-22T21:22:00Z
+---
+
+## Current Test
+
+[testing complete]
+
+## Tests
+
+### 1. Confirm automated coverage — rich-text AST & migration (04-01)
+expected: |
+  6 deliverables auto-verified:
+  - Rich-text AST schemas validated (src/document/__tests__/richtext.test.ts)
+  - Text fields union + lineItem.image + blockVisibility (src/document/__tests__/io.test.ts + typecheck)
+  - migrateV2ToV3 idempotent (migrate.test.ts)
+  - Dexie v3 upgrade (tests/persistence.spec.ts)
+  - Envelope v2 bump (io.test.ts)
+  - Fixtures regenerated (build/parity)
+  Confirm no visible regression; reply "yes" to pass.
+result: pass
+
+### 2. Undo and redo via keyboard
+expected: |
+  Open the builder (demo doc). Edit customer name on canvas (type, blur to commit). Press Ctrl+Z (or Cmd+Z) — edit reverts. Press Ctrl+Shift+Z or Ctrl+Y — edit reapplies. Undo/redo buttons in header also toggle disabled state (opacity 30% when no history). History is bounded and covers template/branding changes too.
+result: pass
+
+### 3. Auto-save indicator
+expected: |
+  After any commit (text blur, numeric blur, reorder, duplicate/delete), watch header: shows "Saving…" briefly (~800ms) then "Saved". If you block IndexedDB or force failure, it shows "Not saved — retry" without discarding your in-memory edit; clicking retry attempts save again.
+result: pass
+
+### 4. Three-pane builder layout (desktop ≥1024px)
+expected: |
+  At ≥1024px width: left outline (240-320px) shows 5 virtual blocks + line items, center canvas shows DocumentPage with shadow, right properties shows TemplateGallery/BrandingPanel/page-size. At 1280px the 210mm A4 page fits without horizontal scroll. Print preview dialog still opens and shows paginated pages.
+result: pass
+
+### 5. Outline pane — select, visibility, collapse
+expected: |
+  In left outline: click a block (Header/Bill to/etc.) — canvas scrolls toward that section and block highlights (bg-primary/10). Click eye toggle — section hides on canvas and stays hidden after reload (persisted via settings.blockVisibility). On Items, click a line item — selects it (highlight) and shows collapsed description toggle; collapse is UI-only and does not persist across reload.
+result: pass
+
+### 6. Floating toolbar — select text shows Bold/Italic/Underline/List/Link
+expected: |
+  On any text cell (customer name, address, title, description): select a word → floating toolbar appears 32px above selection (flips below if near top, clamped 16px), shows B I U •_list 🔗 buttons. Active format shows accent color. No toolbar appears when no selection. Toolbar is not rendered inside #print-root.
+result: issue
+reported: "toolbar does not appear on the top of the selected text"
+severity: major
+
+### 7. Rich-text formatting — Bold/Italic/Underline/List/Link round-trip
+expected: |
+  Select text, click B / I / U — formatting toggles and persists after blur→re-enter→blur (domToAst → AstView round-trip). Click list button — selection wraps in bulleted list (•). Click link, enter URL in prompt — link created; unsupported href (javascript:) is rejected. Paste rich HTML (copy from a website) — only plain text is inserted, no tags survive.
+result: issue
+reported: "i clicked on list after highlighting, Something went wrong! Hide Error Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node. broke the app. same thing when i added the link. both happened on blur. infact all toolbar actions break on blur"
+severity: blocker
+
+### 8. All text cells editable inline
+expected: |
+  Every text cell on canvas is editable in place: customer name, each address line, each line-item title and description. Click to focus, type, press Enter to commit (blurs), press Escape to cancel (restores prior value, no history entry). Cells are keyed by field so caret does not jump on unrelated re-render.
+result: pass
+reported: "this passed but quite difficult to know app is in edit."
+severity: minor
+
+### 9. Editing chrome — hover/focus/placeholder
+expected: |
+  Hover an editable cell — 1px ring (--ring) outline appears. Focus — 2px --primary ring + 4px white gap. Empty cell shows "Type here" placeholder (centered, muted) that disappears on focus and never appears in print/PDF. No caret, outline, or placeholder appears in print preview or when printing.
+result: pass
+
+### 10. Numeric validation — invalid ring + popover
+expected: |
+  On a numeric cell (Qty or Unit price): clear it and type "abc" → cell shows 1.5px destructive ring + popover "Enter a valid number." and blur does NOT commit. Type "-50" → same error (nonnegative). Press Escape → restores prior value and clears error. Type "19.99" with EUR → commits as €19,99 (or formatted per locale) and converts via CURRENCY_DECIMALS*100; "1000" with JPY → 1000 (0dp). Tab / Shift+Tab commits and moves focus to next/previous numeric cell.
+result: issue
+reported: "I can only type in numbers. theres literally no button to change currency"
+severity: major
+
+### 11. Drag reorder + touch up/down
+expected: |
+  Desktop (≥1024px): in left outline, grab the GripVertical handle (20×20, cursor-grab) on a line item and drag — row follows, drop reorders both outline and canvas table order (totals recalc). Mobile (<1024px): handle is hidden; instead each row shows Move up/down buttons (44×44, disabled at first/last). Tap up/down — item swaps with adjacent. Totals lineNets update.
+result: pass
+
+### 12. Zoom 50%–200% and print ignores zoom
+expected: |
+  Desktop header: ZoomOut (–) and ZoomIn (+) buttons + percentage readout (e.g., "100%"). Click – repeatedly → disables at 50%; + → disables at 200%; step is 10%. Canvas scales with origin top center, no clipping of page shadow. Open Print preview while at 150% → preview shows page at 100% geometry (15mm padding, identical to no-zoom print) and parity golden matches; print CSS resets transform.
+result: pass
+
+### 13. Mobile stacked layout + bottom sheet
+expected: |
+  Resize to <1024px (or open on phone): layout stacks — top compact header (brand, undo/redo icons, eye preview toggle, Saved indicator), sticky live preview (DocumentPage at ~55% fit-width, pinch-zoom allowed) below header, editor surface below with outline + tappable line-item rows. Tap a line item — bottom sheet slides up from bottom (300ms slide, 36×5 drag handle centered, dim backdrop bg-black/50). Tap backdrop or drag handle or press Escape or tap X — sheet dismisses. Sheet content scrolls internally (92vh max) with safe-area inset, body scroll locked, focus trapped.
+result: issue
+reported: "mobile view is terrible: screenshot shows duplicated Outline heading, duplicated Add item buttons, document preview hidden behind eye toggle, no document pane visible, mobile drawer shown on desktop width"
+severity: major
+
+### 14. Rich-text AST Zod schemas auto-verified
+expected: Rich-text AST Zod schemas (richtext.ts) with all node and mark types validated
+result: pass
+source: automated
+coverage_id: 04-01-D1
+
+### 15. Text fields widened + image + blockVisibility auto-verified
+expected: Text fields widened to z.union + lineItem.image (data:-URL) + settings.blockVisibility on documentSchema
+result: pass
+source: automated
+coverage_id: 04-01-D2
+
+### 16. migrateV2ToV3 auto-verified
+expected: migrateV2ToV3 wraps v2 string fields to single-paragraph ASTs, idempotent
+result: pass
+source: automated
+coverage_id: 04-01-D3
+
+### 17. Dexie v3 upgrade auto-verified
+expected: Dexie version(3) upgrade triggers on stored v2 documents, rewrites to v3 shape
+result: pass
+source: automated
+coverage_id: 04-01-D4
+
+### 18. Envelope version bump auto-verified
+expected: Envelope version bumped to z.literal(2); v1 imports rejected as invalid_envelope
+result: pass
+source: automated
+coverage_id: 04-01-D5
+
+### 19. Fixtures regenerated auto-verified
+expected: Regenerated fixtures with AST-wrapped text fields
+result: pass
+source: automated
+coverage_id: 04-01-D6
+
+### 20. Customer name cell auto-verified
+expected: Customer name cell is contentEditable on canvas — click, type, blur commits to model and re-renders
+result: pass
+source: automated
+coverage_id: 04-02-D1
+
+### 21. Print projection no editing artifacts auto-verified
+expected: Print projection carries no editing artifacts (no contentEditable, no placeholder, no chrome)
+result: pass
+source: automated
+coverage_id: 04-02-D6
+
+### 22. Parity edit-mode DOM pixel-identical auto-verified
+expected: Parity harness edit-mode DOM remains pixel-identical to committed goldens when unfocused (AST wrapper lossless)
+result: pass
+source: automated
+coverage_id: 04-02-D7
+
+### 23. Paste strips to plain text auto-verified
+expected: Pasting rich HTML strips to plain text — no tags survive
+result: pass
+source: automated
+coverage_id: 04-03-D3
+
+### 24. domToAst normalization auto-verified
+expected: domToAst normalizes browser variants (b/strong→bold, i/em→italic, u→underline, ul>li→list, a→link) and collapses whitespace
+result: pass
+source: automated
+coverage_id: 04-03-D4
+
+### 25. Print projection zero artifacts auto-verified (04-03)
+expected: Print projection has zero editing artifacts (no contentEditable in fixture print, no placeholder/chrome in print)
+result: pass
+source: automated
+coverage_id: 04-03-D7
+
+### 26. Numeric cells filter + minor conversion auto-verified
+expected: Numeric cells filter keystrokes and convert to minor units on commit via CURRENCY_DECIMALS (EUR 2dp, JPY 0dp)
+result: pass
+source: automated
+coverage_id: 04-04-D1
+
+### 27. Duplicate/delete auto-verified
+expected: Duplicate creates new item with unique id after original; Delete shows confirmation dialog (Delete/Cancel) and removes from totals
+result: pass
+source: automated
+coverage_id: 04-04-D4
+
+### 28. Add item + inline cells auto-verified
+expected: Add item button appends new empty item; line-item cells editable inline on canvas (RichTextCell + NumericCell)
+result: pass
+source: automated
+coverage_id: 04-04-D5
+
+### 29. Line-item image auto-verified
+expected: Line-item image field accepts file input and renders data:-URL thumbnail inline (60px) and in PropertiesPane (96px)
+result: pass
+source: automated
+coverage_id: 04-04-D6
+
+### 30. PropertiesPane selected-item display auto-verified
+expected: PropertiesPane shows selected line-item details; defaults to document settings when nothing selected
+result: pass
+source: automated
+coverage_id: 04-04-D7
+
+### 31. Touch reorder 44×44 auto-verified
+expected: Touch reorder uses up/down 44×44 buttons; drag-and-drop remains desktop-only
+result: pass
+source: automated
+coverage_id: 04-05-D3
+
+### 32. MOBILE-SPEC artifact auto-verified
+expected: 04-MOBILE-SPEC.md exists with screen inventory, sheet contents, keyboard-resize, navigation, touch adaptations, state transitions
+result: pass
+source: automated
+coverage_id: 04-05-D4
+
+## Summary
+
+total: 32
+passed: 28
+issues: 4
+pending: 0
+skipped: 0
+blocked: 0
+
+## Gaps
+
+- gap_id: G-04-06
+  truth: "On any text cell selecting a word shows floating toolbar 32px above selection with B I U list link buttons, accent on active format"
+  status: failed
+  reason: "User reported: toolbar does not appear on the top of the selected text"
+  severity: major
+  test: 6
+  root_cause: ""
+  artifacts: []
+  missing: []
+  debug_session: ""
+- gap_id: G-04-07
+  truth: "Clicking Bold/Italic/Underline toggles formatting via execCommand; List wraps in bulleted list; Link creates/removes validated links and persists after blur"
+  status: failed
+  reason: "User reported: i clicked on list after highlighting, Something went wrong! Hide Error Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node. broke the app. same thing when i added the link. both happened on blur. infact all toolbar actions break on blur"
+  severity: blocker
+  test: 7
+  root_cause: ""
+  artifacts: []
+  missing: []
+  debug_session: ""
+- gap_id: G-04-10
+  truth: "Numeric cells filter keystrokes, show destructive ring + popover on invalid, block commit, Escape cancels, Tab moves focus, currency conversion via CURRENCY_DECIMALS with accessible currency switch"
+  status: failed
+  reason: "User reported: I can only type in numbers. theres literally no button to change currency"
+  severity: major
+  test: 10
+  root_cause: ""
+  artifacts: []
+  missing: []
+  debug_session: ""
+- gap_id: G-04-13
+  truth: "Mobile layout <1024px stacks header + sticky fit-width preview + editor surface; bottom sheet slides up with drag handle/backdrop/tap-dismiss/Escape, document pane integrated"
+  status: failed
+  reason: "User reported: mobile view is terrible: screenshot shows duplicated Outline heading, duplicated Add item buttons, document preview hidden behind eye toggle, no document pane visible, mobile drawer shown on desktop width. Why use mobile drawer on desktop, why toggle eye to see outline, what about document pane?"
+  severity: major
+  test: 13
+  root_cause: ""
+  artifacts: []
+  missing: []
+  debug_session: ""
+
+## Deferred Follow-Ups
+
+- test: 8
+  idea: "this passed but quite difficult to know app is in edit — consider stronger editing chrome / mode indicator"
+  deferred_at: 2026-08-22
