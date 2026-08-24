@@ -12,6 +12,7 @@ import { OutlinePane } from './OutlinePane'
 import { PrintPreviewDialog } from './PrintPreviewDialog'
 import { PropertiesPane } from './PropertiesPane'
 import { BottomSheet } from './BottomSheet'
+import { MobileFormattingFooter } from './edit/MobileFormattingFooter'
 import { Button } from './ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { useHistory } from './edit/useHistory'
@@ -210,7 +211,7 @@ function BuilderShellInner({
       <header className="flex h-12 shrink-0 items-center justify-between gap-2 px-4 print:hidden">
         <div className="flex items-center gap-3">
           <span className="text-base font-semibold tracking-tight">Paperchaser</span>
-          {editable && <span className="hidden rounded-full bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground lg:inline">Editing • Click any text to edit</span>}
+          {editable && <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground"><span className="size-2 rounded-full bg-primary-foreground animate-pulse" />Editing • Click any text to edit</span>}
           <div className="hidden items-center gap-1 lg:flex">
             <button type="button" aria-label="Undo" disabled={pastEmpty} onClick={undo} className={cn('rounded p-1 hover:bg-foreground/10', pastEmpty && 'opacity-30')}>
               <Undo2 className="size-4" />
@@ -286,9 +287,9 @@ function BuilderShellInner({
         </aside>
 
         <div className="flex flex-1 justify-center overflow-auto px-2 pb-10 print:pb-0">
-          {/* Zoom wrapper — CSS transform scale, print:scale-100 resets for parity */}
+          {/* Zoom wrapper — CSS transform scale, print:scale-100 resets for parity, ring when editable for persistent edit chrome */}
           <div
-            className="print:scale-100 print:!transform-none"
+            className={cn('print:scale-100 print:!transform-none print:ring-0', editable && 'ring-1 ring-primary/15')}
             style={{ transform: `scale(${zoom})`, transformOrigin: 'top center', boxShadow: '0 4px 24px rgba(0, 0, 0, 0.12)' }}
           >
             <DocumentPage
@@ -337,7 +338,7 @@ function BuilderShellInner({
             </div>
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto p-3">
+        <div className="flex-1 overflow-y-auto p-3 pb-20">
           <OutlinePane
             model={model}
             selectedBlockId={selectedBlockId}
@@ -362,6 +363,8 @@ function BuilderShellInner({
         branding={model.branding}
         pageSize={currentPageSize}
       />
+
+      <MobileFormattingFooter />
 
       {/* Mobile bottom sheet for selected line item (D-20) — mobile only, desktop uses right pane */}
       <BottomSheet open={sheetItemId !== null} onOpenChange={(open) => { if (!open) setSheetItemId(null) }} title={sheetItem ? (getPlainText(sheetItem.title) || 'Item') : 'Item'}>

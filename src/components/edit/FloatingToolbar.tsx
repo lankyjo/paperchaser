@@ -24,6 +24,7 @@ export function FloatingToolbar({ targetRef }: FloatingToolbarProps) {
   const toolbarRef = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
   const [pos, setPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 })
+  const [flipped, setFlipped] = useState(false)
   const [active, setActive] = useState({ bold: false, italic: false, underline: false, list: false, link: false })
 
   useMountEffect(() => {
@@ -66,13 +67,15 @@ export function FloatingToolbar({ targetRef }: FloatingToolbarProps) {
       const effectiveW = toolbarW !== undefined && toolbarW > 0 ? toolbarW : 220
       const toolbarH = toolbarRef.current?.offsetHeight
       const effectiveH = toolbarH !== undefined && toolbarH > 0 ? toolbarH : 36
-      let top = rect.top - effectiveH - 8 // 8px gap
+      let top = rect.top - effectiveH - 12 // 12px gap, prefer above
       let left = rect.left + rect.width / 2 - effectiveW / 2
-      // Flip below if clipped
-      if (top < 16) top = rect.bottom + 8
+      // Header-aware flip: header is 48px, only flip if above would be under header/viewport top
+      const shouldFlip = top < 56 // 48 header + 8 margin
+      if (shouldFlip) top = rect.bottom + 12
       // Clamp horizontal
       left = Math.max(16, Math.min(left, window.innerWidth - effectiveW - 16))
       setPos({ top: Math.round(top), left: Math.round(left) })
+      setFlipped(shouldFlip)
       setVisible(true)
     }
 
@@ -137,6 +140,10 @@ export function FloatingToolbar({ targetRef }: FloatingToolbarProps) {
       aria-label="Formatting"
       onMouseDown={(e) => e.preventDefault()}
     >
+      <div
+        aria-hidden="true"
+        className={`pointer-events-none absolute left-1/2 size-2 -translate-x-1/2 rotate-45 border bg-popover ${flipped ? '-top-1 border-t-0 border-l-0 border-r border-b' : '-bottom-1 border-b-0 border-r-0 border-l border-t'} `}
+      />
       <button type="button" aria-label="Bold" className={btnClass(active.bold)} onMouseDown={(e) => e.preventDefault()} onClick={() => exec('bold')}>
         <Bold className="size-4" />
       </button>
