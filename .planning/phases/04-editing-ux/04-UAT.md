@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 04-editing-ux
 source: ["04-01-SUMMARY.md", "04-02-SUMMARY.md", "04-03-SUMMARY.md", "04-04-SUMMARY.md", "04-05-SUMMARY.md"]
 started: 2026-08-22T21:15:00Z
