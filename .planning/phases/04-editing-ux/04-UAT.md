@@ -225,40 +225,74 @@ blocked: 0
   reason: "User reported: toolbar does not appear on the top of the selected text"
   severity: major
   test: 6
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "FloatingToolbar mounts only when RichTextCell focused, but its selectionchange handler requires document.activeElement === el. On mouse drag selection, activeElement is still the cell but hasSelection checks el.contains(anchorNode) which fails when selection starts outside cell or when toolbar is positioned via stale toolbarRef dimensions (0 width on first render). Additionally, toolbar portal is fixed but parent overflow-auto on canvas can clip getBoundingClientRect to off-screen."
+  artifacts:
+    - path: "src/components/edit/FloatingToolbar.tsx"
+      issue: "selection detection too strict + initial toolbar size 0 causes left clamped to 16px off-selection, single useMountEffect capture of el without re-subscribe on focus changes"
+    - path: "src/components/edit/RichTextCell.tsx"
+      issue: "renders FloatingToolbar only when focused, so selectionchange before focus=true is missed; no pointerup/mouseup fallback"
+  missing:
+    - "Relax isFocused to document.activeElement?.contains(el) or el.contains(document.activeElement)"
+    - "Add mouseup/keyUp listeners to trigger update after drag end, and defer first position until toolbarRef has width"
+    - "Ensure toolbar visible check also allows anchorNode inside execCommand-inserted <b>/<ul>/<a> still considered contained"
+  debug_session: ".planning/debug/04-toolbar-position.md"
 - gap_id: G-04-07
   truth: "Clicking Bold/Italic/Underline toggles formatting via execCommand; List wraps in bulleted list; Link creates/removes validated links and persists after blur"
   status: failed
   reason: "User reported: i clicked on list after highlighting, Something went wrong! Hide Error Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node. broke the app. same thing when i added the link. both happened on blur. infact all toolbar actions break on blur"
   severity: blocker
   test: 7
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "RichTextCell renders <div contentEditable><AstView value={text} /></div> while focused where AstView is React-controlled children. execCommand mutates DOM (inserts <strong>/<ul>/<a>) outside React, then blur handler calls domToAst(ref.current) + onCommit which triggers parent DocumentPage re-render with same key (key based on getPlainText). React diffs the mutated DOM vs expected AstView and attempts removeChild on nodes that execCommand already moved, throwing. Key does not change for formatting-only changes (plain text same), so no remount, diff fails. List and link are worst because they wrap multiple nodes."
+  artifacts:
+    - path: "src/components/edit/RichTextCell.tsx"
+      issue: "uncontrolled contentEditable still renders AstView children while focused; commit on blur triggers React reconcile on execCommand-mutated DOM with stale key"
+    - path: "src/components/DocumentPage.tsx"
+      issue: "keys use getPlainText(item.title) so formatting-only AST changes keep key stable, preventing remount; paragraph/list structure change requires remount"
+    - path: "src/document/richtext.ts"
+      issue: "domToAst correctly whitelists b/strong→bold etc but caller mutates DOM before serialization, race with React"
+  missing:
+    - "Make RichTextCell truly uncontrolled while focused: render empty div and set innerHTML via ref in useMountEffect, or force remount by keying on JSON.stringify(text) not plain text"
+    - "Defer onCommit until next tick after execCommand DOM settles, or use requestAnimationFrame before reading domToAst"
+    - "Add error boundary fallback so removeChild exception does not crash whole app (ponytail: minimal boundary around DocumentPage)"
+  debug_session: ".planning/debug/04-toolbar-removeChild.md"
 - gap_id: G-04-10
   truth: "Numeric cells filter keystrokes, show destructive ring + popover on invalid, block commit, Escape cancels, Tab moves focus, currency conversion via CURRENCY_DECIMALS with accessible currency switch"
   status: failed
   reason: "User reported: I can only type in numbers. theres literally no button to change currency"
   severity: major
   test: 10
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "Currency is model.currency (EUR/JPY via CURRENCY_DECIMALS) but builder UI exposes only template/branding/page-size in PropertiesPane document settings. No control writes model.currency, so numeric cells correctly filter via CURRENCY_DECIMALS but user cannot switch currency to test JPY 0dp vs EUR 2dp. Numeric validation itself passed (filter works) but discoverability missing."
+  artifacts:
+    - path: "src/components/PropertiesPane.tsx"
+      issue: "document settings card shows TemplateGallery/Branding/PageSize but no currency Select"
+    - path: "src/document/money.ts"
+      issue: "CURRENCY_DECIMALS registry correct but no UI seam to select currency; conversion via frankfurter.dev suggested by user not integrated"
+    - path: "src/components/BuilderShell.tsx"
+      issue: "handleTemplateChange/handlePageSizeChange exist but no handleCurrencyChange; commit path ready but not wired"
+  missing:
+    - "Add currency Select (EUR/JPY) in PropertiesPane document settings, onValueChange commits { ...model, currency } via useHistory.commit (undoable)"
+    - "Optional ponytail: on currency switch, fetch https://api.frankfurter.app/latest?from=EUR&to=JPY? as user suggested to show converted totals, or just switch CURRENCY_DECIMALS display without re-monetizing stored minors (simpler: keep stored minors, display via new currency decimals, no auto-convert)"
+  debug_session: ".planning/debug/04-currency-switch.md"
 - gap_id: G-04-13
   truth: "Mobile layout <1024px stacks header + sticky fit-width preview + editor surface; bottom sheet slides up with drag handle/backdrop/tap-dismiss/Escape, document pane integrated"
   status: failed
   reason: "User reported: mobile view is terrible: screenshot shows duplicated Outline heading, duplicated Add item buttons, document preview hidden behind eye toggle, no document pane visible, mobile drawer shown on desktop width. Why use mobile drawer on desktop, why toggle eye to see outline, what about document pane?"
   severity: major
   test: 13
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "BuilderShell mobile branch renders OutlinePane plus a manual manual line-item list below ('Document' section with second Add item), duplicating outline. Sticky preview is gated by mobilePreviewVisible (default true but user toggled off, leaving no paper visible) — preview should be always-visible sticky, eye toggle should toggle outline/properties visibility, not preview. BottomSheet is rendered unconditionally (open={sheetItemId !== null}) so desktop ≥1024px also opens sheet on tap, violating D-23 desktop-only DnD. Breakpoint lg (1024px) is correct but phone emulator at 390px correctly shows mobile; complaint about 'mobile drawer on desktop' is due to desktop tap opening bottom sheet instead of right-pane properties."
+  artifacts:
+    - path: "src/components/BuilderShell.tsx"
+      issue: "mobile <1024px section renders OutlinePane then second {model.lineItems.map} Document list duplicating outline; preview conditional on mobilePreviewVisible hides paper; BottomSheet rendered without lg:hidden guard"
+    - path: "src/components/BottomSheet.tsx"
+      issue: "sheet used for both desktop and mobile selection, should be lg:hidden constrained"
+    - path: "src/components/PropertiesPane.tsx"
+      issue: "document settings vs selected-item logic duplicated in mobile sheet without preview integration"
+  missing:
+    - "Remove duplicated manual Document list below OutlinePane in mobile branch; keep single OutlinePane"
+    - "Make sticky preview always visible (remove eye toggle gating preview, or change toggle to control outline vs preview split, keep paper at top)"
+    - "Gate BottomSheet to mobile only: {sheetItemId && isMobile} or CSS lg:hidden wrapper, desktop selection should highlight right-pane PropertiesPane only"
+    - "Fix duplicated Outline heading (two <h2>Outline</h2> from parent + OutlinePane internal heading)"
+  debug_session: ".planning/debug/04-mobile-layout.md"
 
 ## Deferred Follow-Ups
 
