@@ -208,11 +208,29 @@ result: pass
 source: automated
 coverage_id: 04-05-D4
 
+### 33. Editing state indicator
+expected: App shows clear editing state so user knows when they are editing (not constantly ambiguous)
+result: issue
+reported: "no editing state?? it is just constantly in editing"
+severity: major
+
+### 34. Toolbar on top of highlighted element
+expected: Highlighting text shows floating toolbar 32px above the highlighted element, centered, not below or offset
+result: issue
+reported: "t text formatting bar still not on top of highlighted element — screenshot shows toolbar below Coffee line, not above"
+severity: major
+
+### 35. Mobile toolbar visible
+expected: On mobile (<1024px), formatting tools are discoverable (floating or footer) when text is selected/focused
+result: issue
+reported: "still no tool bar for mobile, i dont know what i need to click to display tools. can we have like a mobile footer or domething. (optional)"
+severity: major
+
 ## Summary
 
-total: 32
+total: 35
 passed: 28
-issues: 4
+issues: 7
 pending: 0
 skipped: 0
 blocked: 0
@@ -301,6 +319,53 @@ blocked: 0
   debug_session: ".planning/debug/04-mobile-layout.md"
   resolved_by: "04-07-PLAN.md"
   resolved_at: 2026-08-24
+- gap_id: G-04-14
+  truth: "App shows clear editing state so user knows when they are editing (not constantly ambiguous)"
+  status: failed
+  reason: "User reported: no editing state?? it is just constantly in editing"
+  severity: major
+  test: 33
+  root_cause: "D-03 intent is always in edit mode (no view/edit toggle) but badge 'Editing • Click any text to edit' added in 04-07 is subtle and header-only; canvas chrome (1px hover ring, focus ring, placeholder) is transient and not persistent, so user does not perceive editing affordance. No toggle to preview/view mode, no persistent paper ring or background tint."
+  artifacts:
+    - path: "src/components/BuilderShell.tsx"
+      issue: "Editing badge is small, lg-only, and does not explain that editing is always-on per D-03"
+    - path: "src/components/edit/RichTextCell.tsx"
+      issue: "edit-cell hover/focus rings are transient, empty placeholder only shows when empty, no persistent edit border"
+  missing:
+    - "Make editing state explicit: persistent subtle paper outline or background tint when editable, plus stronger header badge visible on all breakpoints, and optional view toggle (ponytail: badge is minimal, full toggle add when requested)"
+  debug_session: ".planning/debug/04-editing-state.md"
+- gap_id: G-04-15
+  truth: "Highlighting text shows floating toolbar 32px above the highlighted element, centered, not below or offset"
+  status: failed
+  reason: "User reported: t text formatting bar still not on top of highlighted element — screenshot shows toolbar below Coffee line, not above"
+  severity: major
+  test: 34
+  root_cause: "FloatingToolbar update calculates top = rect.top - toolbarH -8, but on first open toolbarRef offsetWidth/Height is 0 so effective fallback 220/36 used; after render, rect may be inside scrolled canvas (overflow-auto) where getBoundingClientRect is viewport-relative but sticky header pushes rect, causing top <16 flip to below even when above has space. Fixed positioning without accounting for scroll container offset and header height causes below placement when it should be above. Screenshot shows toolbar centered below line, meaning flip triggered incorrectly."
+  artifacts:
+    - path: "src/components/edit/FloatingToolbar.tsx"
+      issue: "flip threshold top <16 is too aggressive for scrolled canvas; toolbarH fallback 36 may be smaller than actual 44, causing under-estimate; no anchor arrow to indicate target"
+    - path: "src/components/DocumentPage.tsx"
+      issue: "center column overflow-auto creates separate scroll context; toolbar fixed positioning does not account for container scroll"
+  missing:
+    - "Increase flip buffer to consider header height (48px) and ensure above placement is preferred when rect.top > toolbarH + 24; only flip if actually clipped by viewport top"
+    - "Add 2px arrow or shadow anchor to make above/below unambiguous"
+  debug_session: ".planning/debug/04-toolbar-top.md"
+- gap_id: G-04-16
+  truth: "On mobile (<1024px), formatting tools are discoverable when text is selected/focused"
+  status: failed
+  reason: "User reported: still no tool bar for mobile, i dont know what i need to click to display tools. can we have like a mobile footer or domething. (optional)"
+  severity: major
+  test: 35
+  root_cause: "FloatingToolbar relies on selectionchange + mouseup to show, but on touch, selection via long-press does not fire mouseup, and toolbar's fixed positioning can be off-screen or behind keyboard. No mobile-specific footer exists, so discovery is low. User requests optional mobile footer with B/I/U/list/link always visible when focused."
+  artifacts:
+    - path: "src/components/edit/FloatingToolbar.tsx"
+      issue: "mobile: no touch-specific handling, toolbar can be hidden behind virtual keyboard or outside viewport"
+    - path: "src/components/BuilderShell.tsx"
+      issue: "no mobile footer for formatting; BottomSheet is for properties, not formatting"
+  missing:
+    - "Add mobile footer bar (sticky bottom, safe-area inset, 44px touch targets) that appears when any RichTextCell focused on <1024px, shows B/I/U/list/link + Done, syncs with execCommand state"
+    - "Keep floating toolbar as desktop, footer as mobile fallback (ponytail: footer is minimal 5 buttons, hide when not focused)"
+  debug_session: ".planning/debug/04-mobile-toolbar.md"
 
 ## Deferred Follow-Ups
 
