@@ -221,7 +221,7 @@ blocked: 0
 
 - gap_id: G-04-06
   truth: "On any text cell selecting a word shows floating toolbar 32px above selection with B I U list link buttons, accent on active format"
-  status: failed
+  status: resolved
   reason: "User reported: toolbar does not appear on the top of the selected text"
   severity: major
   test: 6
@@ -236,9 +236,11 @@ blocked: 0
     - "Add mouseup/keyUp listeners to trigger update after drag end, and defer first position until toolbarRef has width"
     - "Ensure toolbar visible check also allows anchorNode inside execCommand-inserted <b>/<ul>/<a> still considered contained"
   debug_session: ".planning/debug/04-toolbar-position.md"
+  resolved_by: "04-06-PLAN.md"
+  resolved_at: 2026-08-24
 - gap_id: G-04-07
   truth: "Clicking Bold/Italic/Underline toggles formatting via execCommand; List wraps in bulleted list; Link creates/removes validated links and persists after blur"
-  status: failed
+  status: resolved
   reason: "User reported: i clicked on list after highlighting, Something went wrong! Hide Error Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node. broke the app. same thing when i added the link. both happened on blur. infact all toolbar actions break on blur"
   severity: blocker
   test: 7
@@ -255,9 +257,11 @@ blocked: 0
     - "Defer onCommit until next tick after execCommand DOM settles, or use requestAnimationFrame before reading domToAst"
     - "Add error boundary fallback so removeChild exception does not crash whole app (ponytail: minimal boundary around DocumentPage)"
   debug_session: ".planning/debug/04-toolbar-removeChild.md"
+  resolved_by: "04-06-PLAN.md"
+  resolved_at: 2026-08-24
 - gap_id: G-04-10
   truth: "Numeric cells filter keystrokes, show destructive ring + popover on invalid, block commit, Escape cancels, Tab moves focus, currency conversion via CURRENCY_DECIMALS with accessible currency switch"
-  status: failed
+  status: resolved
   reason: "User reported: I can only type in numbers. theres literally no button to change currency"
   severity: major
   test: 10
@@ -270,29 +274,33 @@ blocked: 0
     - path: "src/components/BuilderShell.tsx"
       issue: "handleTemplateChange/handlePageSizeChange exist but no handleCurrencyChange; commit path ready but not wired"
   missing:
-    - "Add currency Select (EUR/JPY) in PropertiesPane document settings, onValueChange commits { ...model, currency } via useHistory.commit (undoable)"
+    - "Add currency Select (EUR/JPY) in PropertiesPane document settings, onValueChange commits { ...model, currency: next } via useHistory.commit (undoable)"
     - "Optional ponytail: on currency switch, fetch https://api.frankfurter.app/latest?from=EUR&to=JPY? as user suggested to show converted totals, or just switch CURRENCY_DECIMALS display without re-monetizing stored minors (simpler: keep stored minors, display via new currency decimals, no auto-convert)"
   debug_session: ".planning/debug/04-currency-switch.md"
+  resolved_by: "04-07-PLAN.md"
+  resolved_at: 2026-08-24
 - gap_id: G-04-13
   truth: "Mobile layout <1024px stacks header + sticky fit-width preview + editor surface; bottom sheet slides up with drag handle/backdrop/tap-dismiss/Escape, document pane integrated"
-  status: failed
+  status: resolved
   reason: "User reported: mobile view is terrible: screenshot shows duplicated Outline heading, duplicated Add item buttons, document preview hidden behind eye toggle, no document pane visible, mobile drawer shown on desktop width. Why use mobile drawer on desktop, why toggle eye to see outline, what about document pane?"
   severity: major
   test: 13
-  root_cause: "BuilderShell mobile branch renders OutlinePane plus a manual manual line-item list below ('Document' section with second Add item), duplicating outline. Sticky preview is gated by mobilePreviewVisible (default true but user toggled off, leaving no paper visible) — preview should be always-visible sticky, eye toggle should toggle outline/properties visibility, not preview. BottomSheet is rendered unconditionally (open={sheetItemId !== null}) so desktop ≥1024px also opens sheet on tap, violating D-23 desktop-only DnD. Breakpoint lg (1024px) is correct but phone emulator at 390px correctly shows mobile; complaint about 'mobile drawer on desktop' is due to desktop tap opening bottom sheet instead of right-pane properties."
+  root_cause: "BuilderShell mobile branch renders OutlinePane plus a manual manual line-item list below ('Document' section with second Add item), duplicating outline. Sticky preview is gated by mobilePreviewVisible (default true but user toggled off, leaving no paper visible) — preview should be always-visible sticky, eye toggle should toggle outline/properties visibility, not preview. BottomSheet is rendered unconditionally (open={sheetItemId !== null}) so desktop ≥1024px also opens sheet on tap, violating D-23 desktop-only DnD. Breakpoint lg (1024px) is correct but phone emulator at 390px correctly shows mobile; complaint about 'mobile drawer on desktop' is due to desktop tap opening bottom sheet instead of right pane."
   artifacts:
     - path: "src/components/BuilderShell.tsx"
-      issue: "mobile <1024px section renders OutlinePane then second {model.lineItems.map} Document list duplicating outline; preview conditional on mobilePreviewVisible hides paper; BottomSheet rendered without lg:hidden guard"
+      issue: "mobile <1024px section renders OutlinePane plus a manual manual line-item list below ('Document' section with second Add item), duplicating outline; preview conditional on mobilePreviewVisible hides paper; BottomSheet rendered without lg:hidden guard"
     - path: "src/components/BottomSheet.tsx"
       issue: "sheet used for both desktop and mobile selection, should be lg:hidden constrained"
     - path: "src/components/PropertiesPane.tsx"
       issue: "document settings vs selected-item logic duplicated in mobile sheet without preview integration"
   missing:
     - "Remove duplicated manual Document list below OutlinePane in mobile branch; keep single OutlinePane"
-    - "Make sticky preview always visible (remove eye toggle gating preview, or change toggle to control outline vs preview split, keep paper at top)"
-    - "Gate BottomSheet to mobile only: {sheetItemId && isMobile} or CSS lg:hidden wrapper, desktop selection should highlight right-pane PropertiesPane only"
+    - "Make sticky preview always visible (remove eye toggle gating preview, or change toggle to control outline visibility not preview; keep paper at top)"
+    - "Gate BottomSheet to mobile only: const isMobile = window.innerWidth < 1024 or use CSS lg:hidden wrapper; open={sheetItemId !== null && isMobileOr via media query}. Desktop selection should only set selectedItemId for PropertiesPane, not sheet."
     - "Fix duplicated Outline heading (two <h2>Outline</h2> from parent + OutlinePane internal heading)"
   debug_session: ".planning/debug/04-mobile-layout.md"
+  resolved_by: "04-07-PLAN.md"
+  resolved_at: 2026-08-24
 
 ## Deferred Follow-Ups
 
