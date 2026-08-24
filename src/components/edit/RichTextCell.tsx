@@ -39,13 +39,21 @@ export function RichTextCell({ text, onCommit, onCancel, placeholder = 'Type her
       return
     }
     if (ref.current) {
-      const doc = domToAst(ref.current)
-      const plainNow = getPlainText(doc)
-      const plainPrev = getPlainText(text)
-      const astPrev =
-        typeof text === 'string' ? [{ type: 'paragraph' as const, content: [{ type: 'text' as const, text }] }] : text
-      const isSame = plainNow === plainPrev && JSON.stringify(doc) === JSON.stringify(astPrev)
-      if (!isSame) onCommit(doc)
+      // Defer to next frame so execCommand DOM (list/link wrapping) settles before React reconcile
+      const el = ref.current
+      requestAnimationFrame(() => {
+        try {
+          const doc = domToAst(el)
+          const plainNow = getPlainText(doc)
+          const plainPrev = getPlainText(text)
+          const astPrev =
+            typeof text === 'string' ? [{ type: 'paragraph' as const, content: [{ type: 'text' as const, text }] }] : text
+          const isSame = plainNow === plainPrev && JSON.stringify(doc) === JSON.stringify(astPrev)
+          if (!isSame) onCommit(doc)
+        } catch {
+          // ponytail: domToAst whitelist never throws on normal paste/execCommand, but execCommand can leave partial DOM that confuses React removeChild. Swallow and keep in-memory model.
+        }
+      })
     }
   }
 

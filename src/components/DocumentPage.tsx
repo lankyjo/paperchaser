@@ -183,13 +183,13 @@ export function DocumentPage({
           {editable ? (
             <>
               <RichTextCell
-                key={`customer-name-${getPlainText(model.customer.name)}`}
+                key={`customer-name-${JSON.stringify(model.customer.name)}`}
                 text={model.customer.name}
                 onCommit={handleCustomerNameCommit}
               />
               {model.customer.address.map((line, idx) => (
                 <RichTextCell
-                  key={`customer-addr-${idx}-${getPlainText(line)}`}
+                  key={`customer-addr-${idx}-${JSON.stringify(line)}`}
                   text={line}
                   onCommit={(next) => handleCustomerAddressCommit(idx, next)}
                 />
@@ -224,7 +224,7 @@ export function DocumentPage({
                   <td style={{ padding: '6px 0', verticalAlign: 'top' }}>
                     {editable && onCommit ? (
                       <RichTextCell
-                        key={`title-${item.id}-${getPlainText(item.title)}`}
+                        key={`title-${item.id}-${JSON.stringify(item.title)}`}
                         text={item.title}
                         onCommit={(next) => handleLineTitleCommit(item.id, next)}
                       />
@@ -242,7 +242,7 @@ export function DocumentPage({
                   <td style={{ padding: '6px 0', verticalAlign: 'top' }}>
                     {editable && onCommit ? (
                       <RichTextCell
-                        key={`desc-${item.id}-${getPlainText(item.description)}`}
+                        key={`desc-${item.id}-${JSON.stringify(item.description)}`}
                         text={item.description}
                         onCommit={(next) => handleLineDescCommit(item.id, next)}
                       />

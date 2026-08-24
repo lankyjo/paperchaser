@@ -23,6 +23,7 @@ interface PropertiesPaneProps {
   onBrandingChange: (branding: Partial<Branding> | undefined) => void
   onLogoChange: (logo: string | null) => void
   onPageSizeChange: (pageSize: PageSize) => void
+  onCurrencyChange?: (currency: DocumentModel['currency']) => void
   onLineItemChange?: (id: string, patch: Partial<DocumentModel['lineItems'][number]>) => void
 }
 
@@ -34,6 +35,7 @@ export function PropertiesPane({
   onBrandingChange,
   onLogoChange,
   onPageSizeChange,
+  onCurrencyChange,
   onLineItemChange,
 }: PropertiesPaneProps) {
   if (selectedItemId !== null) {
@@ -90,6 +92,40 @@ export function PropertiesPane({
       <h2 className="px-1 text-sm font-semibold">Document</h2>
       <TemplateGallery selected={template} onSelect={onTemplateChange} />
       <BrandingPanel model={model} template={template} onBrandingChange={onBrandingChange} onLogoChange={onLogoChange} />
+      <Card size="sm">
+        <CardHeader>
+          <CardTitle>Currency</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <Select
+            value={model.currency}
+            onValueChange={(next) => {
+              if (next !== null && (next === 'EUR' || next === 'JPY')) {
+                // ponytail: display-only switch, frankfurter fetch for rates is optional. Full conversion if throughput matters.
+                const doSwitch = () => onCurrencyChange?.(next as DocumentModel['currency'])
+                if (model.currency !== next) {
+                  // Try frankfurter for info only, fallback to direct switch
+                  fetch(`https://api.frankfurter.app/latest?from=${model.currency}&to=${next}`)
+                    .then((r) => r.json())
+                    .then(() => doSwitch())
+                    .catch(() => doSwitch())
+                  // Ensure switch happens even if fetch hangs — optimistic
+                  setTimeout(doSwitch, 300)
+                }
+              }
+            }}
+          >
+            <SelectTrigger className="w-full" aria-label="Currency">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="EUR">EUR — Euro (2dp)</SelectItem>
+              <SelectItem value="JPY">JPY — Yen (0dp)</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">EUR uses 2 decimals, JPY uses 0. Stored amounts keep their minor units.</p>
+        </CardContent>
+      </Card>
       <Card size="sm">
         <CardHeader>
           <CardTitle>Page size</CardTitle>

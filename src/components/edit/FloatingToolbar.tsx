@@ -32,8 +32,15 @@ export function FloatingToolbar({ targetRef }: FloatingToolbarProps) {
 
     const update = () => {
       const sel = window.getSelection()
-      const isFocused = document.activeElement === el
-      const hasSelection = sel !== null && !sel.isCollapsed && el.contains(sel.anchorNode)
+      const activeEl = document.activeElement as HTMLElement | null
+      const isFocused = activeEl !== null && (activeEl === el || el.contains(activeEl))
+      const hasSelection =
+        sel !== null &&
+        !sel.isCollapsed &&
+        sel.rangeCount > 0 &&
+        ((sel.anchorNode !== null && el.contains(sel.anchorNode)) ||
+          (sel.focusNode !== null && el.contains(sel.focusNode)) ||
+          (sel.anchorNode === el as unknown as Node))
       if (!isFocused || !hasSelection || sel === null || sel.rangeCount === 0) {
         setVisible(false)
         return
@@ -47,23 +54,37 @@ export function FloatingToolbar({ targetRef }: FloatingToolbarProps) {
         link: isSelectionInLink(sel),
       })
 
-      // Position above selection rect
+      // Position above selection rect — defer until toolbar has width
       const range = sel.getRangeAt(0)
       const rect = range.getBoundingClientRect()
-      const toolbarW = toolbarRef.current?.offsetWidth ?? 220
-      const toolbarH = toolbarRef.current?.offsetHeight ?? 36
-      let top = rect.top - toolbarH - 8 // 8px gap
-      let left = rect.left + rect.width / 2 - toolbarW / 2
+      // If rect is empty (collapsed or off-screen), hide
+      if (rect.width === 0 && rect.height === 0) {
+        setVisible(false)
+        return
+      }
+      const toolbarW = toolbarRef.current?.offsetWidth
+      const effectiveW = toolbarW !== undefined && toolbarW > 0 ? toolbarW : 220
+      const toolbarH = toolbarRef.current?.offsetHeight
+      const effectiveH = toolbarH !== undefined && toolbarH > 0 ? toolbarH : 36
+      let top = rect.top - effectiveH - 8 // 8px gap
+      let left = rect.left + rect.width / 2 - effectiveW / 2
       // Flip below if clipped
       if (top < 16) top = rect.bottom + 8
       // Clamp horizontal
-      left = Math.max(16, Math.min(left, window.innerWidth - toolbarW - 16))
+      left = Math.max(16, Math.min(left, window.innerWidth - effectiveW - 16))
       setPos({ top: Math.round(top), left: Math.round(left) })
       setVisible(true)
     }
 
     const handleSelectionChange = () => update()
+    const handleMouseUp = () => {
+      // Selection via drag ends with mouseup, not just selectionchange
+      setTimeout(update, 0)
+    }
+    const handleKeyUp = () => update()
     document.addEventListener('selectionchange', handleSelectionChange)
+    document.addEventListener('mouseup', handleMouseUp)
+    document.addEventListener('keyup', handleKeyUp)
     // Also update on scroll/resize while visible
     window.addEventListener('scroll', update, true)
     window.addEventListener('resize', update)
@@ -71,6 +92,8 @@ export function FloatingToolbar({ targetRef }: FloatingToolbarProps) {
     update()
     return () => {
       document.removeEventListener('selectionchange', handleSelectionChange)
+      document.removeEventListener('mouseup', handleMouseUp)
+      document.removeEventListener('keyup', handleKeyUp)
       window.removeEventListener('scroll', update, true)
       window.removeEventListener('resize', update)
     }
