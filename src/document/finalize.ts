@@ -9,7 +9,8 @@ export interface Counter {
   year?: number
 }
 
-const NUMBERED = new Set<DocumentModel['type']>(['quote', 'agreement', 'invoice', 'creditNote', 'receipt'])
+export const NUMBERED_TYPES: DocumentModel['type'][] = ['quote', 'agreement', 'invoice', 'creditNote', 'receipt']
+const NUMBERED = new Set(NUMBERED_TYPES)
 
 export const isNumberedType = (type: DocumentModel['type']) => NUMBERED.has(type)
 

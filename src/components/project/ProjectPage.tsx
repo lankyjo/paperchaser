@@ -3,7 +3,10 @@ import { creditedTotal } from '../../document/credits'
 import { invoiceBalance } from '../../document/payments'
 import { canDeleteProject } from '../../project/lifecycle'
 import { isTaxModeLocked } from '../../project/sharedData'
+import { exportProject } from '../../db/backupRepo'
+import { downloadJson } from '../../lib/downloadJson'
 import { UndoRedoButtons } from '../builder/UndoRedoButtons'
+import { Button } from '../ui/button'
 import { ClientPicker } from './ClientPicker'
 import { ProjectDetailsForm } from './ProjectDetailsForm'
 import { ProjectStatusSection } from './ProjectStatusSection'
@@ -25,6 +28,9 @@ export function ProjectPage({ projectId }: { projectId: string }) {
         <Link to="/" className="text-sm underline">
           Projects
         </Link>
+        <Button size="sm" variant="outline" className="ml-auto mr-2" onClick={() => void exportProject(project.id).then((b) => downloadJson(`${title}.paperchaser.json`, b))}>
+          Export project
+        </Button>
         <UndoRedoButtons className="flex items-center gap-1" canUndo={canUndo} canRedo={canRedo} onUndo={() => void undo()} onRedo={() => void redo()} />
       </div>
       <h1 className="text-xl font-semibold">{title}</h1>

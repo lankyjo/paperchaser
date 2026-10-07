@@ -58,7 +58,7 @@ const logoSchema = z
     message: 'logo must be a self-contained data: URL or null',
   })
 
-const companySchema = z.object({
+export const companySchema = z.object({
   name: textFieldSchema,
   address: z.array(textFieldSchema),
   email: textFieldSchema,

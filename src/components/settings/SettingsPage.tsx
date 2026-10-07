@@ -3,6 +3,7 @@ import { DOC_TITLES } from '../../document/tokens'
 import { nextNumber } from '../../document/finalize'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
+import { BackupSection } from './BackupSection'
 import { useNumbering } from './useNumbering'
 
 // Numbering settings: prefix (with {YYYY}), next number and yearly reset per numbered document type.
@@ -32,6 +33,7 @@ export function SettingsPage() {
         ))}
       </ul>
       <Button onClick={() => void save()}>Save numbering</Button>
+      <BackupSection />
     </main>
   )
 }

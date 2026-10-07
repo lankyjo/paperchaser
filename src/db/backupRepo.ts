@@ -1,0 +1,72 @@
+import { referencedAssetIds } from '../document/assets'
+import { BACKUP_VERSION, copyProjectBundle, countersAfterImport, type ProjectBundle, type WorkspaceBundle } from '../project/backup'
+import type { Client } from '../project/client'
+import { NUMBERED_TYPES, type Counter } from '../document/finalize'
+import { db } from './db'
+import { assetsRepo, clientsRepo, companyRepo, countersRepo, documentsRepo, projectsRepo } from './repos'
+
+export type ImportMode = 'replace' | 'skip' | 'copy'
+
+async function assetsFor(documents: { blocks?: ProjectBundle['documents'][number]['blocks'] }[]) {
+  const ids = [...referencedAssetIds(documents)]
+  return (await Promise.all(ids.map((id) => assetsRepo.get(id)))).filter((a) => a !== undefined)
+}
+
+export async function exportProject(projectId: string): Promise<ProjectBundle> {
+  const project = await projectsRepo.get(projectId)
+  if (!project) throw new Error('Project not found')
+  const documents = await documentsRepo.byProject(projectId)
+  const client = project.clientId === undefined ? undefined : await clientsRepo.get(project.clientId)
+  return { format: 'paperchaser-project', version: BACKUP_VERSION, project, client, documents, assets: await assetsFor(documents) }
+}
+
+// Reuses a client already here (same id, or same name and email) instead of adding a duplicate.
+async function resolveClient(client: Client | undefined): Promise<string | undefined> {
+  if (!client) return undefined
+  if (await clientsRepo.get(client.id)) return client.id
+  const match = (await clientsRepo.list()).find((c) => c.name === client.name && c.email === client.email)
+  if (match) return match.id
+  await clientsRepo.put(client)
+  return client.id
+}
+
+// Adds a project file; when its id already exists the user chose to replace it, skip it or import a copy.
+export async function importProject(incoming: ProjectBundle, mode: ImportMode): Promise<void> {
+  const exists = (await projectsRepo.get(incoming.project.id)) !== undefined
+  if (exists && mode === 'skip') return
+  const bundle = exists && mode === 'copy' ? copyProjectBundle(incoming, () => crypto.randomUUID()) : incoming
+  if (exists && mode === 'replace') await projectsRepo.delete(bundle.project.id)
+  const clientId = await resolveClient(bundle.client)
+  await projectsRepo.put({ ...bundle.project, clientId: clientId ?? bundle.project.clientId })
+  await db.table('documents').bulkPut(bundle.documents)
+  await db.table('assets').bulkPut(bundle.assets)
+  const local = await Promise.all(NUMBERED_TYPES.map((t) => countersRepo.get(t)))
+  await Promise.all(countersAfterImport(local, bundle.documents).map((c) => countersRepo.put(c)))
+}
+
+export async function exportWorkspace(): Promise<WorkspaceBundle> {
+  const documents = await documentsRepo.list()
+  return {
+    format: 'paperchaser-workspace',
+    version: BACKUP_VERSION,
+    projects: await projectsRepo.list(),
+    clients: await clientsRepo.list(),
+    documents,
+    assets: await assetsFor(documents),
+    counters: (await db.table('counters').toArray()) as Counter[],
+    company: await companyRepo.get(),
+  }
+}
+
+// Restores a full backup in one transaction, replacing everything currently stored.
+export async function replaceWorkspace(bundle: WorkspaceBundle): Promise<void> {
+  await db.transaction('rw', ['projects', 'clients', 'documents', 'assets', 'counters', 'company'], async () => {
+    for (const table of ['projects', 'clients', 'documents', 'assets', 'counters', 'company']) await db.table(table).clear()
+    await db.table('projects').bulkAdd(bundle.projects)
+    await db.table('clients').bulkAdd(bundle.clients)
+    await db.table('documents').bulkAdd(bundle.documents)
+    await db.table('assets').bulkAdd(bundle.assets)
+    await db.table('counters').bulkAdd(bundle.counters)
+    if (bundle.company) await companyRepo.put(bundle.company)
+  })
+}

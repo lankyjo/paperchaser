@@ -1,10 +1,8 @@
 import { useState } from 'react'
 import { countersRepo } from '../../db/repos'
-import type { Counter } from '../../document/finalize'
-import type { DocumentModel } from '../../document/types'
+import { NUMBERED_TYPES, type Counter } from '../../document/finalize'
 import { useMountEffect } from '../../hooks/useMountEffect'
 
-export const NUMBERED_TYPES: DocumentModel['type'][] = ['quote', 'agreement', 'invoice', 'receipt', 'creditNote']
 
 // Stored number sequences per type, with the next number already in use remembered for the duplicate warning.
 export function useNumbering() {
