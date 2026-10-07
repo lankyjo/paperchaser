@@ -6,4 +6,6 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   keyValue: 'Details list',
   table: 'Table',
   steps: 'Numbered steps',
+  metrics: 'Metric tiles',
+  chart: 'Chart',
 }

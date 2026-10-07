@@ -1,7 +1,9 @@
 import type { ComponentType } from 'react'
 import type { Block, BlockType } from '../../document/blocks'
+import { ChartBlockView } from './ChartBlockView'
 import { HeadingBlockView } from './HeadingBlockView'
 import { KeyValueBlockView } from './KeyValueBlockView'
+import { MetricsBlockView } from './MetricsBlockView'
 import { RichTextBlockView } from './RichTextBlockView'
 import { StepsBlockView } from './StepsBlockView'
 import { TableBlockView } from './TableBlockView'
@@ -14,6 +16,8 @@ const views: { [T in BlockType]: ComponentType<BlockViewProps<T>> } = {
   keyValue: KeyValueBlockView,
   table: TableBlockView,
   steps: StepsBlockView,
+  metrics: MetricsBlockView,
+  chart: ChartBlockView,
 }
 
 // Renders one block with the view for its type; editable when onChange is given.

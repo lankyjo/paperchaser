@@ -7,11 +7,13 @@ const intro: Block = { id: 'b2', type: 'richText', content: [{ type: 'paragraph'
 const glance: Block = { id: 'b3', type: 'keyValue', title: 'At a glance', rows: [{ label: 'Start', value: '1 Nov' }] }
 const files: Block = { id: 'b4', type: 'table', columns: ['File', 'Format'], rows: [['Logo', 'SVG']] }
 const nextSteps: Block = { id: 'b5', type: 'steps', items: [{ title: 'Discovery call', description: 'Align on goals' }] }
+const kpis: Block = { id: 'b6', type: 'metrics', items: [{ label: 'Views', value: '200K', note: '+12%' }] }
+const trend: Block = { id: 'b7', type: 'chart', title: 'Views by week', series: [{ label: 'W1', value: 120 }] }
 const blocks = [heading, intro, glance]
 
 describe('blockSchema', () => {
   it('round-trips every tracer block type through JSON', () => {
-    for (const block of [...blocks, files, nextSteps]) expect(blockSchema.parse(JSON.parse(JSON.stringify(block)))).toEqual(block)
+    for (const block of [...blocks, files, nextSteps, kpis, trend]) expect(blockSchema.parse(JSON.parse(JSON.stringify(block)))).toEqual(block)
   })
 })
 
@@ -25,6 +27,11 @@ describe('block operations', () => {
   it('starts a table with two columns and one row, and steps with one item', () => {
     expect(addBlock([], 'table', null, 't')[0]).toEqual({ id: 't', type: 'table', columns: ['', ''], rows: [['', '']] })
     expect(addBlock([], 'steps', null, 's')[0]).toEqual({ id: 's', type: 'steps', items: [{ title: '', description: '' }] })
+  })
+
+  it('starts metrics with three empty tiles and a chart with two empty bars', () => {
+    expect(addBlock([], 'metrics', null, 'm')[0]).toMatchObject({ type: 'metrics', items: [{}, {}, {}] })
+    expect(addBlock([], 'chart', null, 'c')[0]).toEqual({ id: 'c', type: 'chart', title: '', series: [{ label: '', value: 0 }, { label: '', value: 0 }] })
   })
 
   it('moves a block up or down and ignores moves past either end', () => {

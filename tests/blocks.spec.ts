@@ -57,3 +57,22 @@ test('table and numbered-steps blocks can be added and filled in', async ({ page
   await expect(pageRoot.locator('ol li')).toHaveCount(2)
   await expect(pageRoot.getByText('02', { exact: true })).toBeVisible()
 })
+
+test('a chart takes pasted CSV, reports bad lines, and draws one bar per row; metric tiles can be added', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Quick invoice' }).click()
+  await page.goto('/')
+  await page.getByRole('link', { name: 'Untitled project' }).click()
+  await page.getByRole('button', { name: 'Start welcome' }).click()
+  const pageRoot = page.locator('#print-root')
+
+  await page.getByRole('button', { name: 'Add chart' }).click()
+  await pageRoot.getByLabel('Paste CSV').fill('Week,Views\nW1,120\nW2,lots\nW3,"1,450"')
+  await pageRoot.getByRole('button', { name: 'Use pasted data' }).click()
+  await expect(pageRoot.getByRole('alert')).toHaveText('Line 3: value "lots" is not a number')
+  await expect(pageRoot.getByRole('img', { name: 'Bar chart' }).locator('rect')).toHaveCount(2)
+
+  await page.getByRole('button', { name: 'Add metric tiles' }).click()
+  await pageRoot.getByRole('button', { name: 'Add tile' }).click()
+  await expect(pageRoot.locator('[data-placeholder="Label"]')).toHaveCount(4)
+})
