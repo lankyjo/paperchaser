@@ -3,6 +3,7 @@ import { getPlainText } from '../../document/richtext'
 import { DOC_TITLES } from '../../document/tokens'
 import type { DocumentModel } from '../../document/types'
 import type { StepStatus, StepType } from '../../project/pipeline'
+import { EXPLAINERS } from '../../strings/explainers'
 import { Button } from '../ui/button'
 
 const STATUS_LABELS: Record<StepStatus, string> = { notStarted: 'Not started', draft: 'Draft', sent: 'Sent', done: 'Done' }
@@ -25,6 +26,7 @@ export function StepCard({ type, multi, status, documents, onCreate, onToggleDon
         <h3 className="font-medium">{title}</h3>
         <span className="rounded-full bg-muted px-2 py-0.5 text-xs">{STATUS_LABELS[status]}</span>
       </div>
+      <p className="text-xs text-muted-foreground">{EXPLAINERS[type].short}</p>
       <ul className="flex flex-col gap-1 text-sm">
         {documents.map((doc, idx) => (
           <li key={doc.id}>

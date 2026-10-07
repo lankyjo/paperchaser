@@ -17,6 +17,7 @@ Non-negotiable. `pnpm check:conventions` enforces what a tool can check; the rev
 - `src/components/` — React components, grouped by feature folder; `ui/` holds shared primitives.
 - `src/hooks/` — shared custom hooks; a hook used by one feature lives in that feature's folder.
 - `src/lib/` — small framework-agnostic helpers.
+- `src/strings/` — user-facing copy (labels, sample content, explainers), kept out of components.
 - `src/routes/` — route components only; they compose, they don't hold logic.
 - Tests sit next to the code in `__tests__/`.
 

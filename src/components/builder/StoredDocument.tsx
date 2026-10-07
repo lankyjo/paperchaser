@@ -4,6 +4,7 @@ import type { DocumentModel } from '../../document/types'
 import { useMountEffect } from '../../hooks/useMountEffect'
 import { applySharedData, sharedFromClient, type SharedData } from '../../project/sharedData'
 import { BlockWorkspace } from '../blocks/BlockWorkspace'
+import { ExplainerBanner } from '../explainer/ExplainerBanner'
 import { BuilderWorkspace } from './BuilderWorkspace'
 
 interface Loaded {
@@ -30,6 +31,14 @@ export function StoredDocument({ documentId }: { documentId: string }) {
 
   if (loaded === undefined) return <div className="flex min-h-screen items-center justify-center" />
   if (loaded === null) return <p className="p-6 text-sm">Document not found.</p>
-  if (loaded.model.blocks !== undefined) return <BlockWorkspace model={loaded.model} />
-  return <BuilderWorkspace model={loaded.model} shared={loaded.shared} />
+  return (
+    <>
+      <ExplainerBanner type={loaded.model.type} />
+      {loaded.model.blocks !== undefined ? (
+        <BlockWorkspace model={loaded.model} />
+      ) : (
+        <BuilderWorkspace model={loaded.model} shared={loaded.shared} />
+      )}
+    </>
+  )
 }
