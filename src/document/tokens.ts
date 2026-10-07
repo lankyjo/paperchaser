@@ -3,6 +3,7 @@
 import { blankTokens } from './templates/blank'
 import { minimalTokens } from './templates/minimal'
 import { noirLedgerTokens } from './templates/noirLedger'
+import { atelierTokens } from './templates/atelier'
 import { DOC_TYPE_IDS, DOC_TYPES } from './docTypes'
 import type { Branding, DocumentModel, PageSize, TemplateId } from './types'
 
@@ -59,6 +60,8 @@ export interface TemplateTokens {
     bodyFontId: FontId
     titleSize: string
     titleWeight: number
+    // Body text size; absent is 11px.
+    bodySize?: string
     // Label/meta font.
     labelFontId: FontId
     // Letter-spacing for label-style text.
@@ -106,6 +109,7 @@ export const TEMPLATE_VERSIONS: Record<TemplateId, TemplateTokens[]> = {
   blank: [blankTokens],
   minimal: [minimalTokens],
   noirLedger: [noirLedgerTokens],
+  atelier: [atelierTokens],
 }
 
 // Display name of each template.
@@ -113,6 +117,7 @@ export const TEMPLATE_NAMES: Record<TemplateId, string> = {
   blank: 'Blank',
   minimal: 'Minimal',
   noirLedger: 'Noir Ledger',
+  atelier: 'Atelier',
 }
 
 // The current version of each template; must cover exactly the ids in types.ts (pinned by a unit test).

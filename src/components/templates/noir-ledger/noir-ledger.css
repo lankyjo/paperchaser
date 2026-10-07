@@ -1,9 +1,5 @@
 /* Noir Ledger: charcoal page, gold hairlines, letterspaced small-caps labels. */
 
-.tpl-noirLedger {
-  font-size: 11px;
-}
-
 .noir-gold {
   color: var(--tpl-accent);
 }

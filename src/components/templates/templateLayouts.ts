@@ -2,6 +2,7 @@ import type { ComponentType } from 'react'
 import type { printedTotals } from '../../document/finalize'
 import type { ResolvedTokens } from '../../document/tokens'
 import type { DocumentModel, TemplateId } from '../../document/types'
+import { atelierLayout } from './atelier/atelierLayout'
 import { noirLedgerLayout } from './noir-ledger/noirLedgerLayout'
 
 export interface RegionProps {
@@ -28,4 +29,5 @@ export interface TemplateLayout {
 
 export const TEMPLATE_LAYOUTS: Partial<Record<TemplateId, TemplateLayout>> = {
   noirLedger: noirLedgerLayout,
+  atelier: atelierLayout,
 }

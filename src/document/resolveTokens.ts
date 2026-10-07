@@ -44,6 +44,7 @@ export function toCssVars(resolved: ResolvedTokens): Record<string, string> {
     '--tpl-fill': resolved.palette.fill,
     '--tpl-font-heading': FONT_STACKS[resolved.fonts.headingFontId],
     '--tpl-font-body': FONT_STACKS[resolved.fonts.bodyFontId],
+    '--tpl-body-size': resolved.fonts.bodySize ?? '11px',
     '--tpl-font-label': FONT_STACKS[resolved.fonts.labelFontId],
     '--tpl-label-letterspacing': resolved.fonts.labelLetterspacing,
     '--tpl-label-color': resolved.fonts.labelColor ?? resolved.palette.primary ?? resolved.palette.ink,

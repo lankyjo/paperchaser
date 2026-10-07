@@ -1,0 +1,148 @@
+/* Atelier: warm paper, serif body, small letterspaced sans labels. */
+
+.atelier-mark {
+  display: flex;
+  justify-content: center;
+}
+
+.atelier-mark img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.atelier-mark span {
+  font-size: 34px;
+  line-height: 44px;
+}
+
+.atelier-rule {
+  height: 1px;
+  background: var(--tpl-border);
+  margin: 22px 0 26px;
+}
+
+.atelier-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.atelier-head h1 {
+  margin: 0;
+  font-size: var(--tpl-title-size);
+  font-weight: var(--tpl-title-weight);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+.atelier-head span,
+.atelier-page-mark {
+  font-family: 'Geist Mono Variable', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  color: var(--tpl-muted);
+}
+
+.atelier-from {
+  display: flex;
+  justify-content: space-between;
+  gap: 12mm;
+  margin: 24px 0 var(--tpl-section-gap);
+  line-height: 1.55;
+}
+
+.atelier-label,
+.tpl-atelier .doc-parties-title,
+.tpl-atelier .doc-items th {
+  font-family: var(--tpl-font-label);
+  font-size: 8.5px;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--tpl-label-color);
+  margin: 0 0 6px;
+}
+
+.atelier-name,
+.tpl-atelier .doc-parties > div:first-of-type {
+  font-size: 15px;
+}
+
+.atelier-soft,
+.tpl-atelier .doc-parties > div {
+  color: var(--tpl-muted);
+}
+
+.atelier-dates {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 10px;
+  align-content: start;
+  margin: 0;
+  text-align: right;
+}
+
+.atelier-dates dt {
+  font-style: italic;
+  color: var(--tpl-label-color);
+}
+
+.atelier-dates dd {
+  margin: 0;
+}
+
+.tpl-atelier .doc-heading {
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.tpl-atelier .doc-items thead tr {
+  border-bottom-color: var(--tpl-border);
+}
+
+.tpl-atelier .doc-items th {
+  padding-bottom: 10px;
+}
+
+.tpl-atelier .doc-items td {
+  padding: 14px 0;
+}
+
+.tpl-atelier .doc-items td + td,
+.tpl-atelier .doc-items th + th {
+  padding-left: 12px;
+}
+
+.tpl-atelier .doc-items-description,
+.tpl-atelier .doc-items-price {
+  color: var(--tpl-muted);
+  font-style: italic;
+}
+
+.tpl-atelier .doc-totals {
+  width: 70mm;
+  color: var(--tpl-muted);
+}
+
+.tpl-atelier .doc-totals-row {
+  padding: 5px 0;
+}
+
+.tpl-atelier .doc-totals-grand {
+  border-top: 1px solid var(--tpl-ink);
+  margin-top: 8px;
+  padding-top: 12px;
+  color: var(--tpl-ink);
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.atelier-page-mark {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8mm;
+  text-align: center;
+  font-size: 9px;
+}

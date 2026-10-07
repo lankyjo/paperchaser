@@ -15,7 +15,7 @@ function pageStyleFor(pageSize: PageSize, fixedHeight: boolean): CSSProperties {
     background: 'var(--tpl-fill)',
     color: 'var(--tpl-ink)',
     fontFamily: 'var(--tpl-font-body)',
-    fontSize: '11px',
+    fontSize: 'var(--tpl-body-size)',
     lineHeight: 1.5,
     position: 'relative',
   }
