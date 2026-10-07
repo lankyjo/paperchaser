@@ -8,4 +8,6 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   steps: 'Numbered steps',
   metrics: 'Metric tiles',
   chart: 'Chart',
+  rating: 'Rating questions',
+  checklist: 'Checklist',
 }

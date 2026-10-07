@@ -9,11 +9,13 @@ const files: Block = { id: 'b4', type: 'table', columns: ['File', 'Format'], row
 const nextSteps: Block = { id: 'b5', type: 'steps', items: [{ title: 'Discovery call', description: 'Align on goals' }] }
 const kpis: Block = { id: 'b6', type: 'metrics', items: [{ label: 'Views', value: '200K', note: '+12%' }] }
 const trend: Block = { id: 'b7', type: 'chart', title: 'Views by week', series: [{ label: 'W1', value: 120 }] }
+const ratings: Block = { id: 'b8', type: 'rating', title: 'Overall', questions: [{ text: 'Communication', answer: 4 }, { text: 'Quality' }] }
+const checks: Block = { id: 'b9', type: 'checklist', title: 'Before you post', items: [{ text: 'Read the guide', checked: true }] }
 const blocks = [heading, intro, glance]
 
 describe('blockSchema', () => {
   it('round-trips every tracer block type through JSON', () => {
-    for (const block of [...blocks, files, nextSteps, kpis, trend]) expect(blockSchema.parse(JSON.parse(JSON.stringify(block)))).toEqual(block)
+    for (const block of [...blocks, files, nextSteps, kpis, trend, ratings, checks]) expect(blockSchema.parse(JSON.parse(JSON.stringify(block)))).toEqual(block)
   })
 })
 
@@ -32,6 +34,11 @@ describe('block operations', () => {
   it('starts metrics with three empty tiles and a chart with two empty bars', () => {
     expect(addBlock([], 'metrics', null, 'm')[0]).toMatchObject({ type: 'metrics', items: [{}, {}, {}] })
     expect(addBlock([], 'chart', null, 'c')[0]).toEqual({ id: 'c', type: 'chart', title: '', series: [{ label: '', value: 0 }, { label: '', value: 0 }] })
+  })
+
+  it('starts a rating with one unanswered question and a checklist with one unchecked item', () => {
+    expect(addBlock([], 'rating', null, 'r')[0]).toEqual({ id: 'r', type: 'rating', title: '', questions: [{ text: '' }] })
+    expect(addBlock([], 'checklist', null, 'k')[0]).toEqual({ id: 'k', type: 'checklist', title: '', items: [{ text: '' }] })
   })
 
   it('moves a block up or down and ignores moves past either end', () => {

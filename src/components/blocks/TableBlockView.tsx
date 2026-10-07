@@ -1,6 +1,7 @@
 import type { Block } from '../../document/blocks'
 import { getPlainText } from '../../document/richtext'
 import { RichTextCell } from '../edit/RichTextCell'
+import { labelStyle } from './blockStyles'
 
 type TableBlock = Extract<Block, { type: 'table' }>
 
@@ -20,7 +21,7 @@ export function TableBlockView({ block, onChange }: { block: TableBlock; onChang
         <thead>
           <tr>
             {block.columns.map((col, c) => (
-              <th key={c} style={{ ...cellStyle, fontFamily: 'var(--tpl-font-label)', fontSize: '9px', letterSpacing: 'var(--tpl-label-letterspacing)', textTransform: 'uppercase', color: 'var(--tpl-primary)' }}>
+              <th key={c} style={{ ...cellStyle, ...labelStyle }}>
                 {cell(col, (text) => setColumn(c, text))}
               </th>
             ))}

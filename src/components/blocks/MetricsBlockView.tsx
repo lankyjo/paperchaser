@@ -1,6 +1,7 @@
 import type { Block } from '../../document/blocks'
 import { getPlainText } from '../../document/richtext'
 import { RichTextCell } from '../edit/RichTextCell'
+import { labelStyle } from './blockStyles'
 
 type MetricsBlock = Extract<Block, { type: 'metrics' }>
 type Item = MetricsBlock['items'][number]
@@ -17,7 +18,7 @@ export function MetricsBlockView({ block, onChange }: { block: MetricsBlock; onC
         {block.items.map((item, idx) => (
           <div key={idx} style={{ border: '1px solid var(--tpl-border)', borderRadius: 'var(--tpl-radius)', padding: '10px', textAlign: 'center' }}>
             <div style={{ fontFamily: 'var(--tpl-font-heading)', fontSize: '20px', fontWeight: 600 }}>{cell(item.value, '0', (value) => setItem(idx, { ...item, value }))}</div>
-            <div style={{ fontFamily: 'var(--tpl-font-label)', fontSize: '9px', letterSpacing: 'var(--tpl-label-letterspacing)', textTransform: 'uppercase', color: 'var(--tpl-primary)' }}>
+            <div style={labelStyle}>
               {cell(item.label, 'Label', (label) => setItem(idx, { ...item, label }))}
             </div>
             <div style={{ fontSize: '10px' }}>{cell(item.note, 'Note', (note) => setItem(idx, { ...item, note }))}</div>

@@ -76,3 +76,21 @@ test('a chart takes pasted CSV, reports bad lines, and draws one bar per row; me
   await pageRoot.getByRole('button', { name: 'Add tile' }).click()
   await expect(pageRoot.locator('[data-placeholder="Label"]')).toHaveCount(4)
 })
+
+test('rating and checklist blocks print empty boxes and log answers when clicked', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Quick invoice' }).click()
+  await page.goto('/')
+  await page.getByRole('link', { name: 'Untitled project' }).click()
+  await page.getByRole('button', { name: 'Start feedback' }).click()
+  const pageRoot = page.locator('#print-root')
+
+  await page.getByRole('button', { name: 'Add rating questions' }).click()
+  await expect(pageRoot.getByRole('button', { pressed: true })).toHaveCount(0)
+  await pageRoot.getByRole('button', { name: 'Question 1: 4' }).click()
+  await expect(pageRoot.getByRole('button', { name: 'Question 1: 4' })).toHaveAttribute('aria-pressed', 'true')
+
+  await page.getByRole('button', { name: 'Add checklist' }).click()
+  await pageRoot.getByRole('button', { name: 'Tick item 1' }).click()
+  await expect(pageRoot.getByRole('button', { name: 'Tick item 1' })).toHaveAttribute('aria-pressed', 'true')
+})

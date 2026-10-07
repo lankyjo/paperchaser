@@ -1,6 +1,7 @@
 import type { Block } from '../../document/blocks'
 import { getPlainText } from '../../document/richtext'
 import { RichTextCell } from '../edit/RichTextCell'
+import { labelStyle } from './blockStyles'
 import { BarChart } from './BarChart'
 import { CsvPaste } from './CsvPaste'
 
@@ -13,7 +14,7 @@ export function ChartBlockView({ block, onChange }: { block: ChartBlock; onChang
 
   return (
     <div>
-      <h3 style={{ fontFamily: 'var(--tpl-font-label)', fontSize: '9px', letterSpacing: 'var(--tpl-label-letterspacing)', textTransform: 'uppercase', color: 'var(--tpl-primary)', margin: '0 0 6px' }}>
+      <h3 style={{ ...labelStyle, margin: '0 0 6px' }}>
         {onChange ? (
           <RichTextCell key={block.title} text={block.title} placeholder="Chart title" onCommit={(next) => onChange({ ...block, title: getPlainText(next) })} />
         ) : (

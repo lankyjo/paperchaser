@@ -1,11 +1,11 @@
 import type { Block } from '../../document/blocks'
 import { getPlainText } from '../../document/richtext'
 import { RichTextCell } from '../edit/RichTextCell'
+import { labelStyle } from './blockStyles'
 
 type KeyValueBlock = Extract<Block, { type: 'keyValue' }>
 type Row = KeyValueBlock['rows'][number]
 
-const labelStyle = { fontSize: '9px', letterSpacing: 'var(--tpl-label-letterspacing)', textTransform: 'uppercase', fontFamily: 'var(--tpl-font-label)', color: 'var(--tpl-primary)' } as const
 
 // A titled list of label/value rows, e.g. "Your project at a glance".
 export function KeyValueBlockView({ block, onChange }: { block: KeyValueBlock; onChange?: (next: Block) => void }) {

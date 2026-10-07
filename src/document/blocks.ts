@@ -26,6 +26,18 @@ export const blockSchema = z.discriminatedUnion('type', [
     title: z.string(),
     series: z.array(z.object({ label: z.string(), value: z.number().finite() })),
   }),
+  z.object({
+    ...base,
+    type: z.literal('rating'),
+    title: z.string(),
+    questions: z.array(z.object({ text: z.string(), answer: z.int().min(1).max(5).optional() })),
+  }),
+  z.object({
+    ...base,
+    type: z.literal('checklist'),
+    title: z.string(),
+    items: z.array(z.object({ text: z.string(), checked: z.boolean().optional() })),
+  }),
 ])
 
 export type Block = z.infer<typeof blockSchema>
@@ -39,6 +51,8 @@ const emptyBlock: Record<BlockType, (id: string) => Block> = {
   steps: (id) => ({ id, type: 'steps', items: [{ title: '', description: '' }] }),
   metrics: (id) => ({ id, type: 'metrics', items: [0, 1, 2].map(() => ({ label: '', value: '', note: '' })) }),
   chart: (id) => ({ id, type: 'chart', title: '', series: [{ label: '', value: 0 }, { label: '', value: 0 }] }),
+  rating: (id) => ({ id, type: 'rating', title: '', questions: [{ text: '' }] }),
+  checklist: (id) => ({ id, type: 'checklist', title: '', items: [{ text: '' }] }),
 }
 
 export function addBlock(blocks: Block[], type: BlockType, afterId: string | null, id: string): Block[] {
@@ -71,6 +85,8 @@ const summaries: { [T in BlockType]: (block: Extract<Block, { type: T }>) => str
   steps: (b) => b.items[0]?.title ?? '',
   metrics: (b) => b.items.map((i) => i.label).filter(Boolean).join(', '),
   chart: (b) => b.title,
+  rating: (b) => b.title,
+  checklist: (b) => b.title,
 }
 
 // Short text that identifies a block in the outline.
