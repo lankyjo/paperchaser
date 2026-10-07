@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { exportWorkspace, importProject, replaceWorkspace, type ImportMode } from '../../db/backupRepo'
 import { preferencesRepo, projectsRepo } from '../../db/repos'
-import { downloadJson } from '../../lib/downloadJson'
+import { downloadJson } from '../../lib/downloadFile'
 import { parseBundle, type Bundle, type ProjectBundle, type WorkspaceBundle } from '../../project/backup'
 
 export const LAST_BACKUP_KEY = 'lastBackupAt'

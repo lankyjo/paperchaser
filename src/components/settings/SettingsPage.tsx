@@ -3,6 +3,7 @@ import { DOC_TITLES } from '../../document/tokens'
 import { nextNumber } from '../../document/finalize'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
+import { AccountantExport } from './AccountantExport'
 import { BackupSection } from './BackupSection'
 import { useNumbering } from './useNumbering'
 
@@ -34,6 +35,7 @@ export function SettingsPage() {
       </ul>
       <Button onClick={() => void save()}>Save numbering</Button>
       <BackupSection />
+      <AccountantExport />
     </main>
   )
 }
