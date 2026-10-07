@@ -4,6 +4,7 @@ import { documentBlocks } from './documentBlocks'
 import { printedTotals } from './finalize'
 import { formatDocDate } from './formatDocDate'
 import { getPlainText } from './richtext'
+import { DOC_LABELS } from '../strings/documentLabels'
 import { resolveTokens } from './resolveTokens'
 import type { Branding, DocumentModel, PageSize, TemplateId } from './types'
 import { watermarkFor } from './watermark'
@@ -56,7 +57,7 @@ export function resolvePage(doc: DocumentModel, template?: TemplateId, branding?
   }
 }
 
-const DATE_LABELS = { validUntil: 'Valid until', dueDate: 'Due' }
+const DATE_LABELS = { validUntil: DOC_LABELS.validUntil, dueDate: DOC_LABELS.dueDate }
 
 // Plain-text facts every header shows: title, sender, number and formatted dates.
 export function documentFacts(doc: DocumentModel) {

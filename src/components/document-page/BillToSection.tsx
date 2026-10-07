@@ -3,6 +3,7 @@ import type { RichTextDoc } from '../../document/richtext'
 import { getPlainText } from '../../document/richtext'
 import { RichTextCell } from '../edit/RichTextCell'
 import { OverrideNotice } from './OverrideNotice'
+import { DOC_LABELS } from '../../strings/documentLabels'
 
 // Customer name and address block, as editable cells or plain text.
 export function BillToSection({
@@ -23,7 +24,7 @@ export function BillToSection({
 
   return (
     <section className="doc-parties">
-      <h3 className="doc-parties-title">Bill to</h3>
+      <h3 className="doc-parties-title">{DOC_LABELS.billTo}</h3>
       {editable ? (
         <>
           <RichTextCell

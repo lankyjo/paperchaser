@@ -3,6 +3,7 @@ import { formatMoney } from '../../../document/money'
 import { documentFacts } from '../../../document/pageLayout'
 import { LocalImage } from '../../document-page/LocalImage'
 import type { RegionProps } from '../templateLayouts'
+import { DOC_LABELS } from '../../../strings/documentLabels'
 
 // Side column (sender, amount, dates, address) beside an oversized title with the number.
 export function StatementHeader({ model, totals }: RegionProps) {
@@ -16,13 +17,13 @@ export function StatementHeader({ model, totals }: RegionProps) {
         </div>
         {DOC_TYPES[model.type].money && (
           <div>
-            <div className="statement-label">Amount</div>
+            <div className="statement-label">{DOC_LABELS.amount}</div>
             <div className="statement-amount">{formatMoney(totals.grandTotalMinor, model.currency, model.locale)}</div>
           </div>
         )}
         <div>
           <div className="statement-row">
-            <span>Issued</span>
+            <span>{DOC_LABELS.issued}</span>
             <span>{facts.issued}</span>
           </div>
           {facts.date && (
@@ -41,7 +42,7 @@ export function StatementHeader({ model, totals }: RegionProps) {
       </aside>
       <div className="statement-head">
         <h1>{facts.title}</h1>
-        {facts.number !== '' && <div className="statement-number">No. {facts.number}</div>}
+        {facts.number !== '' && <div className="statement-number">{DOC_LABELS.numberShort} {facts.number}</div>}
       </div>
     </header>
   )

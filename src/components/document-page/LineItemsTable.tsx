@@ -1,5 +1,6 @@
 import type { DocumentModel } from '../../document/types'
 import { LineItemRow } from './LineItemRow'
+import { DOC_LABELS } from '../../strings/documentLabels'
 
 // Line-item table; editable rows commit a new model with the patched item.
 export function LineItemsTable({
@@ -21,11 +22,11 @@ export function LineItemsTable({
     <table className="doc-items">
       <thead>
         <tr>
-          <th>Item</th>
-          <th>Description</th>
-          <th className="num">Qty</th>
-          <th className="num">Unit price</th>
-          <th className="num">Amount</th>
+          <th>{DOC_LABELS.item}</th>
+          <th>{DOC_LABELS.description}</th>
+          <th className="num">{DOC_LABELS.quantity}</th>
+          <th className="num">{DOC_LABELS.unitPrice}</th>
+          <th className="num">{DOC_LABELS.amount}</th>
         </tr>
       </thead>
       <tbody style={{ counterReset: `line-item ${from}` }}>

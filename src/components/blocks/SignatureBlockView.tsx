@@ -5,6 +5,7 @@ import { PlainTextCell } from '../edit/PlainTextCell'
 import { labelStyle } from './blockStyles'
 import { SignaturePad } from './SignaturePad'
 import { StoredImage } from './StoredImage'
+import { DOC_LABELS } from '../../strings/documentLabels'
 
 type SignatureBlock = Extract<Block, { type: 'signature' }>
 
@@ -47,8 +48,8 @@ export function SignatureBlockView({ block, onChange }: { block: SignatureBlock;
       </div>
       {block.clientLine && (
         <div>
-          <div style={lineStyle}>Client signature</div>
-          <div style={{ ...lineStyle, marginTop: '20px' }}>Name and date</div>
+          <div style={lineStyle}>{DOC_LABELS.clientSignature}</div>
+          <div style={{ ...lineStyle, marginTop: '20px' }}>{DOC_LABELS.nameAndDate}</div>
         </div>
       )}
     </section>

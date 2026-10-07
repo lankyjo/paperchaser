@@ -4,6 +4,7 @@ import { scheduleAmounts, scheduleWarning, type ScheduleBlock } from '../../docu
 import type { DocumentModel } from '../../document/types'
 import { labelStyle } from './blockStyles'
 import { ScheduleRowActions } from './ScheduleRowActions'
+import { DOC_LABELS } from '../../strings/documentLabels'
 
 type Row = ScheduleBlock['rows'][number]
 
@@ -19,7 +20,7 @@ export function PaymentScheduleBlockView({ block, model, onChange }: { block: Sc
 
   return (
     <section>
-      <h3 style={{ ...labelStyle, margin: '0 0 6px' }}>Payment schedule · {money(block.totalMinor)}</h3>
+      <h3 style={{ ...labelStyle, margin: '0 0 6px' }}>{DOC_LABELS.paymentSchedule} · {money(block.totalMinor)}</h3>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <tbody>
           {block.rows.map((row, idx) => (

@@ -3,6 +3,7 @@ import { DOC_TITLES, FONT_STACKS } from '../../document/tokens'
 import type { DocumentModel } from '../../document/types'
 import { getPlainText } from '../../document/richtext'
 import { LocalImage } from '../document-page/LocalImage'
+import { formatDocDate } from '../../document/formatDocDate'
 
 // Header preset: single line with logo and name left, title, number and date right.
 export function HeaderCompact({ tokens, model }: { tokens: ResolvedTokens; model: DocumentModel }) {
@@ -22,7 +23,7 @@ export function HeaderCompact({ tokens, model }: { tokens: ResolvedTokens; model
             {DOC_TITLES[model.type]}
           </span>
           <span style={{ marginLeft: '8px' }}>
-            {getPlainText(model.number)} · {model.issueDate}
+            {getPlainText(model.number)} · {formatDocDate(model.issueDate, model.locale)}
           </span>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { documentFacts } from '../../../document/pageLayout'
 import { LocalImage } from '../../document-page/LocalImage'
 import type { RegionProps } from '../templateLayouts'
+import { DOC_LABELS } from '../../../strings/documentLabels'
 
 // Letterhead with the sender's details, then the reference line: document title, number and dates.
 export function CorrespondenceHeader({ model }: RegionProps) {
@@ -23,7 +24,9 @@ export function CorrespondenceHeader({ model }: RegionProps) {
           {facts.title}
           {facts.number !== '' && ` Nº ${facts.number}`}
         </div>
-        <div>Issued {facts.issued}</div>
+        <div>
+          {DOC_LABELS.issued} {facts.issued}
+        </div>
         {facts.date && (
           <div>
             {facts.date.label} {facts.date.value}

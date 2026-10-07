@@ -3,6 +3,7 @@ import { formatMoney } from '../../../document/money'
 import { documentFacts } from '../../../document/pageLayout'
 import { LocalImage } from '../../document-page/LocalImage'
 import type { RegionProps } from '../templateLayouts'
+import { DOC_LABELS } from '../../../strings/documentLabels'
 
 // Titles longer than this drop to a smaller size so they stay on two lines.
 const LONG_TITLE = 10
@@ -11,10 +12,10 @@ const LONG_TITLE = 10
 export function SwissHeader({ model, totals }: RegionProps) {
   const facts = documentFacts(model)
   const strip = [
-    ['Number', facts.number],
-    ['Issued', facts.issued],
+    [DOC_LABELS.number, facts.number],
+    [DOC_LABELS.issued, facts.issued],
     ...(facts.date ? [[facts.date.label, facts.date.value]] : []),
-    ...(DOC_TYPES[model.type].money ? [['Amount', formatMoney(totals.grandTotalMinor, model.currency, model.locale)]] : []),
+    ...(DOC_TYPES[model.type].money ? [[DOC_LABELS.amount, formatMoney(totals.grandTotalMinor, model.currency, model.locale)]] : []),
   ].filter(([, value]) => value !== '')
   return (
     <header className="swiss-header">

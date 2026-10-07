@@ -1,5 +1,6 @@
 import type { TaxMode } from '../../document/totals'
 import { formatMoney } from '../../document/money'
+import { DOC_LABELS } from '../../strings/documentLabels'
 
 interface TotalsSectionProps {
   subtotalMinor: number
@@ -10,7 +11,7 @@ interface TotalsSectionProps {
   locale?: string
 }
 
-const TAX_LABELS: Record<TaxMode, string | null> = { exclusive: 'Tax', inclusive: 'Includes tax', none: null }
+const TAX_LABELS: Record<TaxMode, string | null> = { exclusive: DOC_LABELS.tax, inclusive: DOC_LABELS.taxIncluded, none: null }
 
 // Subtotal, tax and grand total, right-aligned under the table; inclusive prices show the tax they contain, untaxed shows none.
 export function TotalsSection({ subtotalMinor, taxMinor, grandTotalMinor, taxMode = 'exclusive', currency, locale }: TotalsSectionProps) {
@@ -19,7 +20,7 @@ export function TotalsSection({ subtotalMinor, taxMinor, grandTotalMinor, taxMod
   return (
     <section className="doc-totals">
       <div className="doc-totals-row">
-        <span>Subtotal</span>
+        <span>{DOC_LABELS.subtotal}</span>
         <span>{money(subtotalMinor)}</span>
       </div>
       {taxLabel !== null && (
@@ -29,7 +30,7 @@ export function TotalsSection({ subtotalMinor, taxMinor, grandTotalMinor, taxMod
         </div>
       )}
       <div className="doc-totals-row doc-totals-grand">
-        <span>Grand total</span>
+        <span>{DOC_LABELS.grandTotal}</span>
         <span>{money(grandTotalMinor)}</span>
       </div>
     </section>

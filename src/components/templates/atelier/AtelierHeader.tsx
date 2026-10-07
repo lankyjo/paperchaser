@@ -1,6 +1,7 @@
 import { documentFacts } from '../../../document/pageLayout'
 import { LocalImage } from '../../document-page/LocalImage'
 import type { RegionProps } from '../templateLayouts'
+import { DOC_LABELS } from '../../../strings/documentLabels'
 
 // Centered mark over a hairline, letterspaced title with its number, then the sender beside the dates.
 export function AtelierHeader({ model }: RegionProps) {
@@ -17,7 +18,7 @@ export function AtelierHeader({ model }: RegionProps) {
       </div>
       <div className="atelier-from">
         <div>
-          <div className="atelier-label">From</div>
+          <div className="atelier-label">{DOC_LABELS.from}</div>
           <div className="atelier-name">{facts.company}</div>
           {facts.companyLines.map((line) => (
             <div key={line} className="atelier-soft">
@@ -26,7 +27,7 @@ export function AtelierHeader({ model }: RegionProps) {
           ))}
         </div>
         <dl className="atelier-dates">
-          <dt>Issued</dt>
+          <dt>{DOC_LABELS.issued}</dt>
           <dd>{facts.issued}</dd>
           {facts.date && (
             <>
