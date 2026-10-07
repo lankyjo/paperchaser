@@ -1,5 +1,6 @@
 import { Link, useNavigate } from '@tanstack/react-router'
 import { getPlainText } from '../../document/richtext'
+import { Button } from '../ui/button'
 import { NewProjectForm } from './NewProjectForm'
 import { useProjects } from './useProjects'
 
@@ -15,13 +16,18 @@ export function ProjectsHome() {
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4">
-      <h1 className="text-xl font-semibold">Projects</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-semibold">Projects</h1>
+        <Button variant="outline" onClick={() => void create('')}>
+          Quick invoice
+        </Button>
+      </div>
       <NewProjectForm onCreate={(title) => void create(title)} />
       {projects?.length === 0 && <p className="text-sm text-muted-foreground">No projects yet.</p>}
       <ul className="flex flex-col gap-3">
         {projects?.map(({ project, documents }) => (
           <li key={project.id} className="rounded-lg border bg-card p-4">
-            <h2 className="font-medium">{project.title}</h2>
+            <h2 className="font-medium">{project.title || 'Untitled project'}</h2>
             <ul className="mt-2 flex flex-col gap-1 text-sm">
               {documents.map((doc) => (
                 <li key={doc.id}>
