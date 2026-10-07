@@ -1,18 +1,20 @@
 import type { ComponentType } from 'react'
 import type { Block, ContentBlock, ContentBlockType } from '../../document/blocks'
+import type { DocumentModel } from '../../document/types'
 import { ChartBlockView } from './ChartBlockView'
 import { ChecklistBlockView } from './ChecklistBlockView'
 import { HeadingBlockView } from './HeadingBlockView'
 import { ImageBlockView } from './ImageBlockView'
 import { KeyValueBlockView } from './KeyValueBlockView'
 import { MetricsBlockView } from './MetricsBlockView'
+import { PaymentScheduleBlockView } from './PaymentScheduleBlockView'
 import { RatingBlockView } from './RatingBlockView'
 import { SignatureBlockView } from './SignatureBlockView'
 import { RichTextBlockView } from './RichTextBlockView'
 import { StepsBlockView } from './StepsBlockView'
 import { TableBlockView } from './TableBlockView'
 
-type BlockViewProps<T extends ContentBlockType> = { block: Extract<Block, { type: T }>; onChange?: (next: Block) => void }
+type BlockViewProps<T extends ContentBlockType> = { block: Extract<Block, { type: T }>; model: DocumentModel; onChange?: (next: Block) => void }
 
 const views: { [T in ContentBlockType]: ComponentType<BlockViewProps<T>> } = {
   heading: HeadingBlockView,
@@ -26,14 +28,15 @@ const views: { [T in ContentBlockType]: ComponentType<BlockViewProps<T>> } = {
   checklist: ChecklistBlockView,
   image: ImageBlockView,
   signature: SignatureBlockView,
+  paymentSchedule: PaymentScheduleBlockView,
 }
 
 // Renders one block with the view for its type; editable when onChange is given.
-export function BlockView({ block, onChange }: { block: ContentBlock; onChange?: (next: Block) => void }) {
+export function BlockView({ block, model, onChange }: { block: ContentBlock; model: DocumentModel; onChange?: (next: Block) => void }) {
   const View = views[block.type] as ComponentType<BlockViewProps<ContentBlockType>>
   return (
     <div style={{ marginBottom: 'var(--tpl-section-gap)' }}>
-      <View block={block} onChange={onChange} />
+      <View block={block} model={model} onChange={onChange} />
     </div>
   )
 }

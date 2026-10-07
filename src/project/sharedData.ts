@@ -13,15 +13,17 @@ export interface SharedData {
   taxMode?: TaxMode
   currency?: string
   locale?: string
+  feeMinor?: number
 }
 
-export function sharedFromProject(client: Client | undefined, project?: Pick<Project, 'taxMode' | 'currency' | 'locale'>): SharedData {
+export function sharedFromProject(client: Client | undefined, project?: Pick<Project, 'taxMode' | 'currency' | 'locale' | 'feeMinor'>): SharedData {
   return {
     customerName: client?.name ?? '',
     customerAddress: client?.billingAddress ?? [],
     taxMode: project?.taxMode,
     currency: project?.currency,
     locale: project?.locale,
+    feeMinor: project?.feeMinor,
   }
 }
 
@@ -47,6 +49,10 @@ function withProjectValue(doc: DocumentModel, field: SharedField, shared: Shared
 
 const FIELDS = Object.keys(sharedValue) as SharedField[]
 
+// The project fee is what every payment schedule splits.
+const withScheduleTotal = (blocks: NonNullable<DocumentModel['blocks']>, feeMinor: number) =>
+  blocks.map((b) => (b.type === 'paymentSchedule' ? { ...b, totalMinor: feeMinor } : b))
+
 // Drafts show the project's values for every field they haven't overridden; sent or unsent snapshots stay frozen.
 export function applySharedData(doc: DocumentModel, shared: SharedData): DocumentModel {
   if (doc.status !== 'draft' || doc.frozen !== undefined) return doc
@@ -56,6 +62,7 @@ export function applySharedData(doc: DocumentModel, shared: SharedData): Documen
     ...(shared.taxMode !== undefined && { taxMode: shared.taxMode }),
     ...(shared.currency !== undefined && { currency: shared.currency }),
     ...(shared.locale !== undefined && { locale: shared.locale }),
+    ...(shared.feeMinor !== undefined && doc.blocks !== undefined && { blocks: withScheduleTotal(doc.blocks, shared.feeMinor) }),
   }
   return FIELDS.filter((f) => !overrides.includes(f)).reduce((next, f) => withProjectValue(next, f, shared), settings)
 }

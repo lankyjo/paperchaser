@@ -22,4 +22,4 @@ export function documentBlocks(doc: Pick<DocumentModel, 'type' | 'blocks' | 'set
 export const canHideBlock = (doc: Pick<DocumentModel, 'type'>, type: BlockType) => !(isMoneyDocument(doc) && REQUIRED_ON_MONEY.has(type))
 
 // Blocks a user may add to any document; money blocks exist once and are never added.
-export const ADDABLE_BLOCK_TYPES: BlockType[] = ['heading', 'richText', 'keyValue', 'table', 'steps', 'metrics', 'chart', 'rating', 'checklist', 'image', 'signature']
+export const ADDABLE_BLOCK_TYPES: BlockType[] = ['heading', 'richText', 'keyValue', 'table', 'steps', 'metrics', 'chart', 'rating', 'checklist', 'image', 'signature', 'paymentSchedule']

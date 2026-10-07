@@ -38,15 +38,17 @@ const lineItemSchema = z.object({
   title: textFieldSchema,
   description: textFieldSchema,
   quantity: z.number().nonnegative(),
-  // Unit price in integer minor units (cents), never floats.
-  unitPriceMinor: z.int().nonnegative(),
+  // Unit price in integer minor units (cents), never floats; only deduction lines may be negative.
+  unitPriceMinor: z.int(),
   // Tax rate in integer minor units of percent (e.g. 1900 = 19.00%).
   taxRateMinor: z.int().nonnegative(),
   // Per-line discount; absent means none.
   discount: discountSchema.optional(),
   // Optional self-contained image on the line item.
   image: lineItemImageSchema.optional(),
-})
+  // A "Less INV-x" line subtracting an amount already invoiced.
+  deduction: z.boolean().optional(),
+}).refine((line) => line.deduction === true || line.unitPriceMinor >= 0, { message: 'only deduction lines can be negative' })
 
 // Logo is a data: URL or null, never an http(s) URL that would fetch remote content (tracking/exfiltration) on render.
 const logoSchema = z
@@ -117,6 +119,8 @@ export const documentSchema = z.object({
   payments: z
     .array(z.object({ id: z.string(), date: z.iso.date(), amountMinor: z.int(), method: z.string(), note: z.string().optional() }))
     .optional(),
+  // On an invoice created from an agreement's payment schedule: the row it bills.
+  scheduleRef: z.object({ agreementId: z.string(), rowId: z.string() }).optional(),
   // On a credit note: the invoice it corrects.
   creditFor: z.string().optional(),
   // On a receipt: the invoice and payment it confirms.

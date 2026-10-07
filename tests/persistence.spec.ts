@@ -20,3 +20,17 @@ test('a new project opens its invoice, and edits survive a reload', async ({ pag
   await page.goto('/')
   await expect(page.getByRole('heading', { name: 'Acme rebrand' })).toBeVisible()
 })
+
+test('an edit is kept when leaving the editor inside the app before autosave fires', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Quick invoice' }).click()
+  const docUrl = page.url()
+  const customerName = page.locator('section', { has: page.getByRole('heading', { name: 'Bill to' }) }).locator('[contenteditable]').first()
+  await customerName.click()
+  await page.keyboard.type('Left in a hurry')
+  await page.keyboard.press('Enter')
+  await page.getByRole('link', { name: 'Project' }).first().click()
+  await expect(page).toHaveURL(/\/projects\//)
+  await page.goto(docUrl)
+  await expect(customerName).toHaveText('Left in a hurry')
+})

@@ -63,3 +63,11 @@ describe('currency and locale', () => {
     expect(doc.locale).toBe('en-NG')
   })
 })
+
+describe('project fee', () => {
+  it('sets the total of payment schedules in draft documents', () => {
+    const agreement = { ...draft, type: 'agreement' as const, blocks: [{ id: 's', type: 'paymentSchedule' as const, totalMinor: 0, taxRateMinor: 0, rows: [] }] }
+    const doc = applySharedData(agreement, { ...shared, feeMinor: 250000 })
+    expect(doc.blocks?.[0]).toMatchObject({ totalMinor: 250000 })
+  })
+})

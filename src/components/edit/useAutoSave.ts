@@ -52,6 +52,8 @@ export function useAutoSave(initial: DocumentModel, onExternalUpdate: (doc: Docu
       window.removeEventListener('pagehide', onHide)
       document.removeEventListener('visibilitychange', onHide)
       stopListening()
+      // Leaving the editor inside the app (no page hide) must still write the pending edit.
+      void flushSave()
     }
   })
 

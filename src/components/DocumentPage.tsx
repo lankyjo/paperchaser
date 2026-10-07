@@ -42,7 +42,7 @@ export function DocumentPage({ model, template, branding, pageSize, editable = f
       case 'totals':
         return <TotalsSection key={block.id} subtotalMinor={totals.subtotalMinor} taxMinor={totals.taxMinor} grandTotalMinor={totals.grandTotalMinor} taxMode={model.taxMode} currency={model.currency} locale={model.locale} />
       default:
-        return <BlockView key={block.id} block={block} onChange={changeBlock} />
+        return <BlockView key={block.id} block={block} model={model} onChange={changeBlock} />
     }
   }
 

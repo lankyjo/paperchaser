@@ -12,6 +12,7 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   checklist: 'Checklist',
   image: 'Image',
   signature: 'Signature',
+  paymentSchedule: 'Payment schedule',
   parties: 'Bill to',
   lineItems: 'Line items',
   totals: 'Totals',

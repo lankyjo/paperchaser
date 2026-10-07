@@ -42,6 +42,7 @@ export function BuilderWorkspace({
     <ProjectDataContext.Provider value={shared}>
       <div className="flex min-h-screen flex-col print:min-h-0" onKeyDown={(e: KeyboardEvent) => handleKeyDown(e)}>
         <BuilderHeader
+          projectId={editableProp ? model.projectId : undefined}
           editable={editable}
           canUndo={canUndo}
           canRedo={canRedo}
