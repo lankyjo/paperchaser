@@ -1,7 +1,6 @@
 import { documentFacts } from '../../../document/pageLayout'
-import { LocalImage } from '../../document-page/LocalImage'
+import { CompanyLogo } from '../CompanyLogo'
 import type { RegionProps } from '../templateLayouts'
-import { DOC_LABELS } from '../../../strings/documentLabels'
 
 // Letterhead with the sender's details, then the reference line: document title, number and dates.
 export function CorrespondenceHeader({ model }: RegionProps) {
@@ -10,7 +9,7 @@ export function CorrespondenceHeader({ model }: RegionProps) {
     <header className="corr-header">
       <div className="corr-letterhead">
         <div>
-          {model.company.logo !== null && <LocalImage src={model.company.logo} alt="" className="document-logo" />}
+          <CompanyLogo model={model} />
           <h2>{facts.company}</h2>
         </div>
         <div className="corr-mono">
@@ -24,14 +23,11 @@ export function CorrespondenceHeader({ model }: RegionProps) {
           {facts.title}
           {facts.number !== '' && ` Nº ${facts.number}`}
         </div>
-        <div>
-          {DOC_LABELS.issued} {facts.issued}
-        </div>
-        {facts.date && (
-          <div>
-            {facts.date.label} {facts.date.value}
+        {facts.dates.map((date) => (
+          <div key={date.label}>
+            {date.label} {date.value}
           </div>
-        )}
+        ))}
       </div>
     </header>
   )

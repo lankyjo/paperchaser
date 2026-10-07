@@ -3,10 +3,11 @@ import { DOC_TITLES, FONT_STACKS } from '../../document/tokens'
 import type { DocumentModel } from '../../document/types'
 import { getPlainText } from '../../document/richtext'
 import { LocalImage } from '../document-page/LocalImage'
-import { formatDocDate } from '../../document/formatDocDate'
+import { documentFacts } from '../../document/pageLayout'
 
 // Header preset: full-width primary-color band with company name left and title right.
 export function HeaderBanner({ tokens, model }: { tokens: ResolvedTokens; model: DocumentModel }) {
+  const facts = documentFacts(model)
   const band = tokens.palette.primary ?? tokens.palette.ink
   return (
     <header
@@ -42,7 +43,7 @@ export function HeaderBanner({ tokens, model }: { tokens: ResolvedTokens; model:
           {DOC_TITLES[model.type]}
         </div>
         <div>
-          {getPlainText(model.number)} · {formatDocDate(model.issueDate, model.locale)}
+          {facts.number} · {facts.issued}
         </div>
       </div>
     </header>

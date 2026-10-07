@@ -11,6 +11,7 @@ import type { Client } from '../project/client'
 import type { Project } from '../project/project'
 import { db as rawDb } from './db'
 import { announceSave } from './documentChannel'
+import { realDocuments } from '../project/sampleProject'
 
 // Company profile row; companyRepo adds the singleton key.
 interface CompanyRow extends Company {
@@ -59,10 +60,7 @@ export const documentsRepo = {
   byProject: (projectId: string) => db.documents.where('projectId').equals(projectId).toArray(),
   list: () => db.documents.toArray(),
   // Every document outside the sample project, for exports and totals.
-  listReal: async () => {
-    const sampleIds = new Set((await db.projects.toArray()).filter((p) => p.sample).map((p) => p.id))
-    return (await db.documents.toArray()).filter((d) => !sampleIds.has(d.projectId))
-  },
+  listReal: async () => realDocuments(await db.projects.toArray(), await db.documents.toArray()),
   finalize: (doc: DocumentModel, now: Date) => finalizeInTransaction(doc, now),
   save: (doc: DocumentModel, expectedRev: number) => saveIfCurrent(doc, expectedRev),
 }
@@ -130,6 +128,13 @@ async function finalizeInTransaction(doc: DocumentModel, now: Date): Promise<Doc
 
 export const projectsRepo = {
   put: (project: Project) => db.projects.put(project),
+  // Saves a project with its client and documents in one transaction, so a failure leaves nothing half-written.
+  putWithDocuments: ({ project, client, documents }: { project: Project; client: Client; documents: DocumentModel[] }) =>
+    rawDb.transaction('rw', 'projects', 'clients', 'documents', async () => {
+      await db.clients.put(client)
+      await db.projects.put(project)
+      await db.documents.bulkPut(documents)
+    }),
   get: (id: string) => db.projects.get(id),
   list: () => db.projects.orderBy('updatedAt').reverse().toArray(),
   // Removes a project together with its documents.

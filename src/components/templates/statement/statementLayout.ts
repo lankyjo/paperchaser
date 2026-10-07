@@ -6,5 +6,4 @@ import './statement.css'
 export const statementLayout: TemplateLayout = {
   Header: StatementHeader,
   Footer: StatementFooter,
-  datesInHeader: true,
 }

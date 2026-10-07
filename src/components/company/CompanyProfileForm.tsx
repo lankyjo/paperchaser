@@ -53,7 +53,11 @@ export function CompanyProfileForm({ initial = EMPTY, submitLabel, onSave }: { i
             Remove logo
           </Button>
         )}
-        <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/svg+xml" aria-label="Logo file" className="hidden" onChange={(e) => readLogoFile(e.target.files?.[0])} />
+        <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/svg+xml" aria-label="Logo file" className="hidden" onChange={(e) => {
+            readLogoFile(e.target.files?.[0])
+            // Lets the same file be picked again after removing it.
+            e.target.value = ''
+          }} />
       </div>
       {logoError && <p className="text-xs text-destructive">Couldn't load that file. Use a PNG, JPG or SVG up to 2 MB.</p>}
       <Button type="submit" disabled={name.trim() === ''}>

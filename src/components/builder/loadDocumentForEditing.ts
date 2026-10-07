@@ -28,9 +28,9 @@ async function syncWithSchedule(doc: DocumentModel, shared: SharedData): Promise
 export async function loadDocumentForEditing(documentId: string): Promise<LoadedDocument | null> {
   const stored = await documentsRepo.get(documentId)
   if (stored === undefined) return null
-  const project = await projectsRepo.get(stored.projectId)
+  const [project, company] = await Promise.all([projectsRepo.get(stored.projectId), companyRepo.get()])
   const client = project?.clientId === undefined ? undefined : await clientsRepo.get(project.clientId)
-  const shared = sharedFromProject(client, project, await companyRepo.get())
+  const shared = sharedFromProject(client, project, company)
   const { doc, scheduleMismatch } = await syncWithSchedule(stored, shared)
   return { model: applySharedData(doc, shared), shared, scheduleMismatch, project }
 }

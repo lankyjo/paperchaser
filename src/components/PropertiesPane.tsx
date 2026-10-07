@@ -5,6 +5,7 @@ import { BrandingPanel } from './BrandingPanel'
 import { TemplateGallery } from './TemplateGallery'
 import { PAGE_SIZE_OPTIONS, PAGE_SIZES } from '../document/tokens'
 import { pageSizeFor } from '../document/pageLayout'
+import { isMoneyDocument } from '../document/documentBlocks'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { CurrencyCard } from './properties/CurrencyCard'
@@ -52,7 +53,7 @@ export function PropertiesPane({
       <h2 className="px-1 text-sm font-semibold">Document</h2>
       <TemplateGallery selected={template} onSelect={onTemplateChange} />
       <BrandingPanel model={model} template={template} onBrandingChange={onBrandingChange} onLogoChange={onLogoChange} />
-      {DOC_TYPES[model.type].money && <CurrencyCard currency={model.currency} />}
+      {isMoneyDocument(model) && <CurrencyCard currency={model.currency} />}
       {dateField === 'validUntil' && onValidUntilChange && <DateCard title="Valid until" value={model.validUntil} onChange={onValidUntilChange} />}
       {dateField === 'dueDate' && onDueDateChange && <DateCard title="Due date" value={model.dueDate} onChange={onDueDateChange} />}
       <Card size="sm">

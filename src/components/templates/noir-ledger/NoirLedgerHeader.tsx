@@ -1,7 +1,7 @@
+import { Fragment } from 'react'
 import { documentFacts } from '../../../document/pageLayout'
-import { LocalImage } from '../../document-page/LocalImage'
+import { CompanyLogo } from '../CompanyLogo'
 import type { RegionProps } from '../templateLayouts'
-import { DOC_LABELS } from '../../../strings/documentLabels'
 
 // Brand and title over a gold rule, then the document's number and dates as label/value fields.
 export function NoirLedgerHeader({ model }: RegionProps) {
@@ -10,7 +10,7 @@ export function NoirLedgerHeader({ model }: RegionProps) {
     <header className="noir-header">
       <div className="noir-top">
         <div>
-          {model.company.logo !== null && <LocalImage src={model.company.logo} alt="" className="document-logo noir-logo" />}
+          <CompanyLogo model={model} className="noir-logo" />
           <div className="noir-brand">
             {facts.company}
             <span className="noir-gold">.</span>
@@ -23,14 +23,12 @@ export function NoirLedgerHeader({ model }: RegionProps) {
       </div>
       <div className="noir-rule" />
       <dl className="noir-fields">
-        <dt>{DOC_LABELS.issued}</dt>
-        <dd>{facts.issued}</dd>
-        {facts.date && (
-          <>
-            <dt>{facts.date.label}</dt>
-            <dd>{facts.date.value}</dd>
-          </>
-        )}
+        {facts.dates.map((date) => (
+          <Fragment key={date.label}>
+            <dt>{date.label}</dt>
+            <dd>{date.value}</dd>
+          </Fragment>
+        ))}
       </dl>
     </header>
   )

@@ -14,6 +14,7 @@ import { PagedDocument } from '../paged-document/PagedDocument'
 import { PrintPreviewDialog } from '../PrintPreviewDialog'
 import { BuilderHeader } from './BuilderHeader'
 import { EditorLayout } from './EditorLayout'
+import { DOC_LABELS } from '../../strings/documentLabels'
 import { cn } from '@/lib/utils'
 import { MobileItemSheet } from './MobileItemSheet'
 import { useBuilderDocument } from './useBuilderDocument'
@@ -64,7 +65,7 @@ export function BuilderWorkspace({
         />
         {DOC_TYPES[model.type].legalNotice && (
           <p role="note" className="mx-4 rounded border px-3 py-2 text-xs text-muted-foreground print:hidden">
-            These clauses are a plain-language starting point, not legal advice. Review them for your country before sending.
+            {DOC_LABELS.legalNotice}
           </p>
         )}
         {editableProp && <LifecycleBar model={model} shared={shared} project={project} history={history} />}

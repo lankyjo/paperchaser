@@ -9,28 +9,25 @@ const LAYOUT_KEY = 'workspaceLayout'
 
 // Loads the saved panel layout before dockview mounts, restores it (or the default) and saves every change.
 export function useWorkspaceLayout() {
-  const [saved, setSaved] = useState<unknown>(undefined)
-  const [loaded, setLoaded] = useState(false)
+  const [saved, setSaved] = useState<{ layout: unknown } | null>(null)
   useMountEffect(() => {
-    void preferencesRepo.get(LAYOUT_KEY).then((layout) => {
-      setSaved(layout)
-      setLoaded(true)
-    })
+    void preferencesRepo.get(LAYOUT_KEY).then((layout) => setSaved({ layout }))
   })
 
   const onReady = ({ api }: DockviewReadyEvent) => {
     let restored = false
-    if (isRestorableLayout(saved, Object.keys(WORKSPACE_PANELS))) {
+    if (isRestorableLayout(saved?.layout, Object.keys(WORKSPACE_PANELS))) {
       try {
-        api.fromJSON(saved as SerializedDockview)
+        api.fromJSON(saved?.layout as SerializedDockview)
         restored = true
       } catch {
         api.clear()
       }
     }
     if (!restored) addDefaultPanels(api)
+    // Saved on every change, so a reload right after a change never loses it.
     api.onDidLayoutChange(() => void preferencesRepo.put(LAYOUT_KEY, api.toJSON()))
   }
 
-  return { loaded, onReady }
+  return { loaded: saved !== null, onReady }
 }

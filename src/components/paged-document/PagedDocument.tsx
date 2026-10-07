@@ -1,6 +1,5 @@
 import { createPortal } from 'react-dom'
 import { pageSizeFor, resolvePage } from '../../document/pageLayout'
-import { toCssVars } from '../../document/resolveTokens'
 import type { Branding, DocumentModel, PageSize, TemplateId } from '../../document/types'
 import { DocumentItem } from '../document-page/DocumentItem'
 import { PageFrame } from '../document-page/PageFrame'
@@ -20,12 +19,12 @@ interface PagedDocumentProps {
 // The document split into real pages by measuring a hidden copy, so preview and print break in the same places.
 export function PagedDocument({ model, template, branding, pageSize, variant }: PagedDocumentProps) {
   const size = pageSize ?? pageSizeFor(model)
-  const { measureRef, pagination } = usePagination(size)
-  const { templateId, tokens, totals, watermark, items } = resolvePage(model, template, branding)
+  const { measureRef, measureKey, pagination } = usePagination(size, [model, template, branding])
+  const { templateId, tokens, totals, items, frame } = resolvePage(model, template, branding)
   const PageMark = TEMPLATE_LAYOUTS[templateId]?.PageMark
   const byId = new Map(items.map((item) => [item.id, item]))
   const pages = (pagination?.pages ?? []).map((page, i, all) => (
-    <PageFrame key={i} templateId={templateId} pageSize={size} fixedHeight cssVars={toCssVars(tokens)} watermark={watermark === null ? null : { text: watermark, color: tokens.accent }}>
+    <PageFrame key={i} templateId={templateId} pageSize={size} fixedHeight {...frame}>
       {page.map((placement) => {
         const item = byId.get(placement.id)
         return item && <DocumentItem key={placement.id} item={item} model={model} templateId={templateId} tokens={tokens} totals={totals} range={placement.range} editable={false} />
@@ -38,7 +37,7 @@ export function PagedDocument({ model, template, branding, pageSize, variant }: 
     <>
       {/* Off-screen measuring copy; visibility:hidden keeps layout, display:none would zero every height. */}
       <div aria-hidden="true" className="print:hidden" style={{ position: 'absolute', left: -10000, top: 0, visibility: 'hidden', pointerEvents: 'none' }}>
-        <div ref={measureRef}>
+        <div key={measureKey} ref={measureRef}>
           <DocumentPage model={model} template={template} branding={branding} pageSize={size} />
         </div>
       </div>

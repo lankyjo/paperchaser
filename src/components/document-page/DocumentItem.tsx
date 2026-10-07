@@ -30,12 +30,12 @@ export function DocumentItem({ item, model, templateId, tokens, totals, range, e
     return <Header tokens={tokens} model={model} totals={totals} />
   }
   if (item.id === 'footer') {
-    const Footer = layout?.Footer ?? footerPresets[tokens.footer.style]
-    return <Footer tokens={tokens} model={model} totals={totals} />
+    const Footer = layout?.Header ? layout.Footer : footerPresets[tokens.footer.style]
+    return Footer ? <Footer tokens={tokens} model={model} totals={totals} /> : null
   }
   if (item.block === undefined) {
     const date = documentFacts(model).date
-    return date && !layout?.datesInHeader ? <p className="doc-date">{date.label} {date.value}</p> : null
+    return date && !layout?.Header ? <p className="doc-date">{date.label} {date.value}</p> : null
   }
   const block = item.block
   switch (block.type) {

@@ -1,37 +1,31 @@
-import { DOC_TYPES } from '../../../document/docTypes'
-import { formatMoney } from '../../../document/money'
 import { documentFacts } from '../../../document/pageLayout'
-import { LocalImage } from '../../document-page/LocalImage'
+import { CompanyLogo } from '../CompanyLogo'
 import type { RegionProps } from '../templateLayouts'
 import { DOC_LABELS } from '../../../strings/documentLabels'
 
 // Side column (sender, amount, dates, address) beside an oversized title with the number.
-export function StatementHeader({ model, totals }: RegionProps) {
+export function StatementHeader({ model }: RegionProps) {
   const facts = documentFacts(model)
   return (
     <header className="statement-header">
       <aside className="statement-side">
         <div className="statement-brand">
-          {model.company.logo !== null && <LocalImage src={model.company.logo} alt="" className="document-logo" />}
+          <CompanyLogo model={model} />
           <span>{facts.company}</span>
         </div>
-        {DOC_TYPES[model.type].money && (
+        {facts.amount !== null && (
           <div>
             <div className="statement-label">{DOC_LABELS.amount}</div>
-            <div className="statement-amount">{formatMoney(totals.grandTotalMinor, model.currency, model.locale)}</div>
+            <div className="statement-amount">{facts.amount}</div>
           </div>
         )}
         <div>
-          <div className="statement-row">
-            <span>{DOC_LABELS.issued}</span>
-            <span>{facts.issued}</span>
-          </div>
-          {facts.date && (
-            <div className="statement-row">
-              <span>{facts.date.label}</span>
-              <span>{facts.date.value}</span>
+          {facts.dates.map((date) => (
+            <div key={date.label} className="statement-row">
+              <span>{date.label}</span>
+              <span>{date.value}</span>
             </div>
-          )}
+          ))}
         </div>
         <div className="statement-note">
           <b>{facts.company}</b>

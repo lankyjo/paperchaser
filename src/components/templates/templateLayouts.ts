@@ -20,14 +20,12 @@ export interface PageMarkProps {
   pages: number
 }
 
-// A template's own page regions; anything left out falls back to the branding header and footer presets.
+// A template's own page regions. Without a Header it uses the branding presets; with one, it prints the dates itself and only a given Footer.
 export interface TemplateLayout {
   Header?: ComponentType<RegionProps>
   Footer?: ComponentType<RegionProps>
   // Shown on every printed page, outside the content flow (page numbers, running titles).
   PageMark?: ComponentType<PageMarkProps>
-  // The header already shows the due or valid-until date, so the separate date line is skipped.
-  datesInHeader?: boolean
 }
 
 export const TEMPLATE_LAYOUTS: Partial<Record<TemplateId, TemplateLayout>> = {

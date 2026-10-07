@@ -1,15 +1,16 @@
 import type { CSSProperties, ReactNode } from 'react'
+import { PAGE_PADDING_MM } from '../../document/pageLayout'
 import { PAGE_SIZES } from '../../document/tokens'
 import type { PageSize, TemplateId } from '../../document/types'
 
-// Page block at the page size's mm dimensions with a fixed 15mm padding; @page margin stays 0 so the margin is not doubled.
+// Page block at the page size's mm dimensions with the shared page padding; @page margin stays 0 so the margin is not doubled.
 function pageStyleFor(pageSize: PageSize, fixedHeight: boolean): CSSProperties {
   const g = PAGE_SIZES[pageSize]
   return {
     width: g.width,
     ...(fixedHeight ? { height: g.height, overflow: 'hidden' } : { minHeight: g.height }),
     margin: '0 auto',
-    padding: '15mm',
+    padding: `${PAGE_PADDING_MM}mm`,
     paddingLeft: 'var(--tpl-padding-left)',
     boxSizing: 'border-box',
     background: 'var(--tpl-fill)',

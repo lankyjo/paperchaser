@@ -1,3 +1,4 @@
+import { templateIdFor } from '../../document/pageLayout'
 import type { DocumentModel } from '../../document/types'
 import { commitWithProjectData, type SharedData } from '../../project/sharedData'
 import { blockActions } from '../blocks/blockActions'
@@ -38,7 +39,7 @@ export function useBuilderDocument(initialModel: DocumentModel, shared?: SharedD
   }
   const sharedPropertiesProps: Omit<PropertiesPaneProps, 'selectedItemId'> = {
     model,
-    template: settings.template ?? 'minimal',
+    template: templateIdFor(model),
     onTemplateChange: settings.changeTemplate,
     onBrandingChange: settings.changeBranding,
     onLogoChange: settings.changeLogo,

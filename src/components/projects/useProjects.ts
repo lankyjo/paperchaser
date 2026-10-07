@@ -5,6 +5,7 @@ import { overdueInvoices, type OverdueInvoice } from '../../document/overdue'
 import type { DocumentModel } from '../../document/types'
 import { useMountEffect } from '../../hooks/useMountEffect'
 import { createProject, type Project } from '../../project/project'
+import { realDocuments } from '../../project/sampleProject'
 import { todayIso } from '../../lib/todayIso'
 
 export interface ProjectWithDocuments {
@@ -15,7 +16,6 @@ export interface ProjectWithDocuments {
 // Every project with its documents, from one read of each table.
 async function loadHome() {
   const [projects, documents, clients] = await Promise.all([projectsRepo.list(), documentsRepo.list(), clientsRepo.list()])
-  const sampleIds = new Set(projects.filter((p) => p.sample).map((p) => p.id))
   const byProject = new Map<string, DocumentModel[]>()
   for (const d of documents) {
     if (!byProject.has(d.projectId)) byProject.set(d.projectId, [])
@@ -24,7 +24,7 @@ async function loadHome() {
   return {
     projects: projects.map((project) => ({ project, documents: byProject.get(project.id) ?? [] })),
     // The sample project never shows up as overdue.
-    overdue: overdueInvoices(documents.filter((d) => !sampleIds.has(d.projectId)), todayIso()),
+    overdue: overdueInvoices(realDocuments(projects, documents), todayIso()),
     clientNames: new Map(clients.map((c) => [c.id, c.name])),
   }
 }

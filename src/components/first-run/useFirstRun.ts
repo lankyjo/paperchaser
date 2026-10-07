@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { clientsRepo, companyRepo, documentsRepo, projectsRepo } from '../../db/repos'
+import { companyRepo, projectsRepo } from '../../db/repos'
 import type { Company } from '../../document/types'
 import { useMountEffect } from '../../hooks/useMountEffect'
 import { todayIso } from '../../lib/todayIso'
@@ -15,9 +15,7 @@ export function useFirstRun() {
   const finish = async (company: Company) => {
     await companyRepo.put(company)
     const sample = createSampleProject({ now: new Date().toISOString(), today: todayIso(), locale: navigator.language, company, newId: () => crypto.randomUUID() })
-    await clientsRepo.put(sample.client)
-    await projectsRepo.put(sample.project)
-    await Promise.all(sample.documents.map((doc) => documentsRepo.put(doc)))
+    await projectsRepo.putWithDocuments(sample)
     setNeeded(false)
   }
 

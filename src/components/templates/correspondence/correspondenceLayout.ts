@@ -6,5 +6,4 @@ import './correspondence.css'
 export const correspondenceLayout: TemplateLayout = {
   Header: CorrespondenceHeader,
   Footer: CorrespondenceFooter,
-  datesInHeader: true,
 }

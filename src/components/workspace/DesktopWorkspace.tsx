@@ -1,23 +1,9 @@
 import { DockviewDefaultTab, DockviewReact, type IDockviewPanelHeaderProps } from 'dockview-react'
 import 'dockview-react/dist/styles/dockview.css'
-import { CanvasPanel } from './CanvasPanel'
-import { ExplainerPanel } from './ExplainerPanel'
+import { PANEL_COMPONENTS } from './defaultLayout'
 import { MaximizeAction } from './MaximizeAction'
-import { OutlinePanel } from './OutlinePanel'
-import { ProjectsPanel } from './ProjectsPanel'
-import { PropertiesPanel } from './PropertiesPanel'
-import { StepsPanel } from './StepsPanel'
 import { useWorkspaceLayout } from './useWorkspaceLayout'
 import './workspace.css'
-
-const COMPONENTS = {
-  outline: OutlinePanel,
-  canvas: CanvasPanel,
-  properties: PropertiesPanel,
-  explainer: ExplainerPanel,
-  steps: StepsPanel,
-  projects: ProjectsPanel,
-}
 
 const THEME = { name: 'paperchaser', className: 'dockview-theme-light paperchaser-dock' }
 
@@ -31,7 +17,7 @@ export function DesktopWorkspace() {
   return (
     // isolate keeps dockview's internal z-indexes below dialogs and menus.
     <div className="isolate min-h-0 flex-1 print:hidden">
-      <DockviewReact components={COMPONENTS} defaultTabComponent={Tab} rightHeaderActionsComponent={MaximizeAction} theme={THEME} onReady={onReady} />
+      <DockviewReact components={PANEL_COMPONENTS} defaultTabComponent={Tab} rightHeaderActionsComponent={MaximizeAction} theme={THEME} onReady={onReady} />
     </div>
   )
 }

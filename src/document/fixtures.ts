@@ -1,13 +1,11 @@
 import { DOC_TYPE_IDS, DOC_TYPES } from './docTypes'
 import { newDocument } from './newDocument'
-import type { DocumentModel, RichTextDoc } from './types'
+import { textDoc } from './richtext'
+import type { DocumentModel } from './types'
 
 // Synthetic fixtures only, never real PII; text fields use the single-paragraph AST, which must render identically to plain strings.
 
-/** Wrap a plain string in a single-paragraph/single-text AST. */
-function ast(s: string): RichTextDoc {
-  return [{ type: 'paragraph', content: [{ type: 'text', text: s }] }]
-}
+const ast = textDoc
 
 /** Self-contained 96x96 rounded-square SVG mark: solid brand color + white "PC" monogram. */
 const LOGO_DATA_URL =

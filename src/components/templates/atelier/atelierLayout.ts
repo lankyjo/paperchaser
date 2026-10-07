@@ -5,7 +5,5 @@ import './atelier.css'
 
 export const atelierLayout: TemplateLayout = {
   Header: AtelierHeader,
-  Footer: () => null,
   PageMark: AtelierPageMark,
-  datesInHeader: true,
 }

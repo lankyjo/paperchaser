@@ -1,5 +1,6 @@
+import { Fragment } from 'react'
 import { documentFacts } from '../../../document/pageLayout'
-import { LocalImage } from '../../document-page/LocalImage'
+import { CompanyLogo } from '../CompanyLogo'
 import type { RegionProps } from '../templateLayouts'
 import { DOC_LABELS } from '../../../strings/documentLabels'
 
@@ -9,7 +10,7 @@ export function AtelierHeader({ model }: RegionProps) {
   return (
     <header className="atelier-header">
       <div className="atelier-mark">
-        {model.company.logo !== null ? <LocalImage src={model.company.logo} alt="" className="document-logo" /> : <span>{facts.company.charAt(0)}</span>}
+        {model.company.logo !== null ? <CompanyLogo model={model} /> : <span>{facts.company.charAt(0)}</span>}
       </div>
       <div className="atelier-rule" />
       <div className="atelier-head">
@@ -27,14 +28,12 @@ export function AtelierHeader({ model }: RegionProps) {
           ))}
         </div>
         <dl className="atelier-dates">
-          <dt>{DOC_LABELS.issued}</dt>
-          <dd>{facts.issued}</dd>
-          {facts.date && (
-            <>
-              <dt>{facts.date.label}</dt>
-              <dd>{facts.date.value}</dd>
-            </>
-          )}
+          {facts.dates.map((date) => (
+            <Fragment key={date.label}>
+              <dt>{date.label}</dt>
+              <dd>{date.value}</dd>
+            </Fragment>
+          ))}
         </dl>
       </div>
     </header>

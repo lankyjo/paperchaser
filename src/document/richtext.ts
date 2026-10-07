@@ -42,6 +42,9 @@ export type RichTextDoc = z.infer<typeof richTextDocSchema>
 export type RichTextNode = z.infer<typeof richTextNodeSchema>
 type RichTextMark = z.infer<typeof richTextMarkSchema>
 
+// Wraps plain text in the single-paragraph rich-text shape.
+export const textDoc = (text: string): RichTextDoc => [{ type: 'paragraph', content: [{ type: 'text', text }] }]
+
 // Flattens a string-or-AST text field to plain text.
 export function getPlainText(value: string | RichTextDoc): string {
   if (typeof value === 'string') return value

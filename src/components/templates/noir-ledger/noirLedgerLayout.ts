@@ -5,7 +5,5 @@ import './noir-ledger.css'
 
 export const noirLedgerLayout: TemplateLayout = {
   Header: NoirLedgerHeader,
-  Footer: () => null,
   PageMark: NoirLedgerPageMark,
-  datesInHeader: true,
 }

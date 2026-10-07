@@ -3,10 +3,11 @@ import { DOC_TITLES, FONT_STACKS } from '../../document/tokens'
 import type { DocumentModel } from '../../document/types'
 import { getPlainText } from '../../document/richtext'
 import { LocalImage } from '../document-page/LocalImage'
-import { formatDocDate } from '../../document/formatDocDate'
+import { documentFacts } from '../../document/pageLayout'
 
 // Header preset: company block left, title and meta right; also used for the offset layout.
 export function HeaderStandard({ tokens, model }: { tokens: ResolvedTokens; model: DocumentModel }) {
+  const facts = documentFacts(model)
   return (
     <header
       style={{
@@ -41,7 +42,7 @@ export function HeaderStandard({ tokens, model }: { tokens: ResolvedTokens; mode
           {DOC_TITLES[model.type]}
         </h2>
         <div>
-          {getPlainText(model.number)} · {formatDocDate(model.issueDate, model.locale)}
+          {facts.number} · {facts.issued}
         </div>
       </div>
     </header>

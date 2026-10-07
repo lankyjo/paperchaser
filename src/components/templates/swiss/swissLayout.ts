@@ -4,6 +4,4 @@ import './swiss.css'
 
 export const swissLayout: TemplateLayout = {
   Header: SwissHeader,
-  Footer: () => null,
-  datesInHeader: true,
 }

@@ -1,9 +1,4 @@
-import type { RichTextDoc } from './richtext'
-
-// Wraps a plain string in the single-paragraph AST shape.
-function wrapString(value: string): RichTextDoc {
-  return [{ type: 'paragraph', content: [{ type: 'text', text: value }] }]
-}
+import { textDoc as wrapString } from './richtext'
 
 // Text-field paths in the v2 document shape.
 const TEXT_PATHS: Array<Array<string | number>> = [
