@@ -13,7 +13,10 @@ import { MobileFormattingFooter } from '../edit/MobileFormattingFooter'
 import { PagedDocument } from '../paged-document/PagedDocument'
 import { PrintPreviewDialog } from '../PrintPreviewDialog'
 import { BuilderHeader } from './BuilderHeader'
-import { DesktopPanes } from './DesktopPanes'
+import { cn } from '@/lib/utils'
+import { ExplainerBanner } from '../explainer/ExplainerBanner'
+import { DesktopWorkspace } from '../workspace/DesktopWorkspace'
+import { WorkspaceContext } from '../workspace/workspaceContext'
 import { MobileItemSheet } from './MobileItemSheet'
 import { MobileStack } from './MobileStack'
 import { useBuilderDocument } from './useBuilderDocument'
@@ -25,9 +28,11 @@ export function BuilderWorkspace({
   editable: editableProp = true,
   shared,
   project,
+  showExplainer = false,
 }: {
   model: DocumentModel
   editable?: boolean
+  showExplainer?: boolean
   shared?: SharedData
   project?: Project
 }) {
@@ -43,7 +48,7 @@ export function BuilderWorkspace({
 
   return (
     <ProjectDataContext.Provider value={shared}>
-      <div className="flex min-h-screen flex-col print:min-h-0" onKeyDown={(e: KeyboardEvent) => handleKeyDown(e)}>
+      <div className={cn('flex flex-col print:min-h-0', isDesktop ? 'h-screen' : 'min-h-screen')} onKeyDown={(e: KeyboardEvent) => handleKeyDown(e)}>
         <BuilderHeader
           projectId={editableProp ? model.projectId : undefined}
           editable={editable}
@@ -70,17 +75,25 @@ export function BuilderWorkspace({
         <PagedDocument model={model} template={settings.template} branding={model.branding} pageSize={settings.pageSize} variant="print" />
         <ScheduleContext.Provider value={scheduleActions}>
           {isDesktop ? (
-            <DesktopPanes
-              {...layout}
-              editable={editable}
-              sections={sections}
-              zoom={zoom}
-              propertiesProps={{ ...sharedPropertiesProps, selectedItemId: selection.selectedItemId }}
-              onCommit={commit}
-              onInsertItem={items.insertItem}
-            />
+            <WorkspaceContext.Provider
+              value={{
+                ...layout,
+                editable,
+                sections,
+                zoom,
+                propertiesProps: { ...sharedPropertiesProps, selectedItemId: selection.selectedItemId },
+                onCommit: commit,
+                onInsertItem: items.insertItem,
+                showExplainer,
+              }}
+            >
+              <DesktopWorkspace />
+            </WorkspaceContext.Provider>
           ) : (
-            <MobileStack {...layout} editable={editable} sections={sections} saveFailed={saveState === 'failed'} onCommit={commit} />
+            <>
+              {showExplainer && <ExplainerBanner type={model.type} />}
+              <MobileStack {...layout} editable={editable} sections={sections} saveFailed={saveState === 'failed'} onCommit={commit} />
+            </>
           )}
         </ScheduleContext.Provider>
         <PrintPreviewDialog

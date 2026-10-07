@@ -15,6 +15,8 @@ import { A4_WIDTH_PX, blendColor, countPixelsInRange, cropY, diffFraction, norma
 const FIXTURE = 'invoice-torture'
 // Each test loops over every template, so it needs more than the default 30s.
 test.describe.configure({ timeout: 180_000 })
+// Large enough that the workspace's canvas panel shows a whole page without scrolling.
+test.use({ viewport: { width: 1600, height: 2400 } })
 const TEMPLATES = Object.keys(TEMPLATE_REGISTRY) as TemplateId[]
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const FIXTURES_DIR = path.join(HERE, 'fixtures')

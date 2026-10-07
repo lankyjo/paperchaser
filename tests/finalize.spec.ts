@@ -76,7 +76,7 @@ test('an unsent invoice keeps its snapshot until the latest project data is pull
 
   const billTo = page.locator('#document-root section', { has: page.getByRole('heading', { name: 'Bill to' }) })
   await expect(billTo.locator('[contenteditable]').first()).toHaveText('Acme Coffee')
-  await expect(page.getByRole('status')).toContainText('Client name: Acme Coffee → Acme Coffee Roasters')
+  await expect(page.getByRole('status').filter({ hasText: 'Project data changed' })).toContainText('Client name: Acme Coffee → Acme Coffee Roasters')
   await page.getByRole('button', { name: 'Pull latest' }).click()
   await expect(billTo.locator('[contenteditable]').first()).toHaveText('Acme Coffee Roasters')
 })
