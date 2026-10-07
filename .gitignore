@@ -32,3 +32,7 @@ tests/artifacts/
 prototypes/
 .planning/research/.cache/
 workspace.json
+
+# Agent instruction files stay local
+CLAUDE.md
+AGENTS.md

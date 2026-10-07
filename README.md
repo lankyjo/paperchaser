@@ -92,31 +92,6 @@ You can give your data to a coding agent, for example Claude Code or Codex. Down
 
 The browser tests compare each printed page with the PDF of Chromium. They also check accessibility with axe and do a full task with only the keyboard. Read [docs/accessibility.md](docs/accessibility.md) for the details.
 
-## Code rules
-
-Read [AGENTS.md](AGENTS.md) before you change the code. The main rules:
-
-- A comment is one line. It tells what the code does, not why a decision was made.
-- Each folder holds only what its name says.
-- Logic that has state goes in a custom hook. A component does not call `useEffect` directly.
-- Each file has the name of its main export.
-
-CI runs these checks on each push.
-
-## Project structure
-
-| Folder | Contents |
-|---|---|
-| `src/document/` | The document model, totals, money, pagination and templates. No React. |
-| `src/project/` | Projects, clients, the pipeline and backups. No React. |
-| `src/db/` | Storage in IndexedDB (Dexie). |
-| `src/components/` | React components, in one folder for each feature. |
-| `src/hooks/` | Hooks that more than one feature uses. |
-| `src/ai/` | The optional AI client and the safe application of AI edits. |
-| `src/strings/` | All text that a user sees, in one place. |
-| `src/routes/` | The pages of the app. |
-| `docs/adr/` | Records of the main design decisions. |
-
 ## License
 
 No license file is in this repository yet. Until the owner adds one, all rights are reserved.
