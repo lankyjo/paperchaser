@@ -24,6 +24,7 @@ test('a new project opens its invoice, and edits survive a reload', async ({ pag
 test('an edit is kept when leaving the editor inside the app before autosave fires', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
+  await expect(page).toHaveURL(/\/documents\//)
   const docUrl = page.url()
   const customerName = page.locator('section', { has: page.getByRole('heading', { name: 'Bill to' }) }).locator('[contenteditable]').first()
   await customerName.click()

@@ -10,6 +10,7 @@ export function ProjectCard({ entry: { project, documents } }: { entry: ProjectW
         <Link to="/projects/$projectId" params={{ projectId: project.id }}>
           {project.title || 'Untitled project'}
         </Link>
+        <span className="ml-2 text-xs capitalize text-muted-foreground">{project.archived ? 'archived' : project.state}</span>
       </h2>
       <ul className="mt-2 flex flex-col gap-1 text-sm">
         {documents.map((doc) => (

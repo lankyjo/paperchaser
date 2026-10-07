@@ -1,13 +1,15 @@
 import { Link, useNavigate } from '@tanstack/react-router'
+import { canDeleteProject } from '../../project/lifecycle'
 import { isTaxModeLocked } from '../../project/sharedData'
 import { ClientPicker } from './ClientPicker'
 import { ProjectDetailsForm } from './ProjectDetailsForm'
+import { ProjectStatusSection } from './ProjectStatusSection'
 import { StepPicker } from './StepPicker'
 import { useProject } from './useProject'
 
-// A project's shared details, client and documents.
+// A project's status, pipeline steps, client and shared details; archived projects are read-only.
 export function ProjectPage({ projectId }: { projectId: string }) {
-  const { data, save, createClientFor, createDocument, toggleDone } = useProject(projectId)
+  const { data, save, createClientFor, createDocument, toggleDone, remove } = useProject(projectId)
   const navigate = useNavigate()
   if (data === null) return null
   const { project, documents, clients } = data
@@ -20,28 +22,37 @@ export function ProjectPage({ projectId }: { projectId: string }) {
         Projects
       </Link>
       <h1 className="text-xl font-semibold">{title}</h1>
-      <StepPicker
-        documents={documents}
-        doneSteps={project.doneSteps ?? []}
-        onCreate={(type) =>
-          void createDocument(type).then((doc) => navigate({ to: '/documents/$documentId', params: { documentId: doc.id } }))
-        }
-        onToggleDone={(type) => void toggleDone(project, type)}
+      {project.archived && <p role="status" className="text-sm text-muted-foreground">Archived — unarchive to make changes.</p>}
+      <ProjectStatusSection
+        project={project}
+        canDelete={canDeleteProject(documents)}
+        onSave={(next) => void save(next)}
+        onDelete={() => void remove().then(() => navigate({ to: '/' }))}
       />
-      <section className="rounded-lg border bg-card p-4">
-        <h2 className="mb-2 font-medium">Client</h2>
-        <ClientPicker
-          projectTitle={title}
-          clientId={project.clientId}
-          clients={clients}
-          onPick={(clientId) => void save({ ...project, clientId })}
-          onCreate={(name) => void createClientFor(project, name)}
+      <fieldset disabled={project.archived} className="contents">
+        <StepPicker
+          documents={documents}
+          doneSteps={project.doneSteps ?? []}
+          onCreate={(type) =>
+            void createDocument(type).then((doc) => navigate({ to: '/documents/$documentId', params: { documentId: doc.id } }))
+          }
+          onToggleDone={(type) => void toggleDone(project, type)}
         />
-      </section>
-      <section className="rounded-lg border bg-card p-4">
-        <h2 className="mb-3 font-medium">Project details</h2>
-        <ProjectDetailsForm key={project.id} project={project} taxModeLocked={isTaxModeLocked(documents)} onSave={(next) => void save(next)} />
-      </section>
+        <section className="rounded-lg border bg-card p-4">
+          <h2 className="mb-2 font-medium">Client</h2>
+          <ClientPicker
+            projectTitle={title}
+            clientId={project.clientId}
+            clients={clients}
+            onPick={(clientId) => void save({ ...project, clientId })}
+            onCreate={(name) => void createClientFor(project, name)}
+          />
+        </section>
+        <section className="rounded-lg border bg-card p-4">
+          <h2 className="mb-3 font-medium">Project details</h2>
+          <ProjectDetailsForm key={project.id} project={project} taxModeLocked={isTaxModeLocked(documents)} onSave={(next) => void save(next)} />
+        </section>
+      </fieldset>
     </main>
   )
 }

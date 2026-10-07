@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { assetsRepo, documentsRepo, projectsRepo } from '../../db/repos'
+import { assetsRepo, clientsRepo, documentsRepo, projectsRepo } from '../../db/repos'
 import { newInvoice } from '../../document/newInvoice'
 import type { DocumentModel } from '../../document/types'
 import { useMountEffect } from '../../hooks/useMountEffect'
@@ -18,7 +18,11 @@ async function loadProjects(): Promise<ProjectWithDocuments[]> {
 // Stored projects with their documents, plus creating a project that starts with one invoice.
 export function useProjects() {
   const [projects, setProjects] = useState<ProjectWithDocuments[] | null>(null)
-  const reload = async () => setProjects(await loadProjects())
+  const [clientNames, setClientNames] = useState(new Map<string, string>())
+  const reload = async () => {
+    setProjects(await loadProjects())
+    setClientNames(new Map((await clientsRepo.list()).map((c) => [c.id, c.name])))
+  }
 
   useMountEffect(() => {
     void reload()
@@ -34,5 +38,5 @@ export function useProjects() {
     return invoice
   }
 
-  return { projects, createWithInvoice }
+  return { projects, clientNames, createWithInvoice }
 }

@@ -6,6 +6,8 @@ export const projectSchema = z.object({
   state: z.enum(['lead', 'active', 'completed', 'lost']),
   archived: z.boolean(),
   clientId: z.string().optional(),
+  // Who a lead is being pitched to before they become a real client.
+  prospectName: z.string().optional(),
   feeMinor: z.int().nonnegative().optional(),
   startDate: z.iso.date().optional(),
   dueDate: z.iso.date().optional(),

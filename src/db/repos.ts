@@ -130,6 +130,12 @@ export const projectsRepo = {
   put: (project: Project) => db.projects.put(project),
   get: (id: string) => db.projects.get(id),
   list: () => db.projects.orderBy('updatedAt').reverse().toArray(),
+  // Removes a project together with its documents.
+  delete: (id: string) =>
+    rawDb.transaction('rw', 'projects', 'documents', async () => {
+      await db.documents.where('projectId').equals(id).delete()
+      await db.projects.delete(id)
+    }),
 }
 
 export const companyRepo = {

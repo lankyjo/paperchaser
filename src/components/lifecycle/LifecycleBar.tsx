@@ -4,6 +4,8 @@ import { isNumberedType } from '../../document/finalize'
 import { preFinalizeWarnings } from '../../document/finalizeChecks'
 import { getPlainText } from '../../document/richtext'
 import type { DocumentModel } from '../../document/types'
+import { sendBlockedReason } from '../../project/lifecycle'
+import type { Project } from '../../project/project'
 import { pullLatestChanges, type SharedData } from '../../project/sharedData'
 import { PaymentsPanel } from '../payments/PaymentsPanel'
 import { Button } from '../ui/button'
@@ -14,13 +16,15 @@ import { VoidButton } from './VoidButton'
 interface LifecycleBarProps {
   model: DocumentModel
   shared: SharedData | undefined
+  project?: Project
   history: { replace: (next: DocumentModel) => void; getRev: () => number }
 }
 
 // Draft: finalize and print. Sent: print again or return to draft. Unsent snapshot: pull the latest project data.
-export function LifecycleBar({ model, shared, history }: LifecycleBarProps) {
+export function LifecycleBar({ model, shared, project, history }: LifecycleBarProps) {
   const [confirming, setConfirming] = useState(false)
-  const lifecycle = useDocumentLifecycle(model, history, shared)
+  const lifecycle = useDocumentLifecycle(model, history, shared, project)
+  const blocked = project ? sendBlockedReason(project, model.type) : null
   const changes = shared && model.status === 'draft' && model.frozen ? pullLatestChanges(model, shared) : []
   const number = getPlainText(model.number)
   // Once money is recorded the document stays sent; corrections go through a credit note.
@@ -30,9 +34,12 @@ export function LifecycleBar({ model, shared, history }: LifecycleBarProps) {
     <>
       <div className="flex flex-wrap items-center gap-2 px-4 py-2 text-sm print:hidden">
         {model.status === 'draft' ? (
-          <Button size="sm" onClick={() => setConfirming(true)}>
-            Finalize and print
-          </Button>
+          <>
+            <Button size="sm" disabled={blocked !== null} onClick={() => setConfirming(true)}>
+              Finalize and print
+            </Button>
+            {blocked && <span className="text-xs text-destructive">{blocked}</span>}
+          </>
         ) : (
           <>
             <span className="rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">

@@ -1,6 +1,7 @@
 import { useState, type KeyboardEvent } from 'react'
 import type { DocumentModel, PageSize, TemplateId } from '../../document/types'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
+import type { Project } from '../../project/project'
 import type { SharedData } from '../../project/sharedData'
 import { LifecycleBar } from '../lifecycle/LifecycleBar'
 import { ProjectDataContext } from './projectDataContext'
@@ -20,12 +21,14 @@ export function BuilderWorkspace({
   pageSize: initialPageSize,
   editable: editableProp = true,
   shared,
+  project,
 }: {
   model: DocumentModel
   template?: TemplateId
   pageSize?: PageSize
   editable?: boolean
   shared?: SharedData
+  project?: Project
 }) {
   const { history, settings, selection, items, sections, outlineProps, sharedPropertiesProps, commitCustomerName } =
     useBuilderDocument(initialModel, initialTemplate, initialPageSize, shared)
@@ -57,7 +60,7 @@ export function BuilderWorkspace({
           onPageSizeChange={settings.changePageSize}
           onOpenPreview={() => setPreviewOpen(true)}
         />
-        {editableProp && <LifecycleBar model={model} shared={shared} history={history} />}
+        {editableProp && <LifecycleBar model={model} shared={shared} project={project} history={history} />}
         {isDesktop ? (
           <DesktopPanes
             {...layout}

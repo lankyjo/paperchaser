@@ -59,5 +59,7 @@ export function useProject(projectId: string) {
     await save({ ...project, doneSteps: done.includes(type) ? done.filter((t) => t !== type) : [...done, type] })
   }
 
-  return { data, save, createClientFor, createDocument, toggleDone }
+  const remove = () => projectsRepo.delete(projectId)
+
+  return { data, save, createClientFor, createDocument, toggleDone, remove }
 }

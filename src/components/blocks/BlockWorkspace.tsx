@@ -6,6 +6,7 @@ import { UndoRedoButtons } from '../builder/UndoRedoButtons'
 import { Button } from '../ui/button'
 import { BlockOutline } from './BlockOutline'
 import { DocumentPage } from '../DocumentPage'
+import type { Project } from '../../project/project'
 import { applySharedData, type SharedData } from '../../project/sharedData'
 import { useHistory } from '../edit/useHistory'
 import { LifecycleBar } from '../lifecycle/LifecycleBar'
@@ -14,12 +15,12 @@ import { ScheduleContext } from './scheduleContext'
 import { useScheduleInvoices } from './useScheduleInvoices'
 
 // Editor for documents built from blocks: outline on the left, editable page on the right.
-export function BlockWorkspace({ model: initial, shared }: { model: DocumentModel; shared?: SharedData }) {
+export function BlockWorkspace({ model: initial, shared, project }: { model: DocumentModel; shared?: SharedData; project?: Project }) {
   const history = useHistory(initial)
   const { model, undo, redo, canUndo, canRedo, saveState, retrySave, handleKeyDown } = history
   // Every edit keeps project values (client, fee, currency) current, e.g. a newly added schedule gets the project fee.
   const commit = (next: DocumentModel) => history.commit(shared ? applySharedData(next, shared) : next)
-  const editable = model.status === 'draft' && saveState !== 'stale'
+  const editable = model.status === 'draft' && saveState !== 'stale' && !project?.archived
   const actions = blockActions(model, commit)
   const scheduleActions = useScheduleInvoices(model)
 
@@ -39,7 +40,7 @@ export function BlockWorkspace({ model: initial, shared }: { model: DocumentMode
           </Button>
         </div>
       </header>
-      <LifecycleBar model={model} shared={shared} history={history} />
+      {!project?.archived && <LifecycleBar model={model} shared={shared} project={project} history={history} />}
       <main className="flex flex-1 flex-col gap-4 px-2 pb-10 lg:flex-row print:p-0">
         {editable && <aside className="shrink-0 lg:w-64 print:hidden">
           <BlockOutline blocks={actions.blocks} canHide={actions.canHide} onMove={actions.moveBlock} onToggleHidden={actions.toggleHidden} onAdd={actions.addBlock} />

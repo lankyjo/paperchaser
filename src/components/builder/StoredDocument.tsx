@@ -4,6 +4,7 @@ import type { DocumentModel } from '../../document/types'
 import { useMountEffect } from '../../hooks/useMountEffect'
 import { isMoneyDocument } from '../../document/documentBlocks'
 import { syncScheduledInvoice, type ScheduleBlock } from '../../document/schedule'
+import type { Project } from '../../project/project'
 import { applySharedData, sharedFromProject, type SharedData } from '../../project/sharedData'
 import { BlockWorkspace } from '../blocks/BlockWorkspace'
 import { ExplainerBanner } from '../explainer/ExplainerBanner'
@@ -13,6 +14,7 @@ interface Loaded {
   model: DocumentModel
   shared: SharedData
   scheduleMismatch: boolean
+  project: Project | undefined
 }
 
 // An invoice billed from an agreement row follows the current schedule while a draft; a sent one is checked against it.
@@ -36,7 +38,7 @@ async function loadWithProjectData(documentId: string): Promise<Loaded | null> {
   const project = await projectsRepo.get(doc.projectId)
   const client = project?.clientId === undefined ? undefined : await clientsRepo.get(project.clientId)
   const shared = sharedFromProject(client, project)
-  return { model: applySharedData(doc, shared), shared, scheduleMismatch }
+  return { model: applySharedData(doc, shared), shared, scheduleMismatch, project }
 }
 
 // Loads a stored document with its project's shared data applied, then opens it in the builder.
@@ -58,9 +60,9 @@ export function StoredDocument({ documentId }: { documentId: string }) {
         </p>
       )}
       {isMoneyDocument(loaded.model) ? (
-        <BuilderWorkspace model={loaded.model} shared={loaded.shared} />
+        <BuilderWorkspace model={loaded.model} shared={loaded.shared} project={loaded.project} editable={!loaded.project?.archived} />
       ) : (
-        <BlockWorkspace model={loaded.model} shared={loaded.shared} />
+        <BlockWorkspace model={loaded.model} shared={loaded.shared} project={loaded.project} />
       )}
     </>
   )
