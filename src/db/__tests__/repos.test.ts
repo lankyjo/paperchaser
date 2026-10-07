@@ -6,7 +6,8 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import type { DocumentModel } from '../../document/types'
 import { db } from '../db'
 import { createProject } from '../../project/project'
-import { catalogRepo, companyRepo, customersRepo, documentsRepo, preferencesRepo, projectsRepo } from '../repos'
+import { createClient } from '../../project/client'
+import { catalogRepo, clientsRepo, companyRepo, documentsRepo, preferencesRepo, projectsRepo } from '../repos'
 
 // Fixture-shaped synthetic document, never real PII.
 const DOC: DocumentModel = {
@@ -25,9 +26,6 @@ const DOC: DocumentModel = {
 /** Fixture-shaped company profile (synthetic — never real PII). */
 const COMPANY = { name: 'Acme GmbH', address: ['Acmeweg 1'], email: 'acme@test.test', logo: null }
 
-/** Fixture-shaped customer records. */
-const ALPHA_CUSTOMER = { id: 'cust-1', name: 'Alpha Kundin', address: ['Weg 1'] }
-const BETA_CUSTOMER = { id: 'cust-2', name: 'Beta Kundin', address: ['Weg 2'] }
 
 /** Fixture-shaped catalog items. */
 const BERATUNG_ITEM = { id: 'prod-1', name: 'Beratung', priceMinor: 10000 }
@@ -79,12 +77,12 @@ describe('projectsRepo', () => {
 describe('db schema drift guard', () => {
   it('declares the six stores with id-keyed primary keys and the indexes queries rely on', async () => {
     const names = db.tables.map((t) => t.name).sort()
-    expect(names).toEqual(['catalog', 'company', 'customers', 'documents', 'preferences', 'projects'])
+    expect(names).toEqual(['catalog', 'clients', 'company', 'documents', 'preferences', 'projects'])
     const byName = new Map(db.tables.map((t) => [t.name, t.schema]))
     expect(byName.get('documents')?.primKey.src).toBe('id')
     expect(byName.get('documents')?.indexes.map((i) => i.name).sort()).toEqual(['projectId', 'status', 'type', 'updatedAt'])
     expect(byName.get('projects')?.indexes.map((i) => i.name)).toEqual(['updatedAt'])
-    expect(byName.get('customers')?.indexes.map((i) => i.name)).toEqual(['name'])
+    expect(byName.get('clients')?.indexes.map((i) => i.name)).toEqual(['name'])
     expect(byName.get('catalog')?.indexes.map((i) => i.name)).toEqual(['name'])
     expect(byName.get('company')?.primKey.src).toBe('id')
     expect(byName.get('preferences')?.primKey.src).toBe('key')
@@ -107,19 +105,16 @@ describe('companyRepo (singleton profile)', () => {
   })
 })
 
-describe('customersRepo', () => {
-  it('put/get/delete round-trip', async () => {
-    await customersRepo.put(ALPHA_CUSTOMER)
-    expect(await customersRepo.get('cust-1')).toEqual(ALPHA_CUSTOMER)
-    await customersRepo.delete('cust-1')
-    expect(await customersRepo.get('cust-1')).toBeUndefined()
-  })
-
-  it('byName returns only matching customers (name index)', async () => {
-    await customersRepo.put(ALPHA_CUSTOMER)
-    await customersRepo.put(BETA_CUSTOMER)
-    expect(await customersRepo.byName('Alpha Kundin')).toEqual([ALPHA_CUSTOMER])
-    expect(await customersRepo.byName('Nobody')).toEqual([])
+describe('clientsRepo', () => {
+  it('round-trips clients and lists them by name', async () => {
+    const beta = createClient({ id: 'c2', name: 'Beta Studio' })
+    const alpha = createClient({ id: 'c1', name: 'Alpha Coffee' })
+    await clientsRepo.put(beta)
+    await clientsRepo.put(alpha)
+    expect(await clientsRepo.get('c1')).toEqual(alpha)
+    expect((await clientsRepo.list()).map((c) => c.id)).toEqual(['c1', 'c2'])
+    await clientsRepo.delete('c1')
+    expect(await clientsRepo.get('c1')).toBeUndefined()
   })
 })
 

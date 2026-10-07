@@ -42,3 +42,9 @@ db.version(4)
     projects: 'id, updatedAt',
   })
   .upgrade((trans) => trans.table('documents').clear())
+
+// Clients replace the unused customers table.
+db.version(5).stores({
+  customers: null,
+  clients: 'id, name',
+})

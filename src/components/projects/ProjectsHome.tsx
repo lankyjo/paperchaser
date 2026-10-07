@@ -1,12 +1,12 @@
 import { Link, useNavigate } from '@tanstack/react-router'
-import { getPlainText } from '../../document/richtext'
 import { Button } from '../ui/button'
 import { NewProjectForm } from './NewProjectForm'
+import { ProjectCard } from './ProjectCard'
 import { useProjects } from './useProjects'
 
 // Home screen: create a project, then open any of its documents.
 export function ProjectsHome() {
-  const { projects, createWithInvoice } = useProjects()
+  const { projects, clients, createWithInvoice, assignClient, createClientFor } = useProjects()
   const navigate = useNavigate()
 
   const create = async (title: string) => {
@@ -18,6 +18,9 @@ export function ProjectsHome() {
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Projects</h1>
+        <Link to="/clients" className="ml-auto mr-3 text-sm underline">
+          Clients
+        </Link>
         <Button variant="outline" onClick={() => void create('')}>
           Quick invoice
         </Button>
@@ -25,19 +28,14 @@ export function ProjectsHome() {
       <NewProjectForm onCreate={(title) => void create(title)} />
       {projects?.length === 0 && <p className="text-sm text-muted-foreground">No projects yet.</p>}
       <ul className="flex flex-col gap-3">
-        {projects?.map(({ project, documents }) => (
-          <li key={project.id} className="rounded-lg border bg-card p-4">
-            <h2 className="font-medium">{project.title || 'Untitled project'}</h2>
-            <ul className="mt-2 flex flex-col gap-1 text-sm">
-              {documents.map((doc) => (
-                <li key={doc.id}>
-                  <Link to="/documents/$documentId" params={{ documentId: doc.id }} className="underline">
-                    {doc.type} {getPlainText(doc.number) || 'draft'}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </li>
+        {projects?.map((entry) => (
+          <ProjectCard
+            key={entry.project.id}
+            entry={entry}
+            clients={clients}
+            onPickClient={(clientId) => void assignClient(entry.project, clientId)}
+            onCreateClient={(name) => void createClientFor(entry.project, name)}
+          />
         ))}
       </ul>
     </main>

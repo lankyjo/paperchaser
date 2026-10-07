@@ -5,6 +5,7 @@ export const projectSchema = z.object({
   title: z.string(),
   state: z.enum(['lead', 'active', 'completed', 'lost']),
   archived: z.boolean(),
+  clientId: z.string().optional(),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
 })

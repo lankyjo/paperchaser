@@ -1,17 +1,13 @@
 // Repos are the only Dexie touchpoints; nothing outside this file reads or writes db tables.
 import type { Table } from 'dexie'
 
-import type { Company, Customer, DocumentModel } from '../document/types'
+import type { Company, DocumentModel } from '../document/types'
+import type { Client } from '../project/client'
 import type { Project } from '../project/project'
 import { db as rawDb } from './db'
 
 // Company profile row; companyRepo adds the singleton key.
 export interface CompanyRow extends Company {
-  id: string
-}
-
-// Customer row, id-keyed (not ++id) for stable IDs across import/export.
-export interface CustomerRow extends Customer {
   id: string
 }
 
@@ -30,7 +26,7 @@ export interface PreferenceRow {
 
 interface Tables {
   company: Table<CompanyRow>
-  customers: Table<CustomerRow>
+  clients: Table<Client>
   catalog: Table<CatalogItemRow>
   documents: Table<DocumentModel>
   preferences: Table<PreferenceRow>
@@ -51,6 +47,7 @@ export const documentsRepo = {
   // Index-backed query by status.
   byStatus: (status: DocumentModel['status']) => db.documents.where('status').equals(status).toArray(),
   byProject: (projectId: string) => db.documents.where('projectId').equals(projectId).toArray(),
+  list: () => db.documents.toArray(),
 }
 
 export const projectsRepo = {
@@ -70,12 +67,11 @@ export const companyRepo = {
   },
 }
 
-export const customersRepo = {
-  put: (customer: CustomerRow) => db.customers.put(customer),
-  get: (id: string) => db.customers.get(id),
-  delete: (id: string) => db.customers.delete(id),
-  // Name-indexed exact match for customer search.
-  byName: (name: string) => db.customers.where('name').equals(name).toArray(),
+export const clientsRepo = {
+  put: (client: Client) => db.clients.put(client),
+  get: (id: string) => db.clients.get(id),
+  delete: (id: string) => db.clients.delete(id),
+  list: () => db.clients.orderBy('name').toArray(),
 }
 
 export const catalogRepo = {
