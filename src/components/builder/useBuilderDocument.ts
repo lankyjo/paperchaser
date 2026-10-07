@@ -53,6 +53,7 @@ export function useBuilderDocument(
     onPageSizeChange: settings.changePageSize,
     onLineItemChange: items.changeLineItem,
     onValidUntilChange: (validUntil: string | undefined) => commit({ ...model, validUntil }),
+    onDueDateChange: (dueDate: string | undefined) => commit({ ...model, dueDate }),
   }
 
   return { history: { ...history, commit }, settings, selection, items, sections, outlineProps, sharedPropertiesProps, commitCustomerName }

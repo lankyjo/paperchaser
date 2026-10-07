@@ -4,12 +4,13 @@ import { filterProjects } from '../../project/searchProjects'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { NewProjectForm } from './NewProjectForm'
+import { OverdueList } from './OverdueList'
 import { ProjectCard } from './ProjectCard'
 import { useProjects } from './useProjects'
 
 // Home screen: create a project, then open any of its documents.
 export function ProjectsHome() {
-  const { projects, clientNames, createWithInvoice } = useProjects()
+  const { projects, clientNames, overdue, createWithInvoice } = useProjects()
   const [query, setQuery] = useState('')
   const [showArchived, setShowArchived] = useState(false)
   const visible = projects === null ? [] : filterProjects(projects.map((e) => ({ ...e.project, entry: e })), clientNames, query, showArchived)
@@ -34,6 +35,7 @@ export function ProjectsHome() {
           Quick invoice
         </Button>
       </div>
+      <OverdueList overdue={overdue} />
       <NewProjectForm onCreate={(title) => void create(title)} />
       <div className="flex items-center gap-3">
         <Input aria-label="Search projects" placeholder="Search by project or client" value={query} onChange={(e) => setQuery(e.target.value)} />

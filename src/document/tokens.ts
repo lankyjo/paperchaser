@@ -37,6 +37,7 @@ export const DOC_TITLES: Record<DocumentModel['type'], string> = {
   thankYou: 'Thank You',
   feedback: 'Feedback',
   creditNote: 'Credit Note',
+  reminder: 'Payment Reminder',
 }
 
 // Paper sizes; A4 is the parity harness geometry.

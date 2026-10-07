@@ -1,6 +1,6 @@
 import type { DocumentModel } from '../document/types'
 
-export type StepType = Exclude<DocumentModel['type'], 'creditNote'>
+export type StepType = Exclude<DocumentModel['type'], 'creditNote' | 'reminder'>
 export type StepStatus = 'notStarted' | 'draft' | 'sent' | 'done'
 
 // The client pipeline in order; multi steps hold several documents (deposit and balance invoices, one report per month).

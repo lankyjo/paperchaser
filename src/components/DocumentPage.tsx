@@ -10,6 +10,7 @@ import { LineItemsTable } from './document-page/LineItemsTable'
 import { PageFrame } from './document-page/PageFrame'
 import { footerPresets, headerPresets } from './document-page/pagePresets'
 import { resolveWatermarkText } from './document-page/resolveWatermarkText'
+import { DateLine } from './document-page/DateLine'
 import { TotalsSection } from './document-page/TotalsSection'
 
 interface DocumentPageProps {
@@ -53,9 +54,8 @@ export function DocumentPage({ model, template, branding, pageSize, editable = f
       watermark={watermarkText === null ? null : { text: watermarkText, color: resolved.accent }}
     >
       {visibility.header !== false && <HeaderPreset tokens={resolved} model={model} />}
-      {model.type === 'quote' && model.validUntil && (
-        <p style={{ margin: '0 0 var(--tpl-section-gap)' }}>Valid until {new Date(`${model.validUntil}T00:00:00`).toLocaleDateString(model.locale ?? 'de-DE')}</p>
-      )}
+      {model.type === 'quote' && model.validUntil && <DateLine label="Valid until" date={model.validUntil} locale={model.locale} />}
+      {model.type === 'invoice' && model.dueDate && <DateLine label="Due" date={model.dueDate} locale={model.locale} />}
       {documentBlocks(model).filter((b) => !b.hidden).map(renderBlock)}
       {visibility.footer !== false && <FooterPreset tokens={resolved} model={model} />}
     </PageFrame>

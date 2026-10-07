@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { Link } from '@tanstack/react-router'
+import { getPlainText } from '../../document/richtext'
+import type { DocumentModel } from '../../document/types'
 import type { Project } from '../../project/project'
 import { Button } from '../ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog'
@@ -15,12 +18,13 @@ const STATES: { value: Project['state']; label: string }[] = [
 interface ProjectStatusSectionProps {
   project: Project
   canDelete: boolean
+  openInvoices: DocumentModel[]
   onSave: (next: Project) => void
   onDelete: () => void
 }
 
 // Project state, the prospect for a lead, archiving, and deleting a project nothing has been billed from.
-export function ProjectStatusSection({ project, canDelete, onSave, onDelete }: ProjectStatusSectionProps) {
+export function ProjectStatusSection({ project, canDelete, openInvoices, onSave, onDelete }: ProjectStatusSectionProps) {
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [prospect, setProspect] = useState(project.prospectName ?? '')
   return (
@@ -54,6 +58,16 @@ export function ProjectStatusSection({ project, canDelete, onSave, onDelete }: P
         <Button size="sm" variant="destructive" onClick={() => setConfirmDelete(true)}>
           Delete project
         </Button>
+      )}
+      {project.state === 'lost' && openInvoices.length > 0 && (
+        <div role="alert" className="w-full text-sm text-destructive">
+          These invoices are still open. Void unpaid ones or issue credit notes:{' '}
+          {openInvoices.map((inv) => (
+            <Link key={inv.id} to="/documents/$documentId" params={{ documentId: inv.id }} className="mr-2 underline">
+              {getPlainText(inv.number)}
+            </Link>
+          ))}
+        </div>
       )}
       <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <DialogContent>

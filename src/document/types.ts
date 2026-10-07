@@ -107,6 +107,7 @@ export const documentSchema = z.object({
     'thankYou',
     'feedback',
     'creditNote',
+    'reminder',
   ]),
   // Set when the document is finalized: the printed totals, kept so later app changes never alter a sent document.
   frozen: z
@@ -119,6 +120,10 @@ export const documentSchema = z.object({
   payments: z
     .array(z.object({ id: z.string(), date: z.iso.date(), amountMinor: z.int(), method: z.string(), note: z.string().optional() }))
     .optional(),
+  // Invoices: when payment is due.
+  dueDate: z.iso.date().optional(),
+  // On a payment reminder: the invoice it chases.
+  reminderFor: z.string().optional(),
   // Quotes: last valid day, the client's answer, and the revision chain.
   validUntil: z.iso.date().optional(),
   outcome: z.enum(['accepted', 'declined']).optional(),

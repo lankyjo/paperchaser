@@ -75,4 +75,10 @@ export const EXPLAINERS: Record<DocumentModel['type'], Explainer> = {
     what: ['The invoice it corrects', 'What is being credited and why', 'The credited amount'],
     tip: 'Use a credit note for refunds or mistakes on paid invoices; unpaid ones can simply be voided.',
   },
+  reminder: {
+    short: 'Politely chase an invoice that is past its due date.',
+    why: 'Late payments are common and usually an oversight. A clear, friendly reminder that quotes the invoice and balance gets most of them paid without awkward calls.',
+    what: ['Which invoice is overdue', 'The original due date', 'The balance still owed', 'How to pay'],
+    tip: 'Stay friendly in the first reminder. It has no number of its own, so it never looks like a second invoice.',
+  },
 }

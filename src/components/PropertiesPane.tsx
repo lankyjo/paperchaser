@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { CurrencyCard } from './properties/CurrencyCard'
 import { ItemProperties } from './properties/ItemProperties'
-import { ValidUntilCard } from './properties/ValidUntilCard'
+import { DateCard } from './properties/DateCard'
 
 // Right pane: the selected line item's properties, otherwise the document settings.
 export interface PropertiesPaneProps {
@@ -20,6 +20,7 @@ export interface PropertiesPaneProps {
   onPageSizeChange: (pageSize: PageSize) => void
   onLineItemChange?: (id: string, patch: Partial<DocumentModel['lineItems'][number]>) => void
   onValidUntilChange?: (date: string | undefined) => void
+  onDueDateChange?: (date: string | undefined) => void
 }
 
 export function PropertiesPane({
@@ -32,6 +33,7 @@ export function PropertiesPane({
   onPageSizeChange,
   onLineItemChange,
   onValidUntilChange,
+  onDueDateChange,
 }: PropertiesPaneProps) {
   if (selectedItemId !== null) {
     const item = model.lineItems.find((li) => li.id === selectedItemId)
@@ -48,7 +50,8 @@ export function PropertiesPane({
       <TemplateGallery selected={template} onSelect={onTemplateChange} />
       <BrandingPanel model={model} template={template} onBrandingChange={onBrandingChange} onLogoChange={onLogoChange} />
       <CurrencyCard currency={model.currency} />
-      {model.type === 'quote' && onValidUntilChange && <ValidUntilCard validUntil={model.validUntil} onChange={onValidUntilChange} />}
+      {model.type === 'quote' && onValidUntilChange && <DateCard title="Valid until" value={model.validUntil} onChange={onValidUntilChange} />}
+      {model.type === 'invoice' && onDueDateChange && <DateCard title="Due date" value={model.dueDate} onChange={onDueDateChange} />}
       <Card size="sm">
         <CardHeader>
           <CardTitle>Page size</CardTitle>

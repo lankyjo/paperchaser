@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { assetsRepo, clientsRepo, documentsRepo, projectsRepo } from '../../db/repos'
 import { newInvoice } from '../../document/newInvoice'
+import { overdueInvoices, type OverdueInvoice } from '../../document/overdue'
 import type { DocumentModel } from '../../document/types'
 import { useMountEffect } from '../../hooks/useMountEffect'
 import { createProject, type Project } from '../../project/project'
@@ -19,8 +20,10 @@ async function loadProjects(): Promise<ProjectWithDocuments[]> {
 export function useProjects() {
   const [projects, setProjects] = useState<ProjectWithDocuments[] | null>(null)
   const [clientNames, setClientNames] = useState(new Map<string, string>())
+  const [overdue, setOverdue] = useState<OverdueInvoice[]>([])
   const reload = async () => {
     setProjects(await loadProjects())
+    setOverdue(overdueInvoices(await documentsRepo.list(), new Date().toLocaleDateString('en-CA')))
     setClientNames(new Map((await clientsRepo.list()).map((c) => [c.id, c.name])))
   }
 
@@ -38,5 +41,5 @@ export function useProjects() {
     return invoice
   }
 
-  return { projects, clientNames, createWithInvoice }
+  return { projects, clientNames, overdue, createWithInvoice }
 }

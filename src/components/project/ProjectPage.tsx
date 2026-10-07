@@ -1,4 +1,6 @@
 import { Link, useNavigate } from '@tanstack/react-router'
+import { creditedTotal } from '../../document/credits'
+import { invoiceBalance } from '../../document/payments'
 import { canDeleteProject } from '../../project/lifecycle'
 import { isTaxModeLocked } from '../../project/sharedData'
 import { ClientPicker } from './ClientPicker'
@@ -26,6 +28,7 @@ export function ProjectPage({ projectId }: { projectId: string }) {
       <ProjectStatusSection
         project={project}
         canDelete={canDeleteProject(documents)}
+        openInvoices={documents.filter((d) => d.type === 'invoice' && d.status === 'sent' && invoiceBalance(d, creditedTotal(documents, d.id)) > 0)}
         onSave={(next) => void save(next)}
         onDelete={() => void remove().then(() => navigate({ to: '/' }))}
       />
