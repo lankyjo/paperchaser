@@ -169,6 +169,13 @@ describe('assetsRepo', () => {
     expect(await assetsRepo.get('orphan')).toBeUndefined()
     expect(await assetsRepo.get('used')).toBeDefined()
   })
+
+  it('keeps the company profile logo even when no document uses it', async () => {
+    await assetsRepo.put(asset('profile-logo'))
+    await companyRepo.put({ ...COMPANY, logo: 'asset:profile-logo' })
+    await assetsRepo.pruneUnreferenced()
+    expect(await assetsRepo.get('profile-logo')).toBeDefined()
+  })
 })
 
 describe('clientsRepo', () => {

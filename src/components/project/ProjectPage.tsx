@@ -38,7 +38,7 @@ export function ProjectPage({ projectId }: { projectId: string }) {
       {project.archived && <p role="status" className="text-sm text-muted-foreground">Archived — unarchive to make changes.</p>}
       <ProjectStatusSection
         project={project}
-        canDelete={canDeleteProject(documents)}
+        canDelete={project.sample === true || canDeleteProject(documents)}
         openInvoices={openInvoices(documents).map((o) => o.invoice)}
         onSave={(next) => void save(next)}
         onDelete={() => void remove().then(() => navigate({ to: '/' }))}

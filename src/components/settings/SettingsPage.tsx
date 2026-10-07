@@ -6,6 +6,7 @@ import { Input } from '../ui/input'
 import { AccountantExport } from './AccountantExport'
 import { AiSettingsSection } from './AiSettingsSection'
 import { BackupSection } from './BackupSection'
+import { CompanyProfileSection } from './CompanyProfileSection'
 import { useNumbering } from './useNumbering'
 
 // Numbering settings: prefix (with {YYYY}), next number and yearly reset per numbered document type.
@@ -16,6 +17,7 @@ export function SettingsPage() {
       <Link to="/" className="text-sm underline">
         Projects
       </Link>
+      <CompanyProfileSection />
       <h1 className="text-xl font-semibold">Numbering</h1>
       <p className="text-sm text-muted-foreground">Numbers are assigned when a document is finalized. Use {'{YYYY}'} in a prefix for the year.</p>
       <ul className="flex flex-col gap-3">

@@ -12,7 +12,7 @@ const firstOfYear = () => `${new Date().getFullYear()}-01-01`
 export function AccountantExport() {
   const [from, setFrom] = useState(firstOfYear())
   const [to, setTo] = useState(todayIso())
-  const exportCsv = async () => downloadFile(`paperchaser-${from}-to-${to}.csv`, moneyDocumentsCsv(await documentsRepo.list(), { from, to }), 'text/csv')
+  const exportCsv = async () => downloadFile(`paperchaser-${from}-to-${to}.csv`, moneyDocumentsCsv(await documentsRepo.listReal(), { from, to }), 'text/csv')
   return (
     <section aria-label="Export for your accountant" className="flex flex-col gap-3 rounded-lg border bg-card p-4">
       <h2 className="font-medium">Export for your accountant</h2>

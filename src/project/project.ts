@@ -17,6 +17,8 @@ export const projectSchema = z.object({
   locale: z.string().optional(),
   // Single-document steps the user has marked finished.
   doneSteps: z.array(z.string()).optional(),
+  // The example project from first launch: deletable, and left out of overdue lists and exports.
+  sample: z.boolean().optional(),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
 })

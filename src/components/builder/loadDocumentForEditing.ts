@@ -1,4 +1,4 @@
-import { clientsRepo, documentsRepo, projectsRepo } from '../../db/repos'
+import { clientsRepo, companyRepo, documentsRepo, projectsRepo } from '../../db/repos'
 import { findSchedule, priorScheduleInvoices, syncScheduledInvoice } from '../../document/schedule'
 import type { DocumentModel } from '../../document/types'
 import type { Project } from '../../project/project'
@@ -30,7 +30,7 @@ export async function loadDocumentForEditing(documentId: string): Promise<Loaded
   if (stored === undefined) return null
   const project = await projectsRepo.get(stored.projectId)
   const client = project?.clientId === undefined ? undefined : await clientsRepo.get(project.clientId)
-  const shared = sharedFromProject(client, project)
+  const shared = sharedFromProject(client, project, await companyRepo.get())
   const { doc, scheduleMismatch } = await syncWithSchedule(stored, shared)
   return { model: applySharedData(doc, shared), shared, scheduleMismatch, project }
 }

@@ -58,6 +58,11 @@ export const documentsRepo = {
   byStatus: (status: DocumentModel['status']) => db.documents.where('status').equals(status).toArray(),
   byProject: (projectId: string) => db.documents.where('projectId').equals(projectId).toArray(),
   list: () => db.documents.toArray(),
+  // Every document outside the sample project, for exports and totals.
+  listReal: async () => {
+    const sampleIds = new Set((await db.projects.toArray()).filter((p) => p.sample).map((p) => p.id))
+    return (await db.documents.toArray()).filter((d) => !sampleIds.has(d.projectId))
+  },
   finalize: (doc: DocumentModel, now: Date) => finalizeInTransaction(doc, now),
   save: (doc: DocumentModel, expectedRev: number) => saveIfCurrent(doc, expectedRev),
 }
@@ -142,7 +147,7 @@ export const companyRepo = {
   },
   get: async (): Promise<Company | undefined> => {
     const row = await db.company.get(COMPANY_ID)
-    return row && { name: row.name, address: row.address, email: row.email, logo: row.logo }
+    return row && { name: row.name, address: row.address, email: row.email, logo: row.logo, ...(row.taxId !== undefined && { taxId: row.taxId }) }
   },
 }
 
@@ -151,7 +156,8 @@ export const assetsRepo = {
   get: (id: string) => db.assets.get(id),
   // Deletes images no document references and returns how many were removed.
   pruneUnreferenced: async (): Promise<number> => {
-    const used = referencedAssetIds(await db.documents.toArray())
+    // The company profile logo counts as used even when no document shows it yet.
+    const used = referencedAssetIds([...(await db.documents.toArray()), { company: await db.company.get(COMPANY_ID) }])
     const orphans = (await db.assets.toCollection().primaryKeys()).filter((id) => !used.has(id))
     await db.assets.bulkDelete(orphans)
     return orphans.length

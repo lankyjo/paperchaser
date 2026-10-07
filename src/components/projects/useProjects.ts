@@ -15,6 +15,7 @@ export interface ProjectWithDocuments {
 // Every project with its documents, from one read of each table.
 async function loadHome() {
   const [projects, documents, clients] = await Promise.all([projectsRepo.list(), documentsRepo.list(), clientsRepo.list()])
+  const sampleIds = new Set(projects.filter((p) => p.sample).map((p) => p.id))
   const byProject = new Map<string, DocumentModel[]>()
   for (const d of documents) {
     if (!byProject.has(d.projectId)) byProject.set(d.projectId, [])
@@ -22,7 +23,8 @@ async function loadHome() {
   }
   return {
     projects: projects.map((project) => ({ project, documents: byProject.get(project.id) ?? [] })),
-    overdue: overdueInvoices(documents, todayIso()),
+    // The sample project never shows up as overdue.
+    overdue: overdueInvoices(documents.filter((d) => !sampleIds.has(d.projectId)), todayIso()),
     clientNames: new Map(clients.map((c) => [c.id, c.name])),
   }
 }
@@ -32,12 +34,14 @@ export function useProjects() {
   const [projects, setProjects] = useState<ProjectWithDocuments[] | null>(null)
   const [clientNames, setClientNames] = useState(new Map<string, string>())
   const [overdue, setOverdue] = useState<OverdueInvoice[]>([])
-  useMountEffect(() => {
-    void loadHome().then((home) => {
+  const reload = () =>
+    loadHome().then((home) => {
       setProjects(home.projects)
       setOverdue(home.overdue)
       setClientNames(home.clientNames)
     })
+  useMountEffect(() => {
+    void reload()
   })
 
   const createWithInvoice = async (title: string): Promise<DocumentModel> => {
@@ -49,5 +53,5 @@ export function useProjects() {
     return invoice
   }
 
-  return { projects, clientNames, overdue, createWithInvoice }
+  return { projects, clientNames, overdue, createWithInvoice, reload }
 }

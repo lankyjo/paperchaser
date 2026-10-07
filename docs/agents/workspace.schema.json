@@ -81,6 +81,9 @@
               "type": "string"
             }
           },
+          "sample": {
+            "type": "boolean"
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time",

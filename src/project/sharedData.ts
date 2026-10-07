@@ -2,7 +2,7 @@ import { isMoneyDocument } from '../document/documentBlocks'
 import { isLiveDraft } from '../document/finalize'
 import { getPlainText } from '../document/richtext'
 import type { TaxMode } from '../document/totals'
-import type { DocumentModel } from '../document/types'
+import type { Company, DocumentModel } from '../document/types'
 import type { Client } from './client'
 import type { Project } from './project'
 
@@ -15,9 +15,11 @@ export interface SharedData {
   currency?: string
   locale?: string
   feeMinor?: number
+  // Your company profile; absent until first-run setup saved one.
+  company?: Company
 }
 
-export function sharedFromProject(client: Client | undefined, project?: Pick<Project, 'taxMode' | 'currency' | 'locale' | 'feeMinor'>): SharedData {
+export function sharedFromProject(client: Client | undefined, project?: Pick<Project, 'taxMode' | 'currency' | 'locale' | 'feeMinor'>, company?: Company): SharedData {
   return {
     customerName: client?.name ?? '',
     customerAddress: client?.billingAddress ?? [],
@@ -25,6 +27,7 @@ export function sharedFromProject(client: Client | undefined, project?: Pick<Pro
     currency: project?.currency,
     locale: project?.locale,
     feeMinor: project?.feeMinor,
+    company,
   }
 }
 
@@ -64,6 +67,8 @@ export function applySharedData(doc: DocumentModel, shared: SharedData): Documen
     ...(shared.currency !== undefined && { currency: shared.currency }),
     ...(shared.locale !== undefined && { locale: shared.locale }),
     ...(shared.feeMinor !== undefined && doc.blocks !== undefined && { blocks: withScheduleTotal(doc.blocks, shared.feeMinor) }),
+    // The profile logo wins; a logo picked on the document only shows while the profile has none.
+    ...(shared.company !== undefined && { company: { ...shared.company, logo: shared.company.logo ?? doc.company.logo } }),
   }
   return FIELDS.filter((f) => !overrides.includes(f)).reduce((next, f) => withProjectValue(next, f, shared), settings)
 }

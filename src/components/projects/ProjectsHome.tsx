@@ -5,6 +5,8 @@ import { filterProjects } from '../../project/searchProjects'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { DataSafetyNotices } from '../data-safety/DataSafetyNotices'
+import { FirstRunSetup } from '../first-run/FirstRunSetup'
+import { useFirstRun } from '../first-run/useFirstRun'
 import { NewProjectForm } from './NewProjectForm'
 import { OverdueList } from './OverdueList'
 import { ProjectCard } from './ProjectCard'
@@ -12,7 +14,8 @@ import { useProjects } from './useProjects'
 
 // Home screen: create a project, then open any of its documents.
 export function ProjectsHome() {
-  const { projects, clientNames, overdue, createWithInvoice } = useProjects()
+  const { projects, clientNames, overdue, createWithInvoice, reload } = useProjects()
+  const firstRun = useFirstRun()
   const [query, setQuery] = useState('')
   const [showArchived, setShowArchived] = useState(false)
   const visible = projects === null ? [] : filterProjects(projects.map((e) => ({ ...e.project, entry: e })), clientNames, query, showArchived)
@@ -41,6 +44,7 @@ export function ProjectsHome() {
         </Button>
       </div>
       <DataSafetyNotices />
+      {firstRun.needed && <FirstRunSetup onFinish={(company) => void firstRun.finish(company).then(reload)} />}
       <OverdueList overdue={overdue} />
       <NewProjectForm onCreate={(title) => void create(title)} />
       <div className="flex items-center gap-3">

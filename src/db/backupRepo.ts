@@ -8,7 +8,7 @@ import { assetsRepo, clientsRepo, companyRepo, countersRepo, documentsRepo, proj
 
 export type ImportMode = 'replace' | 'skip' | 'copy'
 
-async function assetsFor(documents: { blocks?: ProjectBundle['documents'][number]['blocks'] }[]) {
+async function assetsFor(documents: Parameters<typeof referencedAssetIds>[0]) {
   const ids = [...referencedAssetIds(documents)]
   return (await Promise.all(ids.map((id) => assetsRepo.get(id)))).filter((a) => a !== undefined)
 }
@@ -61,15 +61,16 @@ export async function importProject(incoming: ProjectBundle, mode: ImportMode): 
 
 export async function exportWorkspace(): Promise<WorkspaceBundle> {
   const documents = await documentsRepo.list()
+  const company = await companyRepo.get()
   return {
     format: 'paperchaser-workspace',
     version: BACKUP_VERSION,
     projects: await projectsRepo.list(),
     clients: await clientsRepo.list(),
     documents,
-    assets: await assetsFor(documents),
+    assets: await assetsFor([...documents, { company }]),
     counters: (await db.table('counters').toArray()) as Counter[],
-    company: await companyRepo.get(),
+    company,
   }
 }
 

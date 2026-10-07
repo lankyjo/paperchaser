@@ -10,6 +10,16 @@ const shared = sharedFromProject(client)
 const draft = newInvoice({ id: 'd1', projectId: 'p1', today: '2026-10-07' })
 
 describe('applySharedData', () => {
+  it('fills a draft from your company profile, falling back to the document logo', () => {
+    const company = { name: 'Northwind Studio', address: ['12 Harbor Lane'], email: 'hello@northwind.test', logo: 'asset:profile' }
+    const withProfile = sharedFromProject(client, undefined, company)
+    expect(applySharedData(draft, withProfile).company).toEqual(company)
+    const ownLogo = { ...draft, company: { ...draft.company, logo: 'asset:own' } }
+    expect(applySharedData(ownLogo, withProfile).company.logo).toBe('asset:profile')
+    expect(applySharedData(ownLogo, sharedFromProject(client, undefined, { ...company, logo: null })).company.logo).toBe('asset:own')
+    expect(applySharedData({ ...draft, status: 'sent' as const }, withProfile).company.name).toBe('')
+  })
+
   it('fills a draft from the project client', () => {
     const doc = applySharedData(draft, shared)
     expect(getPlainText(doc.customer.name)).toBe('Acme Coffee')
