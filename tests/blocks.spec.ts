@@ -24,7 +24,7 @@ test('a welcome document is built from blocks that can be edited, hidden, reorde
   await page.getByRole('button', { name: 'Move Details list up' }).click()
   await page.getByRole('button', { name: 'Add heading' }).click()
   const outline = page.getByRole('navigation', { name: 'Blocks' }).getByRole('listitem')
-  await expect(outline).toHaveCount(4)
+  await expect(outline).toHaveCount(5)
   await expect(outline.nth(1)).toContainText('Details list')
 
   await expect(page.getByText('Saving…')).toBeVisible()
@@ -32,7 +32,7 @@ test('a welcome document is built from blocks that can be edited, hidden, reorde
   await page.reload()
   await expect(pageRoot.getByRole('heading', { name: 'Welcome, Acme' })).toBeVisible()
   await expect(pageRoot.getByText("We're excited to work with you")).toHaveCount(0)
-  await expect(outline).toHaveCount(4)
+  await expect(outline).toHaveCount(5)
 })
 
 test('table and numbered-steps blocks can be added and filled in', async ({ page }) => {
@@ -53,9 +53,9 @@ test('table and numbered-steps blocks can be added and filled in', async ({ page
   await expect(table.locator('th').first()).toHaveText('File')
 
   await page.getByRole('button', { name: 'Add numbered steps' }).click()
-  await pageRoot.getByRole('button', { name: 'Add step' }).click()
-  await expect(pageRoot.locator('ol li')).toHaveCount(2)
-  await expect(pageRoot.getByText('02', { exact: true })).toBeVisible()
+  // Welcome already has a steps block, so the new one is the last.
+  await pageRoot.getByRole('button', { name: 'Add step' }).last().click()
+  await expect(pageRoot.locator('ol').last().locator('li')).toHaveCount(2)
 })
 
 test('a chart takes pasted CSV, reports bad lines, and draws one bar per row; metric tiles can be added', async ({ page }) => {

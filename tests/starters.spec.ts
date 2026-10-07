@@ -25,3 +25,17 @@ test('a new project brief covers overview, objective, audience and key message',
   const pageRoot = page.locator('#print-root')
   for (const section of ['Project overview', 'Objective', 'Target audience', 'Key message']) await expect(pageRoot).toContainText(section)
 })
+
+test('welcome, delivery guide and thank-you documents start with their sample content', async ({ page }) => {
+  await openProject(page)
+  await page.getByRole('button', { name: 'Start delivery guide' }).click()
+  await expect(page.locator('#print-root')).toContainText('File name')
+  await expect(page.locator('#print-root')).toContainText('Download link')
+  await page.goBack()
+  await page.getByRole('button', { name: 'Start thank you' }).click()
+  await expect(page.locator('#print-root')).toContainText('Thank you for trusting us')
+  await expect(page.locator('#print-root').getByText('Client signature', { exact: true })).toHaveCount(0)
+  await page.goBack()
+  await page.getByRole('button', { name: 'Start welcome' }).click()
+  await expect(page.locator('#print-root')).toContainText('Discovery call')
+})

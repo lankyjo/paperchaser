@@ -41,3 +41,25 @@ describe('brief starter', () => {
     expect(countPlaceholders(doc)).toBeGreaterThan(0)
   })
 })
+
+describe('welcome, delivery guide and thank-you starters', () => {
+  it('welcome has a greeting, project at a glance and numbered next steps', () => {
+    const doc = make('welcome')
+    expect(documentSchema.parse(doc)).toEqual(doc)
+    expect(doc.blocks?.map((b) => b.type)).toEqual(expect.arrayContaining(['heading', 'richText', 'keyValue', 'steps']))
+  })
+
+  it('delivery guide lists files in a table and how to access them', () => {
+    const doc = make('deliveryGuide')
+    expect(documentSchema.parse(doc)).toEqual(doc)
+    const text = JSON.stringify(doc.blocks)
+    for (const part of ['File name', 'Download link', 'Link expires']) expect(text).toContain(part)
+  })
+
+  it('thank-you is a signed letter without a client signature line', () => {
+    const doc = make('thankYou')
+    expect(documentSchema.parse(doc)).toEqual(doc)
+    expect(doc.blocks?.find((b) => b.type === 'signature')).toMatchObject({ clientLine: false })
+    expect(countPlaceholders(doc)).toBeGreaterThan(0)
+  })
+})
