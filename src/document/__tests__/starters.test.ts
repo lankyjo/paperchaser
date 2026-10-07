@@ -63,3 +63,20 @@ describe('welcome, delivery guide and thank-you starters', () => {
     expect(countPlaceholders(doc)).toBeGreaterThan(0)
   })
 })
+
+describe('monthly report and feedback starters', () => {
+  it('monthly report names the month and has summary, metrics, content table and chart', () => {
+    const doc = make('monthlyReport')
+    expect(documentSchema.parse(doc)).toEqual(doc)
+    expect(doc.blocks?.[0]).toMatchObject({ type: 'heading', text: 'Monthly Report — October 2026' })
+    expect(doc.blocks?.map((b) => b.type)).toEqual(expect.arrayContaining(['metrics', 'table', 'chart', 'richText']))
+  })
+
+  it('feedback has rating questions and open questions with room to answer', () => {
+    const doc = make('feedback')
+    expect(documentSchema.parse(doc)).toEqual(doc)
+    const rating = doc.blocks?.find((b) => b.type === 'rating')
+    expect(rating && rating.type === 'rating' && rating.questions.length).toBeGreaterThanOrEqual(4)
+    expect(JSON.stringify(doc.blocks)).toContain('In your own words')
+  })
+})

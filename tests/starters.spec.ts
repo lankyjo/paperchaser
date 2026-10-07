@@ -39,3 +39,15 @@ test('welcome, delivery guide and thank-you documents start with their sample co
   await page.getByRole('button', { name: 'Start welcome' }).click()
   await expect(page.locator('#print-root')).toContainText('Discovery call')
 })
+
+test('monthly reports and feedback start with their sample content', async ({ page }) => {
+  await openProject(page)
+  await page.getByRole('button', { name: 'Start monthly report' }).click()
+  const pageRoot = page.locator('#print-root')
+  await expect(pageRoot).toContainText('Monthly Report — ')
+  await expect(pageRoot.getByRole('img', { name: 'Bar chart' })).toBeVisible()
+  await page.goBack()
+  await page.getByRole('button', { name: 'Start feedback' }).click()
+  await expect(pageRoot).toContainText('Value for money')
+  await expect(pageRoot).toContainText('What could we have done better?')
+})
