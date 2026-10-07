@@ -33,7 +33,8 @@ export function MobileStack({
         <div className="mx-4 mt-2 rounded bg-destructive px-3 py-2 text-sm text-destructive-foreground">Not saved — retry</div>
       )}
       <div className="sticky top-0 z-10 border-b bg-card p-2">
-        <div className="flex justify-center overflow-auto">
+        {/* Focusable so keyboard users can scroll the preview. */}
+        <div tabIndex={0} role="region" aria-label="Document preview" className="flex justify-center overflow-auto">
           <div style={{ transform: 'scale(0.55)', transformOrigin: 'top center', boxShadow: '0 2px 12px rgba(0,0,0,0.12)' }}>
             <DocumentPage
               id="document-root"

@@ -3,8 +3,8 @@
 import { blankTokens } from './templates/blank'
 import { minimalTokens } from './templates/minimal'
 import { noirLedgerTokens } from './templates/noirLedger'
-import { atelierTokens } from './templates/atelier'
-import { statementTokens } from './templates/statement'
+import { atelierTokens, atelierTokensV1 } from './templates/atelier'
+import { statementTokens, statementTokensV1 } from './templates/statement'
 import { swissTokens } from './templates/swiss'
 import { correspondenceTokens } from './templates/correspondence'
 import { DOC_TYPE_IDS, DOC_TYPES } from './docTypes'
@@ -115,8 +115,8 @@ export const TEMPLATE_VERSIONS: Record<TemplateId, TemplateTokens[]> = {
   blank: [blankTokens],
   minimal: [minimalTokens],
   noirLedger: [noirLedgerTokens],
-  atelier: [atelierTokens],
-  statement: [statementTokens],
+  atelier: [atelierTokensV1, atelierTokens],
+  statement: [statementTokensV1, statementTokens],
   swiss: [swissTokens],
   correspondence: [correspondenceTokens],
 }

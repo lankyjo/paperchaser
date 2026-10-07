@@ -79,7 +79,7 @@ describe('TEMPLATE_REGISTRY', () => {
 })
 
 // Fingerprint of every published template version; append, never edit.
-const PUBLISHED = { blank: ['36e5a0fbec7f'], minimal: ['3df0477aca6d'], noirLedger: ['e9f3dda798cf'], atelier: ['c45bfd2eb2fc'], statement: ['e01c4f9bd462'], swiss: ['1c2be9730eb3'], correspondence: ['f65fa4400cdb'] }
+const PUBLISHED = { blank: ['36e5a0fbec7f'], minimal: ['3df0477aca6d'], noirLedger: ['e9f3dda798cf'], atelier: ['c45bfd2eb2fc', '81260f0d0475'], statement: ['e01c4f9bd462', '2a5d48af9327'], swiss: ['1c2be9730eb3'], correspondence: ['f65fa4400cdb'] }
 
 describe('template versions', () => {
   it('renders a frozen document with the template version it was sent with', () => {

@@ -22,7 +22,7 @@ export function SelectControl({
           if (next !== null && typeof next === 'string') onPick(next)
         }}
       >
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="w-full" aria-label={label}>
           <SelectValue placeholder="Select…" />
         </SelectTrigger>
         <SelectContent>

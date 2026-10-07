@@ -22,14 +22,14 @@ export function BlockOutline({ blocks, canHide, onMove, onToggleHidden, onAdd }:
             <span className={`flex-1 truncate ${block.hidden ? 'text-muted-foreground line-through' : ''}`}>
               <span className="text-muted-foreground">{TYPE_LABELS[block.type]}</span> {blockSummary(block)}
             </span>
-            <button type="button" aria-label={`Move ${TYPE_LABELS[block.type]} up`} disabled={idx === 0} onClick={() => onMove(block.id, -1)} className="p-0.5 disabled:opacity-30">
+            <button type="button" aria-label={`Move ${TYPE_LABELS[block.type]} up`} disabled={idx === 0} onClick={() => onMove(block.id, -1)} className="flex size-6 items-center justify-center rounded hover:bg-foreground/10 disabled:opacity-30">
               <ArrowUp className="size-3.5" />
             </button>
-            <button type="button" aria-label={`Move ${TYPE_LABELS[block.type]} down`} disabled={idx === blocks.length - 1} onClick={() => onMove(block.id, 1)} className="p-0.5 disabled:opacity-30">
+            <button type="button" aria-label={`Move ${TYPE_LABELS[block.type]} down`} disabled={idx === blocks.length - 1} onClick={() => onMove(block.id, 1)} className="flex size-6 items-center justify-center rounded hover:bg-foreground/10 disabled:opacity-30">
               <ArrowDown className="size-3.5" />
             </button>
             {canHide(block.type) && (
-              <button type="button" aria-label={`${block.hidden ? 'Show' : 'Hide'} ${TYPE_LABELS[block.type]}`} onClick={() => onToggleHidden(block.id)} className="p-0.5">
+              <button type="button" aria-label={`${block.hidden ? 'Show' : 'Hide'} ${TYPE_LABELS[block.type]}`} onClick={() => onToggleHidden(block.id)} className="flex size-6 items-center justify-center rounded hover:bg-foreground/10">
                 {block.hidden ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
               </button>
             )}

@@ -185,7 +185,7 @@
   gap: 8mm;
   font-size: 8px;
   white-space: nowrap;
-  color: color-mix(in srgb, var(--tpl-muted) 75%, var(--tpl-fill));
+  color: var(--tpl-muted);
 }
 
 .noir-page-mark span:first-child {

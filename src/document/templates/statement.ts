@@ -1,7 +1,7 @@
 import type { TemplateTokens } from '../tokens'
 
 // Statement: dark side column with the amount due, oversized title, lime highlight.
-export const statementTokens: TemplateTokens = {
+export const statementTokensV1: TemplateTokens = {
   palette: {
     ink: '#111111',
     primary: '#0f0f0f',
@@ -43,3 +43,6 @@ export const statementTokens: TemplateTokens = {
     rule: '#111111',
   },
 }
+
+// Version 2: labels darkened to meet WCAG AA contrast.
+export const statementTokens: TemplateTokens = { ...statementTokensV1, fonts: { ...statementTokensV1.fonts, labelColor: '#717171' } }

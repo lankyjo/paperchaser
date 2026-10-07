@@ -86,7 +86,7 @@
   gap: 10px;
   font-style: italic;
   font-size: 13px;
-  color: #8a8276;
+  color: var(--tpl-muted);
 }
 
 .tpl-correspondence .doc-items-description::after,

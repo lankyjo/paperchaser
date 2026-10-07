@@ -50,7 +50,7 @@ export function SortableOutlineItem({
         <button
           type="button"
           aria-label="Drag to reorder"
-          className="hidden shrink-0 rounded p-1 hover:bg-foreground/10 lg:flex lg:size-5 lg:items-center lg:justify-center cursor-grab active:cursor-grabbing"
+          className="hidden shrink-0 rounded hover:bg-foreground/10 lg:flex lg:size-6 lg:items-center lg:justify-center cursor-grab active:cursor-grabbing"
           {...attributes}
           {...listeners}
           onClick={withoutRowSelect()}
@@ -60,17 +60,17 @@ export function SortableOutlineItem({
         <button
           type="button"
           aria-label={isCollapsed ? 'Expand item' : 'Collapse item'}
-          className="shrink-0 rounded p-0.5 hover:bg-foreground/10"
+          className="flex size-6 shrink-0 items-center justify-center rounded hover:bg-foreground/10"
           onClick={withoutRowSelect(onToggleCollapse)}
         >
           {isCollapsed ? <ChevronRight className="size-3" /> : <ChevronDown className="size-3" />}
         </button>
         <span className="flex-1 truncate">{getPlainText(item.title) || 'Untitled'}</span>
         <div className="hidden shrink-0 items-center gap-0.5 group-hover:flex">
-          <button type="button" aria-label="Duplicate item" className="rounded p-1 hover:bg-foreground/10" onClick={withoutRowSelect(onDuplicate)}>
+          <button type="button" aria-label="Duplicate item" className="flex size-6 items-center justify-center rounded hover:bg-foreground/10" onClick={withoutRowSelect(onDuplicate)}>
             <Copy className="size-3" />
           </button>
-          <button type="button" aria-label="Delete item" className="rounded p-1 hover:bg-foreground/10 text-destructive" onClick={withoutRowSelect(onDeleteRequest)}>
+          <button type="button" aria-label="Delete item" className="flex size-6 items-center justify-center rounded text-destructive hover:bg-foreground/10" onClick={withoutRowSelect(onDeleteRequest)}>
             <Trash2 className="size-3" />
           </button>
         </div>

@@ -1,7 +1,7 @@
 import type { TemplateTokens } from '../tokens'
 
 // Atelier: warm paper, serif type, quiet sans labels.
-export const atelierTokens: TemplateTokens = {
+export const atelierTokensV1: TemplateTokens = {
   palette: {
     ink: '#1b1b1b',
     primary: '#1b1b1b',
@@ -42,3 +42,6 @@ export const atelierTokens: TemplateTokens = {
     rule: '#1b1b1b',
   },
 }
+
+// Version 2: labels darkened to meet WCAG AA contrast.
+export const atelierTokens: TemplateTokens = { ...atelierTokensV1, fonts: { ...atelierTokensV1.fonts, labelColor: '#736d64' } }
