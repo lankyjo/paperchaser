@@ -159,3 +159,7 @@ iOS delivery works at all. It is tracked as ticket 04 (Safari macOS/iOS print
 comparison plus printing from the installed iOS home-screen app on a real device).
 If Safari fails, the response is CSS fixes or documented workarounds, not a
 second engine.
+
+## Result (2026-10-07): iOS print passes
+
+Printing from the app installed to an iOS home screen was tested on a real device and passed, as reported by the owner. No differences from Chromium were noted. Safari on macOS was not tested; treat it as best effort, with Chromium as the reference browser.
