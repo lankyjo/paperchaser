@@ -1,5 +1,5 @@
 import { clientsRepo, documentsRepo, projectsRepo } from '../../db/repos'
-import { syncScheduledInvoice, type ScheduleBlock } from '../../document/schedule'
+import { findSchedule, priorScheduleInvoices, syncScheduledInvoice } from '../../document/schedule'
 import type { DocumentModel } from '../../document/types'
 import type { Project } from '../../project/project'
 import { applySharedData, sharedFromProject, type SharedData } from '../../project/sharedData'
@@ -17,11 +17,9 @@ async function syncWithSchedule(doc: DocumentModel, shared: SharedData): Promise
   if (ref === undefined) return { doc, scheduleMismatch: false }
   const stored = await documentsRepo.get(ref.agreementId)
   const agreement = stored && applySharedData(stored, shared)
-  const schedule = agreement?.blocks?.find((b): b is ScheduleBlock => b.type === 'paymentSchedule')
+  const schedule = agreement && findSchedule(agreement)
   if (!schedule) return { doc, scheduleMismatch: false }
-  const siblings = (await documentsRepo.byProject(doc.projectId)).filter((d) => d.scheduleRef?.agreementId === ref.agreementId && d.status !== 'void')
-  const earlier = schedule.rows.slice(0, schedule.rows.findIndex((r) => r.id === ref.rowId)).map((r) => r.id)
-  const prior = earlier.map((rowId) => siblings.find((d) => d.scheduleRef?.rowId === rowId)).filter((d): d is DocumentModel => d !== undefined)
+  const prior = priorScheduleInvoices(schedule, ref.rowId, await documentsRepo.byProject(doc.projectId), ref.agreementId)
   const { invoice, mismatch } = syncScheduledInvoice(doc, schedule, prior)
   return { doc: invoice, scheduleMismatch: mismatch }
 }

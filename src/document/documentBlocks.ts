@@ -1,11 +1,11 @@
 import type { Block, BlockType } from './blocks'
+import { DOC_TYPES } from './docTypes'
 import type { DocumentModel } from './types'
 
 export const MONEY_BLOCKS: BlockType[] = ['parties', 'lineItems', 'totals']
-const MONEY_TYPES = new Set<DocumentModel['type']>(['quote', 'invoice', 'receipt', 'creditNote'])
 const REQUIRED_ON_MONEY = new Set<BlockType>(['lineItems', 'totals'])
 
-export const isMoneyDocument = (doc: Pick<DocumentModel, 'type'>) => MONEY_TYPES.has(doc.type)
+export const isMoneyDocument = (doc: Pick<DocumentModel, 'type'>) => DOC_TYPES[doc.type].money
 
 // The blocks a document renders; money documents saved before blocks existed get the fixed sections in order.
 export function documentBlocks(doc: Pick<DocumentModel, 'type' | 'blocks' | 'settings'>): Block[] {

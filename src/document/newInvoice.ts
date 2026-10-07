@@ -1,7 +1,7 @@
 import type { DocumentModel } from './types'
 
 // Adds whole days to a YYYY-MM-DD date in UTC, so time zones never shift it.
-export function addDays(date: string, days: number): string {
+function addDays(date: string, days: number): string {
   const d = new Date(`${date}T00:00:00Z`)
   d.setUTCDate(d.getUTCDate() + days)
   return d.toISOString().slice(0, 10)

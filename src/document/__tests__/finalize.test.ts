@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { pullLatestChanges } from '../../project/sharedData'
-import { finalizeDocument, isNumberedType, nextNumber, printedTotals, unsendDocument, type Counter } from '../finalize'
+import { canUnsend, finalizeDocument, isLiveDraft, isNumberedType, nextNumber, printedTotals, unsendDocument, type Counter } from '../finalize'
 import { newInvoice } from '../newInvoice'
 import type { DocumentModel } from '../types'
 
@@ -54,5 +54,19 @@ describe('unsend and pull latest', () => {
   it('lists what pulling the latest project data would change', () => {
     const shared = { customerName: 'Acme Coffee', customerAddress: ['300 Main St'] }
     expect(pullLatestChanges(draft, shared)).toEqual([{ field: 'Client name', from: 'Acme', to: 'Acme Coffee' }])
+  })
+})
+
+describe('canUnsend and isLiveDraft', () => {
+  it('lets a sent document go back to draft only while no money or decision is recorded', () => {
+    const sent = finalizeDocument(draft, 'INV-0001', '2026-10-07T00:00:00.000Z')
+    expect(canUnsend(sent)).toBe(true)
+    expect(canUnsend({ ...sent, payments: [{ id: 'p', date: '2026-10-08', amountMinor: 100, method: 'bank' }] })).toBe(false)
+    expect(canUnsend({ ...sent, status: 'void' })).toBe(false)
+  })
+
+  it('treats only unsent, unfrozen drafts as live', () => {
+    expect(isLiveDraft(draft)).toBe(true)
+    expect(isLiveDraft(unsendDocument(finalizeDocument(draft, null, '2026-10-07T00:00:00.000Z')))).toBe(false)
   })
 })

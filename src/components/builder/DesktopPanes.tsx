@@ -1,5 +1,4 @@
 import type { DocumentModel, PageSize, TemplateId } from '../../document/types'
-import type { RichTextDoc } from '../../document/richtext'
 import type { blockActions } from '../blocks/blockActions'
 import { BlockOutline } from '../blocks/BlockOutline'
 import { ServicePicker } from '../catalog/ServicePicker'
@@ -18,7 +17,6 @@ export function DesktopPanes({
   zoom,
   outlineProps,
   propertiesProps,
-  onCustomerNameCommit,
   onCommit,
   onInsertItem,
 }: {
@@ -30,7 +28,6 @@ export function DesktopPanes({
   zoom: number
   outlineProps: OutlinePaneProps
   propertiesProps: PropertiesPaneProps
-  onCustomerNameCommit: (name: RichTextDoc) => void
   onCommit: (next: DocumentModel) => void
   onInsertItem?: (line: DocumentModel['lineItems'][number]) => void
 }) {
@@ -65,7 +62,6 @@ export function DesktopPanes({
             branding={model.branding}
             pageSize={pageSize}
             editable={editable}
-            onCustomerNameCommit={editable ? onCustomerNameCommit : undefined}
             onCommit={editable ? onCommit : undefined}
           />
         </div>

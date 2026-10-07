@@ -2,16 +2,16 @@ import type { Block } from '../blocks'
 import { heading, paragraphs, type NewId } from './compose'
 
 export const welcomeBlocks = (newId: NewId): Block[] => [
-  heading(newId(1), 'Welcome to the team'),
-  paragraphs(newId(2), ["We're excited to work with you, [Client name]. Here's everything you need to get started. Questions at any point? Just reply — we're here."]),
+  heading(newId(), 'Welcome to the team'),
+  paragraphs(newId(), ["We're excited to work with you, [Client name]. Here's everything you need to get started. Questions at any point? Just reply — we're here."]),
   {
-    id: newId(3),
+    id: newId(),
     type: 'keyValue',
     title: 'Your project at a glance',
     rows: ['Project', 'Start date', 'Final delivery', 'Point of contact'].map((label) => ({ label, value: '' })),
   },
   {
-    id: newId(4),
+    id: newId(),
     type: 'steps',
     items: [
       { title: 'Discovery call', description: 'We align on goals, direction and logistics before we begin.' },

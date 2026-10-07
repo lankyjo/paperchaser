@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { canVoid } from '../../document/credits'
-import { isNumberedType } from '../../document/finalize'
+import { DOC_TYPES } from '../../document/docTypes'
+import { canUnsend, isNumberedType } from '../../document/finalize'
 import { preFinalizeWarnings } from '../../document/finalizeChecks'
 import { getPlainText } from '../../document/richtext'
 import type { DocumentModel } from '../../document/types'
@@ -29,9 +30,8 @@ export function LifecycleBar({ model, shared, project, history }: LifecycleBarPr
   const lifecycle = useDocumentLifecycle(model, history, shared, project)
   const blocked = project ? sendBlockedReason(project, model.type) : null
   const changes = shared && model.status === 'draft' && model.frozen ? pullLatestChanges(model, shared) : []
+  const capabilities = DOC_TYPES[model.type]
   const number = getPlainText(model.number)
-  // Once money is recorded the document stays sent; corrections go through a credit note.
-  const canUnsend = (model.payments ?? []).length === 0 && model.outcome === undefined && model.supersededBy === undefined
 
   return (
     <>
@@ -53,16 +53,16 @@ export function LifecycleBar({ model, shared, project, history }: LifecycleBarPr
               Print
             </Button>
             {model.status === 'sent' && <CopyEmailButton doc={model} />}
-            {canUnsend && model.status !== 'void' && (
+            {canUnsend(model) && (
               <Button size="sm" variant="ghost" onClick={() => void lifecycle.unsend()}>
                 Back to draft
               </Button>
             )}
-            {model.type === 'invoice' && canVoid(model) && <VoidButton onVoid={() => void lifecycle.voidDocument()} />}
-            {model.type === 'quote' && <QuoteActions quote={model} project={project} save={lifecycle.save} />}
+            {capabilities.voidable && canVoid(model) && <VoidButton onVoid={() => void lifecycle.voidDocument()} />}
+            {capabilities.acceptable && <QuoteActions quote={model} project={project} save={lifecycle.save} />}
           </>
         )}
-        {(model.type === 'invoice' || model.type === 'monthlyReport') && <NextMonthButton doc={model} />}
+        {capabilities.recurring && <NextMonthButton doc={model} />}
         {changes.length > 0 && lifecycle.pullLatest && (
           <div role="status" className="flex flex-wrap items-center gap-2 rounded border px-2 py-1">
             <span>Project data changed since this was sent:</span>
@@ -87,7 +87,7 @@ export function LifecycleBar({ model, shared, project, history }: LifecycleBarPr
           }}
         />
       </div>
-      {model.type === 'invoice' && model.status === 'sent' && (
+      {capabilities.payable && model.status === 'sent' && (
         <PaymentsPanel invoice={model} onSave={(payments) => void lifecycle.savePayments(payments)} />
       )}
     </>

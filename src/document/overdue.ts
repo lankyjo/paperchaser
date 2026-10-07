@@ -1,6 +1,5 @@
-import { creditedTotal } from './credits'
 import { formatMoney } from './money'
-import { invoiceBalance } from './payments'
+import { openInvoices } from './payments'
 import { getPlainText } from './richtext'
 import type { DocumentModel } from './types'
 
@@ -15,15 +14,14 @@ export interface OverdueInvoice {
 
 // Sent invoices past their due date that still have a balance, oldest first, whatever their project's state.
 export function overdueInvoices(documents: DocumentModel[], today: string): OverdueInvoice[] {
-  return documents
-    .filter((d) => d.type === 'invoice' && d.status === 'sent' && d.dueDate !== undefined && d.dueDate < today)
-    .map((invoice) => ({ invoice, balanceMinor: invoiceBalance(invoice, creditedTotal(documents, invoice.id)), daysOverdue: daysBetween(invoice.dueDate!, today) }))
-    .filter((o) => o.balanceMinor > 0)
+  return openInvoices(documents)
+    .filter(({ invoice }) => invoice.dueDate !== undefined && invoice.dueDate < today)
+    .map((o) => ({ ...o, daysOverdue: daysBetween(o.invoice.dueDate!, today) }))
     .sort((a, b) => b.daysOverdue - a.daysOverdue)
 }
 
 // An unnumbered letter chasing one invoice; it never looks like a second invoice.
-export function newReminder(invoice: DocumentModel, balanceMinor: number, { id, today, newId }: { id: string; today: string; newId: (n: number) => string }): DocumentModel {
+export function newReminder(invoice: DocumentModel, balanceMinor: number, { id, today, newId }: { id: string; today: string; newId: () => string }): DocumentModel {
   const number = getPlainText(invoice.number)
   const balance = formatMoney(balanceMinor, invoice.currency, invoice.locale)
   const due = invoice.dueDate ?? invoice.issueDate
@@ -39,14 +37,14 @@ export function newReminder(invoice: DocumentModel, balanceMinor: number, { id, 
     payments: undefined,
     rev: undefined,
     blocks: [
-      { id: newId(1), type: 'heading', text: 'Payment reminder' },
+      { id: newId(), type: 'heading', text: 'Payment reminder' },
       {
-        id: newId(2),
+        id: newId(),
         type: 'richText',
         content: [{ type: 'paragraph', content: [{ type: 'text', text: `Our records show that invoice ${number}, due on ${due}, still has ${balance} outstanding. If you have already paid, please ignore this reminder. Otherwise we would be grateful for payment at your earliest convenience.` }] }],
       },
       {
-        id: newId(3),
+        id: newId(),
         type: 'keyValue',
         title: 'Invoice details',
         rows: [

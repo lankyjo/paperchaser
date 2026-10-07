@@ -40,7 +40,7 @@ export const richTextDocSchema = z.array(richTextNodeSchema)
 
 export type RichTextDoc = z.infer<typeof richTextDocSchema>
 export type RichTextNode = z.infer<typeof richTextNodeSchema>
-export type RichTextMark = z.infer<typeof richTextMarkSchema>
+type RichTextMark = z.infer<typeof richTextMarkSchema>
 
 // Flattens a string-or-AST text field to plain text.
 export function getPlainText(value: string | RichTextDoc): string {

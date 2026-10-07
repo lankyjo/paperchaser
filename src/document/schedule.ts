@@ -1,7 +1,7 @@
 import type { Block } from './blocks'
-import { printedTotals } from './finalize'
+import { isLiveDraft, printedTotals } from './finalize'
 import { newInvoice } from './newInvoice'
-import { roundMinor } from './money'
+import { minorToPercent, roundMinor } from './money'
 import { getPlainText } from './richtext'
 import type { DocumentModel } from './types'
 
@@ -9,6 +9,17 @@ export type ScheduleBlock = Extract<Block, { type: 'paymentSchedule' }>
 type LineItem = DocumentModel['lineItems'][number]
 
 const FULL = 10000
+
+export const findSchedule = (doc: Pick<DocumentModel, 'blocks'>) => doc.blocks?.find((b): b is ScheduleBlock => b.type === 'paymentSchedule')
+
+// The live invoices billing the rows before this one, in schedule order.
+export function priorScheduleInvoices(schedule: ScheduleBlock, rowId: string, docs: DocumentModel[], agreementId: string): DocumentModel[] {
+  const live = docs.filter((d) => d.scheduleRef?.agreementId === agreementId && d.status !== 'void')
+  return schedule.rows
+    .slice(0, schedule.rows.findIndex((r) => r.id === rowId))
+    .map((r) => live.find((d) => d.scheduleRef?.rowId === r.id))
+    .filter((d): d is DocumentModel => d !== undefined)
+}
 
 // Each row's share of the total; when the rows add up to 100% the last one absorbs the rounding.
 export function scheduleAmounts(block: ScheduleBlock): number[] {
@@ -21,7 +32,7 @@ export function scheduleAmounts(block: ScheduleBlock): number[] {
 
 export function scheduleWarning(block: ScheduleBlock): string | null {
   const sum = block.rows.reduce((n, r) => n + r.percentMinor, 0)
-  return sum === FULL ? null : `The schedule adds up to ${sum / 100}%, not 100%`
+  return sum === FULL ? null : `The schedule adds up to ${minorToPercent(sum)}%, not 100%`
 }
 
 const line = (id: string, title: string, amount: number, taxRateMinor: number, deduction = false): LineItem => ({
@@ -39,7 +50,7 @@ function scheduleLines(block: ScheduleBlock, rowId: string, invoiceId: string, p
   const idx = block.rows.findIndex((r) => r.id === rowId)
   const row = block.rows[idx]
   if (idx < block.rows.length - 1 || priorInvoices.length === 0) {
-    return [line(`${invoiceId}-share`, `${row.label} (${row.percentMinor / 100}%)`, scheduleAmounts(block)[idx], block.taxRateMinor)]
+    return [line(`${invoiceId}-share`, `${row.label} (${minorToPercent(row.percentMinor)}%)`, scheduleAmounts(block)[idx], block.taxRateMinor)]
   }
   const deductions = priorInvoices.map((prior) => {
     const label = getPlainText(prior.number) || block.rows.find((r) => r.id === prior.scheduleRef?.rowId)?.label || 'earlier invoice'
@@ -69,7 +80,7 @@ export function syncScheduledInvoice(invoice: DocumentModel, block: ScheduleBloc
   const ref = invoice.scheduleRef
   if (ref === undefined || !block.rows.some((r) => r.id === ref.rowId)) return { invoice, mismatch: false }
   const expected = scheduleLines(block, ref.rowId, invoice.id, priorInvoices)
-  if (invoice.status === 'draft' && invoice.frozen === undefined) return { invoice: { ...invoice, lineItems: expected }, mismatch: false }
+  if (isLiveDraft(invoice)) return { invoice: { ...invoice, lineItems: expected }, mismatch: false }
   const expectedTotal = expected.reduce((n, l) => n + l.unitPriceMinor, 0)
   return { invoice, mismatch: printedTotals(invoice).subtotalMinor !== expectedTotal }
 }

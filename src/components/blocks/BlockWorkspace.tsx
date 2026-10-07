@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import type { KeyboardEvent } from 'react'
+import { DOC_TYPES } from '../../document/docTypes'
 import type { DocumentModel } from '../../document/types'
 import { SaveIndicator } from '../builder/SaveIndicator'
 import { UndoRedoButtons } from '../builder/UndoRedoButtons'
@@ -7,7 +8,7 @@ import { Button } from '../ui/button'
 import { BlockOutline } from './BlockOutline'
 import { DocumentPage } from '../DocumentPage'
 import type { Project } from '../../project/project'
-import { applySharedData, type SharedData } from '../../project/sharedData'
+import { commitWithProjectData, type SharedData } from '../../project/sharedData'
 import { AiPanel } from '../ai/AiPanel'
 import { useHistory } from '../edit/useHistory'
 import { LifecycleBar } from '../lifecycle/LifecycleBar'
@@ -19,8 +20,7 @@ import { useScheduleInvoices } from './useScheduleInvoices'
 export function BlockWorkspace({ model: initial, shared, project }: { model: DocumentModel; shared?: SharedData; project?: Project }) {
   const history = useHistory(initial)
   const { model, undo, redo, canUndo, canRedo, saveState, retrySave, handleKeyDown } = history
-  // Every edit keeps project values (client, fee, currency) current, e.g. a newly added schedule gets the project fee.
-  const commit = (next: DocumentModel) => history.commit(shared ? applySharedData(next, shared) : next)
+  const commit = (next: DocumentModel) => history.commit(commitWithProjectData(next, shared))
   const editable = model.status === 'draft' && saveState !== 'stale' && !project?.archived
   const actions = blockActions(model, commit)
   const scheduleActions = useScheduleInvoices(model)
@@ -41,7 +41,7 @@ export function BlockWorkspace({ model: initial, shared, project }: { model: Doc
           </Button>
         </div>
       </header>
-      {model.type === 'agreement' && (
+      {DOC_TYPES[model.type].legalNotice && (
         <p role="note" className="mx-4 rounded border px-3 py-2 text-xs text-muted-foreground print:hidden">
           These clauses are a plain-language starting point, not legal advice. Review them for your country before sending.
         </p>

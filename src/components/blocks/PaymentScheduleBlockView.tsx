@@ -1,5 +1,5 @@
 import type { Block } from '../../document/blocks'
-import { formatMoney } from '../../document/money'
+import { formatMoney, minorToPercent, percentToMinor } from '../../document/money'
 import { scheduleAmounts, scheduleWarning, type ScheduleBlock } from '../../document/schedule'
 import type { DocumentModel } from '../../document/types'
 import { labelStyle } from './blockStyles'
@@ -29,9 +29,9 @@ export function PaymentScheduleBlockView({ block, model, onChange }: { block: Sc
               </td>
               <td style={cell}>
                 {onChange ? (
-                  <input aria-label="Percent" type="number" min={0} max={100} className={`${input} w-16`} value={row.percentMinor / 100} onChange={(e) => setRow(idx, { ...row, percentMinor: Math.round((Number(e.target.value) || 0) * 100) })} />
+                  <input aria-label="Percent" type="number" min={0} max={100} className={`${input} w-16`} value={minorToPercent(row.percentMinor)} onChange={(e) => setRow(idx, { ...row, percentMinor: percentToMinor(Number(e.target.value) || 0) })} />
                 ) : (
-                  `${row.percentMinor / 100}%`
+                  `${minorToPercent(row.percentMinor)}%`
                 )}
               </td>
               <td style={cell}>{money(amounts[idx])}</td>

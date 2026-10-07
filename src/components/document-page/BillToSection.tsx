@@ -8,18 +8,13 @@ import { OverrideNotice } from './OverrideNotice'
 export function BillToSection({
   model,
   editable,
-  onCustomerNameCommit,
   onCommit,
 }: {
   model: DocumentModel
   editable: boolean
-  onCustomerNameCommit?: (name: RichTextDoc) => void
   onCommit?: (next: DocumentModel) => void
 }) {
-  const commitName = (next: RichTextDoc) => {
-    if (onCustomerNameCommit) onCustomerNameCommit(next)
-    else onCommit?.({ ...model, customer: { ...model.customer, name: next } })
-  }
+  const commitName = (next: RichTextDoc) => onCommit?.({ ...model, customer: { ...model.customer, name: next } })
   const commitAddressLine = (idx: number, next: RichTextDoc) => {
     const addr = [...model.customer.address]
     addr[idx] = next

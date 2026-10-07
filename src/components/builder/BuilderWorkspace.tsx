@@ -1,5 +1,5 @@
 import { useState, type KeyboardEvent } from 'react'
-import type { DocumentModel, PageSize, TemplateId } from '../../document/types'
+import type { DocumentModel } from '../../document/types'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import type { Project } from '../../project/project'
 import type { SharedData } from '../../project/sharedData'
@@ -18,21 +18,16 @@ import { useCanvasZoom } from './useCanvasZoom'
 // The builder around one document: header, desktop panes or mobile stack, preview dialog and mobile sheet.
 export function BuilderWorkspace({
   model: initialModel,
-  template: initialTemplate,
-  pageSize: initialPageSize,
   editable: editableProp = true,
   shared,
   project,
 }: {
   model: DocumentModel
-  template?: TemplateId
-  pageSize?: PageSize
   editable?: boolean
   shared?: SharedData
   project?: Project
 }) {
-  const { history, settings, selection, items, sections, outlineProps, sharedPropertiesProps, commitCustomerName } =
-    useBuilderDocument(initialModel, initialTemplate, initialPageSize, shared)
+  const { history, settings, selection, items, sections, outlineProps, sharedPropertiesProps } = useBuilderDocument(initialModel, shared)
   const { model, commit, undo, redo, saveState, retrySave, canUndo, canRedo, handleKeyDown } = history
   // Sent documents are read-only until returned to draft; a tab with stale edits is read-only until reloaded.
   const editable = editableProp && model.status === 'draft' && saveState !== 'stale'
@@ -40,7 +35,7 @@ export function BuilderWorkspace({
   const [previewOpen, setPreviewOpen] = useState(false)
   // Print always uses the desktop canvas so the document renders exactly once.
   const isDesktop = useMediaQuery('(min-width: 1024px), print')
-  const layout = { model, template: settings.currentTemplate, pageSize: settings.currentPageSize, outlineProps }
+  const layout = { model, template: settings.template, pageSize: settings.pageSize, outlineProps }
 
   return (
     <ProjectDataContext.Provider value={shared}>
@@ -57,7 +52,7 @@ export function BuilderWorkspace({
           onZoomOut={zoomOut}
           saveState={saveState}
           onRetrySave={retrySave}
-          pageSize={settings.currentPageSize}
+          pageSize={settings.pageSize}
           onPageSizeChange={settings.changePageSize}
           onOpenPreview={() => setPreviewOpen(true)}
         />
@@ -70,7 +65,6 @@ export function BuilderWorkspace({
             sections={sections}
             zoom={zoom}
             propertiesProps={{ ...sharedPropertiesProps, selectedItemId: selection.selectedItemId }}
-            onCustomerNameCommit={commitCustomerName}
             onCommit={commit}
             onInsertItem={items.insertItem}
           />
@@ -81,9 +75,9 @@ export function BuilderWorkspace({
           open={previewOpen}
           onOpenChange={setPreviewOpen}
           model={model}
-          template={settings.currentTemplate}
+          template={settings.template}
           branding={model.branding}
-          pageSize={settings.currentPageSize}
+          pageSize={settings.pageSize}
         />
         <MobileFormattingFooter />
         <MobileItemSheet

@@ -1,14 +1,26 @@
+import { creditedTotal } from './credits'
+import { DOC_TYPES } from './docTypes'
 import { printedTotals } from './finalize'
 import { getPlainText } from './richtext'
 import type { DocumentModel } from './types'
 
 export type Payment = NonNullable<DocumentModel['payments']>[number]
-export type PaymentStatus = 'unpaid' | 'partial' | 'paid' | 'overpaid'
+type PaymentStatus = 'unpaid' | 'partial' | 'paid' | 'overpaid'
 
-// What is still owed: the printed total less payments (refunds count negative) and any credits.
+// Sum of recorded payments; refunds count negative.
+export const paidTotal = (doc: DocumentModel) => (doc.payments ?? []).reduce((sum, p) => sum + p.amountMinor, 0)
+
+// What is still owed: the printed total less payments and any credits.
 export function invoiceBalance(invoice: DocumentModel, creditedMinor = 0): number {
-  const paid = (invoice.payments ?? []).reduce((sum, p) => sum + p.amountMinor, 0)
-  return printedTotals(invoice).grandTotalMinor - paid - creditedMinor
+  return printedTotals(invoice).grandTotalMinor - paidTotal(invoice) - creditedMinor
+}
+
+// Sent invoices that still have a balance once payments and sent credit notes are taken off.
+export function openInvoices(documents: DocumentModel[]): { invoice: DocumentModel; balanceMinor: number }[] {
+  return documents
+    .filter((d) => DOC_TYPES[d.type].payable && d.status === 'sent')
+    .map((invoice) => ({ invoice, balanceMinor: invoiceBalance(invoice, creditedTotal(documents, invoice.id)) }))
+    .filter((o) => o.balanceMinor > 0)
 }
 
 export function paymentStatus(invoice: DocumentModel, creditedMinor = 0): PaymentStatus {

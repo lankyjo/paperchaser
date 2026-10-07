@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { clientsRepo, documentsRepo, projectsRepo } from '../../db/repos'
+import { assetsRepo, clientsRepo, documentsRepo, projectsRepo } from '../../db/repos'
 import { newDocument } from '../../document/newDocument'
 import type { DocumentModel } from '../../document/types'
 import { useMountEffect } from '../../hooks/useMountEffect'
@@ -7,6 +7,7 @@ import { createClient, type Client } from '../../project/client'
 import { useProjectHistory } from './useProjectHistory'
 import type { StepType } from '../../project/pipeline'
 import type { Project } from '../../project/project'
+import { todayIso } from '../../lib/todayIso'
 
 interface ProjectData {
   project: Project | null
@@ -51,7 +52,7 @@ export function useProject(projectId: string) {
       type,
       id: crypto.randomUUID(),
       projectId,
-      today: new Date().toLocaleDateString('en-CA'),
+      today: todayIso(),
       newId: () => crypto.randomUUID(),
     })
     await documentsRepo.put(doc)
@@ -63,7 +64,8 @@ export function useProject(projectId: string) {
     await save({ ...project, doneSteps: done.includes(type) ? done.filter((t) => t !== type) : [...done, type] })
   }
 
-  const remove = () => projectsRepo.delete(projectId)
+  // Images only the deleted documents used are removed with them.
+  const remove = () => projectsRepo.delete(projectId).then(() => assetsRepo.pruneUnreferenced())
 
   const undo = () => data?.project && history.undo(data.project)
   const redo = () => data?.project && history.redo(data.project)

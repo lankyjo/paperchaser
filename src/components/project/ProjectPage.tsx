@@ -1,6 +1,6 @@
 import { Link, useNavigate } from '@tanstack/react-router'
-import { creditedTotal } from '../../document/credits'
-import { invoiceBalance } from '../../document/payments'
+import { useOpenDocument } from '../../hooks/useOpenDocument'
+import { openInvoices } from '../../document/payments'
 import { canDeleteProject } from '../../project/lifecycle'
 import { isTaxModeLocked } from '../../project/sharedData'
 import { exportProject } from '../../db/backupRepo'
@@ -17,6 +17,7 @@ import { useProject } from './useProject'
 export function ProjectPage({ projectId }: { projectId: string }) {
   const { data, save, createClientFor, createDocument, toggleDone, remove, undo, redo, canUndo, canRedo, historySteps } = useProject(projectId)
   const navigate = useNavigate()
+  const openDocument = useOpenDocument()
   if (data === null) return null
   const { project, documents, clients } = data
   if (project === null) return <p className="p-6 text-sm">Project not found.</p>
@@ -38,7 +39,7 @@ export function ProjectPage({ projectId }: { projectId: string }) {
       <ProjectStatusSection
         project={project}
         canDelete={canDeleteProject(documents)}
-        openInvoices={documents.filter((d) => d.type === 'invoice' && d.status === 'sent' && invoiceBalance(d, creditedTotal(documents, d.id)) > 0)}
+        openInvoices={openInvoices(documents).map((o) => o.invoice)}
         onSave={(next) => void save(next)}
         onDelete={() => void remove().then(() => navigate({ to: '/' }))}
       />
@@ -47,7 +48,7 @@ export function ProjectPage({ projectId }: { projectId: string }) {
           documents={documents}
           doneSteps={project.doneSteps ?? []}
           onCreate={(type) =>
-            void createDocument(type).then((doc) => navigate({ to: '/documents/$documentId', params: { documentId: doc.id } }))
+            void createDocument(type).then((doc) => openDocument(doc))
           }
           onToggleDone={(type) => void toggleDone(project, type)}
         />

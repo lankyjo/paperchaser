@@ -58,10 +58,12 @@ export async function exportWorkspace(): Promise<WorkspaceBundle> {
   }
 }
 
-// Restores a full backup in one transaction, replacing everything currently stored.
+const TABLES = ['projects', 'clients', 'documents', 'assets', 'counters', 'company']
+
+// Restores a full backup in one transaction, replacing everything currently stored, then drops images nothing uses.
 export async function replaceWorkspace(bundle: WorkspaceBundle): Promise<void> {
-  await db.transaction('rw', ['projects', 'clients', 'documents', 'assets', 'counters', 'company'], async () => {
-    for (const table of ['projects', 'clients', 'documents', 'assets', 'counters', 'company']) await db.table(table).clear()
+  await db.transaction('rw', TABLES, async () => {
+    for (const table of TABLES) await db.table(table).clear()
     await db.table('projects').bulkAdd(bundle.projects)
     await db.table('clients').bulkAdd(bundle.clients)
     await db.table('documents').bulkAdd(bundle.documents)
@@ -69,4 +71,5 @@ export async function replaceWorkspace(bundle: WorkspaceBundle): Promise<void> {
     await db.table('counters').bulkAdd(bundle.counters)
     if (bundle.company) await companyRepo.put(bundle.company)
   })
+  await assetsRepo.pruneUnreferenced()
 }

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { FIXTURE_MAP } from '../fixtures'
 import { roundMinor } from '../money'
-import { computeTotals, deriveWatermark } from '../totals'
+import { computeTotals } from '../totals'
 import { documentSchema } from '../types'
 
 describe('roundMinor — half-away-from-zero ties (A1, Pitfall 2)', () => {
@@ -218,20 +218,6 @@ describe('computeTotals — shipping/fees are line-like, tax grouped by rate (D-
     expect(totals.taxByRate).toHaveLength(1)
     // full grandTotal reconciliation: discountedSubtotal + tax + shippingFees
     expect(totals.grandTotalMinor).toBe(totals.discountedSubtotalMinor + totals.taxMinor + totals.shippingFeesMinor)
-  })
-})
-
-describe('deriveWatermark — derives from status, never stored (D-11)', () => {
-  it("maps 'draft' to 'draft'", () => {
-    expect(deriveWatermark('draft')).toBe('draft')
-  })
-
-  it("maps 'sent' to null", () => {
-    expect(deriveWatermark('sent')).toBeNull()
-  })
-
-  it("maps 'paid' to null", () => {
-    expect(deriveWatermark('paid')).toBeNull()
   })
 })
 

@@ -4,6 +4,7 @@ import { creditedTotal, newCreditNote } from '../../document/credits'
 import { newReceiptForPayment, type Payment } from '../../document/payments'
 import type { DocumentModel } from '../../document/types'
 import { useMountEffect } from '../../hooks/useMountEffect'
+import { todayIso } from '../../lib/todayIso'
 
 // Receipts and credit notes belonging to this invoice, and creating new ones.
 export function useInvoiceRelated(invoice: DocumentModel) {
@@ -18,13 +19,13 @@ export function useInvoiceRelated(invoice: DocumentModel) {
 
   const receiptFor = (payment: Payment) => receipts.find((r) => r.receiptFor?.paymentId === payment.id)
   const createReceipt = async (payment: Payment): Promise<DocumentModel> => {
-    const receipt = newReceiptForPayment(invoice, payment, { id: crypto.randomUUID(), today: new Date().toLocaleDateString('en-CA') })
+    const receipt = newReceiptForPayment(invoice, payment, { id: crypto.randomUUID(), today: todayIso() })
     await documentsRepo.put(receipt)
     setRelated((current) => [...current, receipt])
     return receipt
   }
   const createCreditNote = async (): Promise<DocumentModel> => {
-    const credit = newCreditNote(invoice, { id: crypto.randomUUID(), today: new Date().toLocaleDateString('en-CA') })
+    const credit = newCreditNote(invoice, { id: crypto.randomUUID(), today: todayIso() })
     await documentsRepo.put(credit)
     return credit
   }

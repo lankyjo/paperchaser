@@ -1,6 +1,5 @@
 import type { Block } from '../../document/blocks'
-import { getPlainText } from '../../document/richtext'
-import { RichTextCell } from '../edit/RichTextCell'
+import { PlainTextCell } from '../edit/PlainTextCell'
 import { labelStyle } from './blockStyles'
 
 type TableBlock = Extract<Block, { type: 'table' }>
@@ -9,8 +8,7 @@ const cellStyle = { padding: '6px 8px 6px 0', borderBottom: '1px solid var(--tpl
 
 // A display table such as a delivery file list; headers and cells are plain text.
 export function TableBlockView({ block, onChange }: { block: TableBlock; onChange?: (next: Block) => void }) {
-  const cell = (value: string, commit: (text: string) => void) =>
-    onChange ? <RichTextCell key={value} text={value} placeholder="—" onCommit={(next) => commit(getPlainText(next))} /> : value
+  const editable = onChange !== undefined
   const setColumn = (c: number, text: string) => onChange?.({ ...block, columns: block.columns.map((v, i) => (i === c ? text : v)) })
   const setCell = (r: number, c: number, text: string) =>
     onChange?.({ ...block, rows: block.rows.map((row, i) => (i === r ? row.map((v, j) => (j === c ? text : v)) : row)) })
@@ -22,7 +20,7 @@ export function TableBlockView({ block, onChange }: { block: TableBlock; onChang
           <tr>
             {block.columns.map((col, c) => (
               <th key={c} style={{ ...cellStyle, ...labelStyle }}>
-                {cell(col, (text) => setColumn(c, text))}
+                <PlainTextCell value={col} placeholder="—" editable={editable} onCommit={(text) => setColumn(c, text)} />
               </th>
             ))}
           </tr>
@@ -32,7 +30,7 @@ export function TableBlockView({ block, onChange }: { block: TableBlock; onChang
             <tr key={r}>
               {row.map((value, c) => (
                 <td key={c} style={cellStyle}>
-                  {cell(value, (text) => setCell(r, c, text))}
+                  <PlainTextCell value={value} placeholder="—" editable={editable} onCommit={(text) => setCell(r, c, text)} />
                 </td>
               ))}
             </tr>

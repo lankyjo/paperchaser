@@ -46,14 +46,9 @@ export function minorToRaw(minor: number, currency: string, locale = 'en-US'): s
   return new Intl.NumberFormat(locale, { useGrouping: false, maximumFractionDigits: dec }).format(minor / 10 ** dec)
 }
 
-/** Check if a raw string is valid nonnegative numeric input (for isValid helper). */
-export function isValidNumericRaw(raw: string): boolean {
-  const normalized = raw.trim().replace(',', '.')
-  if (normalized === '' || normalized === '.' || normalized === '-' || normalized === '-.') return false
-  if (!/^-?\d*\.?\d*$/.test(normalized)) return false
-  const parsed = Number(normalized)
-  return Number.isFinite(parsed) && !Number.isNaN(parsed) && parsed >= 0
-}
+// Percentages are stored in hundredths of a percent: 1900 is 19%.
+export const percentToMinor = (percent: number) => Math.round(percent * 100)
+export const minorToPercent = (minor: number) => minor / 100
 
 /** Parse a raw quantity string (float, nonnegative, not minor-scaled). */
 export function parseQuantity(raw: string): number | null {

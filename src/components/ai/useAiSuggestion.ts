@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { applyAiOperations, changedSections } from '../../ai/aiPatch'
 import { buildAiPrompt } from '../../ai/aiPrompt'
-import { askAi, DEFAULT_AI_SETTINGS, type AiSettings } from '../../ai/aiProviders'
+import { DEFAULT_AI_SETTINGS, type AiSettings } from '../../ai/aiSettings'
 import { preferencesRepo } from '../../db/repos'
 import type { DocumentModel } from '../../document/types'
 import { AI_SETTINGS_KEY } from '../settings/useAiSettings'
@@ -18,6 +18,8 @@ export function useAiSuggestion(model: DocumentModel, commit: (next: DocumentMod
     try {
       const settings = (await preferencesRepo.get<AiSettings>(AI_SETTINGS_KEY)) ?? DEFAULT_AI_SETTINGS.openrouter
       const { system, user } = buildAiPrompt(model, instruction)
+      // The AI SDK is large, so it loads only when a suggestion is first asked for.
+      const { askAi } = await import('../../ai/aiProviders')
       const reply = await askAi(settings, system, user)
       const result = applyAiOperations(model, reply.operations)
       if (!result.ok) return setState({ kind: 'error', message: result.reason })

@@ -1,4 +1,4 @@
-// The single totals and watermark engine; components consume it and never reimplement totals math.
+// The single totals engine; components consume it and never reimplement totals math.
 
 import { roundMinor } from './money'
 
@@ -9,7 +9,7 @@ export interface Discount {
 }
 
 // taxRateMinor 0 means untaxed.
-export interface ShippingFee {
+interface ShippingFee {
   label: string | import('./richtext').RichTextDoc
   amountMinor: number
   taxRateMinor: number
@@ -108,8 +108,4 @@ function mergeRates(a: Map<number, number>, b: Map<number, number>): Map<number,
   const merged = new Map(a)
   for (const [rate, tax] of b) merged.set(rate, (merged.get(rate) ?? 0) + tax)
   return merged
-}
-
-export function deriveWatermark(status: 'draft' | 'sent' | 'paid' | 'void'): 'draft' | null {
-  return status === 'draft' ? 'draft' : null
 }

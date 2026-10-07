@@ -7,11 +7,12 @@ import { creativeTokens } from './templates/creative'
 import { freelancerTokens } from './templates/freelancer'
 import { minimalTokens } from './templates/minimal'
 import { modernTokens } from './templates/modern'
+import { DOC_TYPE_IDS, DOC_TYPES } from './docTypes'
 import type { Branding, DocumentModel, PageSize, TemplateId } from './types'
 
 export type { Branding, PageSize, TemplateId }
 
-export type FontId = 'geist' | 'geist-mono' | 'source-serif-4' | 'system'
+type FontId = 'geist' | 'geist-mono' | 'source-serif-4' | 'system'
 export type HeaderStyle = 'standard' | 'banner' | 'compact' | 'standard-offset'
 export type FooterStyle = 'minimal' | 'standard' | 'detailed'
 
@@ -25,20 +26,7 @@ export const FONT_STACKS: Record<FontId, string> = {
 }
 
 // English document title by type, rendered by the header presets.
-export const DOC_TITLES: Record<DocumentModel['type'], string> = {
-  quote: 'Quote',
-  agreement: 'Client Agreement',
-  welcome: 'Welcome',
-  brief: 'Project Brief',
-  invoice: 'Invoice',
-  deliveryGuide: 'Delivery Guide',
-  monthlyReport: 'Monthly Report',
-  receipt: 'Receipt',
-  thankYou: 'Thank You',
-  feedback: 'Feedback',
-  creditNote: 'Credit Note',
-  reminder: 'Payment Reminder',
-}
+export const DOC_TITLES = Object.fromEntries(DOC_TYPE_IDS.map((t) => [t, DOC_TYPES[t].title])) as Record<DocumentModel['type'], string>
 
 // Paper sizes; A4 is the parity harness geometry.
 export const PAGE_SIZES: Record<PageSize, { label: string; width: string; height: string }> = {

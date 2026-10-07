@@ -1,4 +1,4 @@
-import { useNavigate } from '@tanstack/react-router'
+import { useOpenDocument } from '../../hooks/useOpenDocument'
 import { formatMoney } from '../../document/money'
 import { invoiceBalance, paymentStatus, type Payment } from '../../document/payments'
 import { getPlainText } from '../../document/richtext'
@@ -11,9 +11,9 @@ const STATUS_LABELS = { unpaid: 'Unpaid', partial: 'Partly paid', paid: 'Paid', 
 
 // Payments against a sent invoice: balance, recorded payments, receipts per payment; never printed.
 export function PaymentsPanel({ invoice, onSave }: { invoice: DocumentModel; onSave: (payments: Payment[]) => void }) {
-  const navigate = useNavigate()
+  const openDocument = useOpenDocument()
   const { receiptFor, createReceipt, isLocked, creditNotes, creditedMinor, createCreditNote } = useInvoiceRelated(invoice)
-  const open = (doc: DocumentModel) => void navigate({ to: '/documents/$documentId', params: { documentId: doc.id } })
+  const open = (doc: DocumentModel) => void openDocument(doc)
   const payments = invoice.payments ?? []
   const money = (minor: number) => formatMoney(minor, invoice.currency, invoice.locale)
   const balance = invoiceBalance(invoice, creditedMinor)

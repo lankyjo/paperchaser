@@ -1,7 +1,7 @@
 import { getPlainText } from './richtext'
 import type { DocumentModel } from './types'
 
-export type QuoteState = 'draft' | 'sent' | 'accepted' | 'declined' | 'expired' | 'superseded'
+type QuoteState = 'draft' | 'sent' | 'accepted' | 'declined' | 'expired' | 'superseded'
 
 export function quoteState(quote: DocumentModel, today: string): QuoteState {
   if (quote.status === 'draft') return 'draft'

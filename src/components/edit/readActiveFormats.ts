@@ -1,4 +1,4 @@
-export interface ActiveFormats {
+interface ActiveFormats {
   bold: boolean
   italic: boolean
   underline: boolean

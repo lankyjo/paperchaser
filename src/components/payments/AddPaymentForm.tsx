@@ -3,10 +3,11 @@ import { parseToMinor } from '../../document/money'
 import type { Payment } from '../../document/payments'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
+import { todayIso } from '../../lib/todayIso'
 
 // Records money received (or a refund, entered as a negative amount).
 export function AddPaymentForm({ currency, locale, onAdd }: { currency: string; locale?: string; onAdd: (payment: Payment) => void }) {
-  const [date, setDate] = useState(new Date().toLocaleDateString('en-CA'))
+  const [date, setDate] = useState(todayIso())
   const [amount, setAmount] = useState('')
   const [method, setMethod] = useState('Bank transfer')
   const isRefund = amount.trim().startsWith('-')

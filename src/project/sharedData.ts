@@ -1,4 +1,5 @@
 import { isMoneyDocument } from '../document/documentBlocks'
+import { isLiveDraft } from '../document/finalize'
 import { getPlainText } from '../document/richtext'
 import type { TaxMode } from '../document/totals'
 import type { DocumentModel } from '../document/types'
@@ -55,7 +56,7 @@ const withScheduleTotal = (blocks: NonNullable<DocumentModel['blocks']>, feeMino
 
 // Drafts show the project's values for every field they haven't overridden; sent or unsent snapshots stay frozen.
 export function applySharedData(doc: DocumentModel, shared: SharedData): DocumentModel {
-  if (doc.status !== 'draft' || doc.frozen !== undefined) return doc
+  if (!isLiveDraft(doc)) return doc
   const overrides = doc.overrides ?? []
   const settings = {
     ...doc,
@@ -70,6 +71,11 @@ export function applySharedData(doc: DocumentModel, shared: SharedData): Documen
 // A shared field counts as overridden exactly when its text differs from the project value.
 export function trackOverrides(doc: DocumentModel, shared: SharedData): DocumentModel {
   return { ...doc, overrides: FIELDS.filter((f) => sharedValue[f](doc) !== projectValue[f](shared)) }
+}
+
+// Every edit inside a project records which shared fields now differ, then refreshes the rest from the project.
+export function commitWithProjectData(next: DocumentModel, shared: SharedData | undefined): DocumentModel {
+  return shared ? applySharedData(trackOverrides(next, shared), shared) : next
 }
 
 export function resetOverride(doc: DocumentModel, field: SharedField, shared: SharedData): DocumentModel {

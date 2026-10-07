@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
 import { FIXTURE_MAP } from '../fixtures'
-import { deriveWatermark } from '../totals'
 import { documentSchema } from '../types'
 import { TEMPLATE_REGISTRY, type TemplateId } from '../tokens'
 import { resolveTokens, toCssVars } from '../resolveTokens'
@@ -130,11 +129,5 @@ describe('edge-10 — invalid template value (03-02)', () => {
   it('a stored document with an invalid template fails documentSchema.safeParse (z.enum rejects; never silently defaulted)', () => {
     const doc = { ...FIXTURE_MAP['invoice-simple'], template: 'not-a-template' }
     expect(documentSchema.safeParse(doc).success).toBe(false)
-  })
-})
-
-describe('deriveWatermark — edge-13 (03-01)', () => {
-  it("status 'sent' renders no watermark", () => {
-    expect(deriveWatermark('sent')).toBeNull()
   })
 })

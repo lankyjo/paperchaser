@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { DEFAULT_AI_SETTINGS, type AiProvider } from '../../ai/aiProviders'
+import { DEFAULT_AI_SETTINGS, type AiProvider } from '../../ai/aiSettings'
 import { startOpenRouterLogin } from '../../ai/openRouterLogin'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'

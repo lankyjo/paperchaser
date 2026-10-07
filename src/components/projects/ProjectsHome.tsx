@@ -1,4 +1,5 @@
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
+import { useOpenDocument } from '../../hooks/useOpenDocument'
 import { useState } from 'react'
 import { filterProjects } from '../../project/searchProjects'
 import { Input } from '../ui/input'
@@ -14,11 +15,11 @@ export function ProjectsHome() {
   const [query, setQuery] = useState('')
   const [showArchived, setShowArchived] = useState(false)
   const visible = projects === null ? [] : filterProjects(projects.map((e) => ({ ...e.project, entry: e })), clientNames, query, showArchived)
-  const navigate = useNavigate()
+  const openDocument = useOpenDocument()
 
   const create = async (title: string) => {
     const invoice = await createWithInvoice(title)
-    await navigate({ to: '/documents/$documentId', params: { documentId: invoice.id } })
+    await openDocument(invoice)
   }
 
   return (

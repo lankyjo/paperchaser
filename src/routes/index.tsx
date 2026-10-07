@@ -25,5 +25,6 @@ export function IndexPage() {
 
   // Fixtures render read-only for the parity harness; otherwise the projects home opens.
   if (key === null) return <ProjectsHome />
-  return <BuilderWorkspace model={FIXTURE_MAP[key]} template={template} pageSize={pageSize} editable={false} />
+  const fixture = FIXTURE_MAP[key]
+  return <BuilderWorkspace model={{ ...fixture, template: template ?? fixture.template, pageSize: pageSize ?? fixture.pageSize }} editable={false} />
 }

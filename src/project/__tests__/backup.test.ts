@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { finalizeDocument } from '../../document/finalize'
 import { newCreditNote } from '../../document/credits'
 import { newInvoice } from '../../document/newInvoice'
-import { BACKUP_VERSION, copyProjectBundle, countersAfterImport, parseBundle, type ProjectBundle } from '../backup'
+import { BACKUP_VERSION, copyProjectBundle, countersAfterImport, MAX_BUNDLE_LENGTH, parseBundle, type ProjectBundle } from '../backup'
 import { createClient } from '../client'
 import { createProject } from '../project'
 
@@ -46,5 +46,11 @@ describe('countersAfterImport', () => {
     const local = [{ type: 'invoice' as const, prefix: 'INV-', next: 5, yearlyReset: false }]
     expect(countersAfterImport(local, [invoice])).toEqual([{ type: 'invoice', prefix: 'INV-', next: 43, yearlyReset: false }])
     expect(countersAfterImport([{ ...local[0], next: 99 }], [invoice])[0].next).toBe(99)
+  })
+})
+
+describe('parseBundle size cap', () => {
+  it('rejects a file over the length cap before parsing it', () => {
+    expect(parseBundle(' '.repeat(MAX_BUNDLE_LENGTH + 1))).toEqual({ ok: false, reason: 'This file is too large to import.' })
   })
 })

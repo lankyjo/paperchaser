@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { newInvoice } from '../../document/newInvoice'
 import { getPlainText } from '../../document/richtext'
 import { createClient } from '../client'
-import { applySharedData, isTaxModeLocked, resetOverride, sharedFromProject, trackOverrides } from '../sharedData'
+import { applySharedData, commitWithProjectData, isTaxModeLocked, resetOverride, sharedFromProject, trackOverrides } from '../sharedData'
 
 const client = { ...createClient({ id: 'c1', name: 'Acme Coffee' }), billingAddress: ['300 Main St', 'Portland'] }
 const shared = sharedFromProject(client)
@@ -69,5 +69,23 @@ describe('project fee', () => {
     const agreement = { ...draft, type: 'agreement' as const, blocks: [{ id: 's', type: 'paymentSchedule' as const, totalMinor: 0, taxRateMinor: 0, rows: [] }] }
     const doc = applySharedData(agreement, { ...shared, feeMinor: 250000 })
     expect(doc.blocks?.[0]).toMatchObject({ totalMinor: 250000 })
+  })
+})
+
+describe('commitWithProjectData', () => {
+  it('keeps an edited shared field and records it as overridden', () => {
+    const synced = applySharedData(draft, shared)
+    const edited = commitWithProjectData({ ...synced, customer: { ...synced.customer, name: 'Acme Wholesale' } }, shared)
+    expect(getPlainText(edited.customer.name)).toBe('Acme Wholesale')
+    expect(edited.overrides).toEqual(['customer.name'])
+  })
+
+  it('gives a newly added payment schedule the project fee', () => {
+    const agreement = { ...draft, type: 'agreement' as const, blocks: [{ id: 's', type: 'paymentSchedule' as const, totalMinor: 0, taxRateMinor: 0, rows: [] }] }
+    expect(commitWithProjectData(agreement, { ...shared, feeMinor: 250000 }).blocks?.[0]).toMatchObject({ totalMinor: 250000 })
+  })
+
+  it('passes edits through outside a project', () => {
+    expect(commitWithProjectData(draft, undefined)).toBe(draft)
   })
 })

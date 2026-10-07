@@ -1,4 +1,5 @@
 import type { DocumentModel, TemplateId, PageSize, Branding } from '../document/types'
+import { DOC_TYPES } from '../document/docTypes'
 import { getPlainText } from '../document/richtext'
 import { BrandingPanel } from './BrandingPanel'
 import { TemplateGallery } from './TemplateGallery'
@@ -38,11 +39,12 @@ export function PropertiesPane({
   if (selectedItemId !== null) {
     const item = model.lineItems.find((li) => li.id === selectedItemId)
     if (item === undefined) return null
-    return <ItemProperties item={item} onLineItemChange={onLineItemChange} />
+    return <ItemProperties item={item} currency={model.currency} locale={model.locale} onLineItemChange={onLineItemChange} />
   }
 
   const currentPageSize: PageSize = model.pageSize ?? 'a4'
   const docNumber = getPlainText(model.number)
+  const dateField = DOC_TYPES[model.type].dateField
 
   return (
     <div className="space-y-4">
@@ -50,8 +52,8 @@ export function PropertiesPane({
       <TemplateGallery selected={template} onSelect={onTemplateChange} />
       <BrandingPanel model={model} template={template} onBrandingChange={onBrandingChange} onLogoChange={onLogoChange} />
       <CurrencyCard currency={model.currency} />
-      {model.type === 'quote' && onValidUntilChange && <DateCard title="Valid until" value={model.validUntil} onChange={onValidUntilChange} />}
-      {model.type === 'invoice' && onDueDateChange && <DateCard title="Due date" value={model.dueDate} onChange={onDueDateChange} />}
+      {dateField === 'validUntil' && onValidUntilChange && <DateCard title="Valid until" value={model.validUntil} onChange={onValidUntilChange} />}
+      {dateField === 'dueDate' && onDueDateChange && <DateCard title="Due date" value={model.dueDate} onChange={onDueDateChange} />}
       <Card size="sm">
         <CardHeader>
           <CardTitle>Page size</CardTitle>

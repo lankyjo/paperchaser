@@ -1,6 +1,6 @@
 import type { DocumentModel } from '../document/types'
 
-export interface Explainer {
+interface Explainer {
   short: string
   why: string
   what: string[]

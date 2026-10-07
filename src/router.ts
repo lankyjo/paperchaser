@@ -1,13 +1,9 @@
-import { createRoute, createRootRoute, createRouter } from '@tanstack/react-router'
+import { createRoute, createRootRoute, createRouter, lazyRouteComponent } from '@tanstack/react-router'
 
 import { RootComponent } from './routes/__root'
-import { CatalogPage } from './components/catalog/CatalogPage'
-import { ClientsPage } from './components/clients/ClientsPage'
-import { SettingsPage } from './components/settings/SettingsPage'
-import { DocumentRoute } from './routes/DocumentRoute'
 import { IndexPage } from './routes/index'
-import { ProjectRoute } from './routes/ProjectRoute'
 
+// Every page but the projects home loads on first visit, keeping the start-up bundle small.
 const rootRoute = createRootRoute({
   component: RootComponent,
 })
@@ -21,31 +17,31 @@ const indexRoute = createRoute({
 const documentRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/documents/$documentId',
-  component: DocumentRoute,
+  component: lazyRouteComponent(() => import('./routes/DocumentRoute'), 'DocumentRoute'),
 })
 
 const clientsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/clients',
-  component: ClientsPage,
+  component: lazyRouteComponent(() => import('./components/clients/ClientsPage'), 'ClientsPage'),
 })
 
 const projectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/projects/$projectId',
-  component: ProjectRoute,
+  component: lazyRouteComponent(() => import('./routes/ProjectRoute'), 'ProjectRoute'),
 })
 
 const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/settings',
-  component: SettingsPage,
+  component: lazyRouteComponent(() => import('./components/settings/SettingsPage'), 'SettingsPage'),
 })
 
 const catalogRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/services',
-  component: CatalogPage,
+  component: lazyRouteComponent(() => import('./components/catalog/CatalogPage'), 'CatalogPage'),
 })
 
 const routeTree = rootRoute.addChildren([indexRoute, documentRoute, clientsRoute, projectRoute, settingsRoute, catalogRoute])

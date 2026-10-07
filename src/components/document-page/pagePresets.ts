@@ -8,7 +8,7 @@ import { HeaderBanner } from '../print/HeaderBanner'
 import { HeaderCompact } from '../print/HeaderCompact'
 import { HeaderStandard } from '../print/HeaderStandard'
 
-export interface PresetProps {
+interface PresetProps {
   tokens: ResolvedTokens
   model: DocumentModel
 }

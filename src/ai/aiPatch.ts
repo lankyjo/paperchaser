@@ -1,14 +1,15 @@
 import { blockSummary } from '../document/blocks'
+import { isLiveDraft } from '../document/finalize'
 import { documentSchema, type DocumentModel } from '../document/types'
 import { BLOCK_LABELS } from '../strings/blockLabels'
 
-export interface AiOperation {
+interface AiOperation {
   op: 'replace' | 'add' | 'remove'
   path: string
   valueJson?: string
 }
 
-export type AiPatchResult = { ok: true; doc: DocumentModel } | { ok: false; reason: string }
+type AiPatchResult = { ok: true; doc: DocumentModel } | { ok: false; reason: string }
 
 // Lifecycle, identity and money-trail fields the AI must never touch.
 const PROTECTED = new Set(['id', 'projectId', 'type', 'number', 'status', 'frozen', 'payments', 'rev', 'receiptFor', 'creditFor', 'scheduleRef', 'reminderFor', 'revisionOf', 'revisionBase', 'revision', 'supersededBy', 'overrides', 'currency'])
@@ -55,7 +56,7 @@ function applyOperation(root: Record<string, unknown>, { op, path, valueJson }: 
 
 // Applies model-proposed edits to a copy of a draft; protected fields, invalid JSON and schema violations are refused.
 export function applyAiOperations(doc: DocumentModel, operations: AiOperation[]): AiPatchResult {
-  if (doc.status !== 'draft' || doc.frozen !== undefined) return { ok: false, reason: 'Sent documents cannot be changed by AI.' }
+  if (!isLiveDraft(doc)) return { ok: false, reason: 'Sent documents cannot be changed by AI.' }
   const blocked = operations.map((o) => segments(o.path)[0]).find((field) => PROTECTED.has(field))
   if (blocked) return { ok: false, reason: `The suggestion tried to change ${blocked}, which AI may not edit.` }
   const copy = structuredClone(doc) as unknown as Record<string, unknown>

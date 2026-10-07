@@ -21,4 +21,4 @@ export function paragraphs(id: string, items: (string | { lead: string; text: st
 
 export const heading = (id: string, text: string): Block => ({ id, type: 'heading', text })
 
-export type NewId = (n: number) => string
+export type NewId = () => string

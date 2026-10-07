@@ -3,8 +3,9 @@ import { exportWorkspace, importProject, replaceWorkspace, type ImportMode } fro
 import { preferencesRepo, projectsRepo } from '../../db/repos'
 import { downloadJson } from '../../lib/downloadFile'
 import { parseBundle, type Bundle, type ProjectBundle, type WorkspaceBundle } from '../../project/backup'
+import { todayIso } from '../../lib/todayIso'
 
-export const LAST_BACKUP_KEY = 'lastBackupAt'
+const LAST_BACKUP_KEY = 'lastBackupAt'
 
 type Pending = { kind: 'projectClash'; bundle: ProjectBundle } | { kind: 'workspace'; bundle: WorkspaceBundle } | null
 
@@ -14,7 +15,7 @@ export function useBackup() {
   const [pending, setPending] = useState<Pending>(null)
 
   const backup = async () => {
-    downloadJson(`paperchaser-backup-${new Date().toLocaleDateString('en-CA')}.json`, await exportWorkspace())
+    downloadJson(`paperchaser-backup-${todayIso()}.json`, await exportWorkspace())
     await preferencesRepo.put(LAST_BACKUP_KEY, new Date().toISOString())
   }
 

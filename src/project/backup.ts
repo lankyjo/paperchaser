@@ -35,10 +35,14 @@ export type ProjectBundle = z.infer<typeof projectBundleSchema>
 export type WorkspaceBundle = z.infer<typeof workspaceBundleSchema>
 export type Bundle = ProjectBundle | WorkspaceBundle
 
-export type BundleParse = { ok: true; bundle: Bundle } | { ok: false; reason: string }
+type BundleParse = { ok: true; bundle: Bundle } | { ok: false; reason: string }
 
-// Untrusted import boundary: JSON syntax, then version, then the full schema; never throws.
+// ponytail: naive length cap rejects oversized files before JSON.parse; switch to streaming parsing if multi-megabyte backups matter.
+export const MAX_BUNDLE_LENGTH = 5_000_000
+
+// Untrusted import boundary: size, JSON syntax, then version, then the full schema; never throws.
 export function parseBundle(json: string): BundleParse {
+  if (json.length > MAX_BUNDLE_LENGTH) return { ok: false, reason: 'This file is too large to import.' }
   let raw: unknown
   try {
     raw = JSON.parse(json)

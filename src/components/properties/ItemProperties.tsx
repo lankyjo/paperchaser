@@ -1,4 +1,5 @@
 import type { DocumentModel } from '../../document/types'
+import { formatMoney, minorToPercent } from '../../document/money'
 import { getPlainText } from '../../document/richtext'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { ItemImageField } from './ItemImageField'
@@ -6,9 +7,13 @@ import { ItemImageField } from './ItemImageField'
 // Read-only summary of the selected line item plus its image field; text is edited on the canvas.
 export function ItemProperties({
   item,
+  currency,
+  locale,
   onLineItemChange,
 }: {
   item: DocumentModel['lineItems'][number]
+  currency: string
+  locale: string | undefined
   onLineItemChange?: (id: string, patch: Partial<DocumentModel['lineItems'][number]>) => void
 }) {
   return (
@@ -33,16 +38,16 @@ export function ItemProperties({
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Unit price</p>
-              <p className="text-sm">{(item.unitPriceMinor / 100).toFixed(2)}</p>
+              <p className="text-sm">{formatMoney(item.unitPriceMinor, currency, locale)}</p>
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Tax</p>
-              <p className="text-sm">{(item.taxRateMinor / 100).toFixed(2)}%</p>
+              <p className="text-sm">{minorToPercent(item.taxRateMinor)}%</p>
             </div>
             {item.discount !== undefined && (
               <div>
                 <p className="text-xs text-muted-foreground">Discount</p>
-                <p className="text-sm">{item.discount.kind === 'percent' ? `${(item.discount.value / 100).toFixed(2)}%` : `${(item.discount.value / 100).toFixed(2)}`}</p>
+                <p className="text-sm">{item.discount.kind === 'percent' ? `${minorToPercent(item.discount.value)}%` : formatMoney(item.discount.value, currency, locale)}</p>
               </div>
             )}
           </div>

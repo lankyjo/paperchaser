@@ -1,4 +1,5 @@
 import { printedTotals } from './finalize'
+import { formatDocDate } from './formatDocDate'
 import { formatMoney } from './money'
 import { getPlainText } from './richtext'
 import { DOC_TITLES } from './tokens'
@@ -18,7 +19,7 @@ export function emailMessage(doc: DocumentModel): { subject: string; body: strin
   const from = getPlainText(doc.company.name)
   const client = getPlainText(doc.customer.name)
   const amount = formatMoney(printedTotals(doc).grandTotalMinor, doc.currency, doc.locale)
-  const due = doc.dueDate ? new Date(`${doc.dueDate}T00:00:00`).toLocaleDateString(doc.locale ?? 'de-DE') : ''
+  const due = doc.dueDate ? formatDocDate(doc.dueDate, doc.locale) : ''
   const what = number ? `${title.toLowerCase()} ${number}` : `our ${title.toLowerCase()} document`
   const detail = MONEY_LINES[doc.type]?.(amount, due) ?? ''
   return {

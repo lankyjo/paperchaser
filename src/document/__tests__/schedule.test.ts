@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { computeTotals } from '../totals'
 import { finalizeDocument } from '../finalize'
-import { invoiceForScheduleRow, scheduleAmounts, scheduleWarning, syncScheduledInvoice, type ScheduleBlock } from '../schedule'
+import { findSchedule, invoiceForScheduleRow, priorScheduleInvoices, scheduleAmounts, scheduleWarning, syncScheduledInvoice, type ScheduleBlock } from '../schedule'
 import { documentSchema } from '../types'
 
 const schedule: ScheduleBlock = {
@@ -60,5 +60,21 @@ describe('syncScheduledInvoice', () => {
     const result = syncScheduledInvoice(sent, changed, [])
     expect(result.invoice).toBe(sent)
     expect(result.mismatch).toBe(true)
+  })
+})
+
+describe('priorScheduleInvoices', () => {
+  it('returns the live invoices of earlier rows of this agreement, in row order', () => {
+    const deposit = make('r1')
+    const milestone = make('r2')
+    const voided = { ...make('r2'), id: 'void', status: 'void' as const }
+    const other = { ...make('r1'), id: 'other', scheduleRef: { agreementId: 'a2', rowId: 'r1' } }
+    expect(priorScheduleInvoices(schedule, 'r3', [milestone, voided, other, deposit], 'a1')).toEqual([deposit, milestone])
+    expect(priorScheduleInvoices(schedule, 'r1', [deposit], 'a1')).toEqual([])
+  })
+
+  it('finds the schedule block of an agreement', () => {
+    expect(findSchedule({ blocks: [schedule] })).toBe(schedule)
+    expect(findSchedule({ blocks: undefined })).toBeUndefined()
   })
 })

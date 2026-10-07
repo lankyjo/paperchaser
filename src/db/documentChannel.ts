@@ -1,6 +1,6 @@
 const CHANNEL = 'paperchaser-documents'
 
-export interface DocumentSaved {
+interface DocumentSaved {
   id: string
   rev: number
 }

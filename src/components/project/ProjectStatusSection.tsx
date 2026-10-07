@@ -4,7 +4,7 @@ import { getPlainText } from '../../document/richtext'
 import type { DocumentModel } from '../../document/types'
 import type { Project } from '../../project/project'
 import { Button } from '../ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog'
+import { ConfirmDialog } from '../ui/confirm-dialog'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 
@@ -69,22 +69,14 @@ export function ProjectStatusSection({ project, canDelete, openInvoices, onSave,
           ))}
         </div>
       )}
-      <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete this project?</DialogTitle>
-            <DialogDescription>The project and all its draft documents are removed for good.</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmDelete(false)}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={onDelete}>
-              Delete project
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        title="Delete this project?"
+        description="The project and all its draft documents are removed for good."
+        confirmLabel="Delete project"
+        onConfirm={onDelete}
+      />
     </section>
   )
 }

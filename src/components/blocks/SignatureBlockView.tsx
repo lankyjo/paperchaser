@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import type { Block } from '../../document/blocks'
-import { getPlainText } from '../../document/richtext'
 import { useImageUpload } from '../../hooks/useImageUpload'
-import { RichTextCell } from '../edit/RichTextCell'
+import { PlainTextCell } from '../edit/PlainTextCell'
 import { labelStyle } from './blockStyles'
 import { SignaturePad } from './SignaturePad'
 import { StoredImage } from './StoredImage'
@@ -15,16 +14,15 @@ const lineStyle = { borderTop: '1px solid var(--tpl-ink)', paddingTop: '4px', ma
 export function SignatureBlockView({ block, onChange }: { block: SignatureBlock; onChange?: (next: Block) => void }) {
   const { upload, store, error } = useImageUpload()
   const [drawing, setDrawing] = useState(false)
-  const text = (value: string, placeholder: string, commit: (t: string) => void) =>
-    onChange ? <RichTextCell key={value} text={value} placeholder={placeholder} onCommit={(next) => commit(getPlainText(next))} /> : value
+  const editable = onChange !== undefined
 
   return (
     <section style={{ display: 'grid', gridTemplateColumns: block.clientLine ? '1fr 1fr' : '1fr', gap: '32px' }}>
       <div>
         {block.assetId !== '' && <StoredImage key={block.assetId} assetId={block.assetId} alt={`Signature of ${block.name}`} style={{ maxHeight: '60px' }} />}
         <div style={block.assetId === '' ? lineStyle : { borderTop: '1px solid var(--tpl-ink)', paddingTop: '4px' }}>
-          <div style={{ fontWeight: 600 }}>{text(block.name, 'Your name', (name) => onChange?.({ ...block, name }))}</div>
-          <div style={labelStyle}>{text(block.role, 'Role', (role) => onChange?.({ ...block, role }))}</div>
+          <div style={{ fontWeight: 600 }}><PlainTextCell value={block.name} placeholder="Your name" editable={editable} onCommit={(name) => onChange?.({ ...block, name })} /></div>
+          <div style={labelStyle}><PlainTextCell value={block.role} placeholder="Role" editable={editable} onCommit={(role) => onChange?.({ ...block, role })} /></div>
         </div>
         {onChange && (
           <div className="mt-2 flex flex-col gap-1 text-[11px] text-muted-foreground print:hidden">

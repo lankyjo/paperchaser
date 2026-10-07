@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { DEFAULT_AI_SETTINGS, type AiProvider, type AiSettings } from '../../ai/aiProviders'
+import { DEFAULT_AI_SETTINGS, type AiProvider, type AiSettings } from '../../ai/aiSettings'
 import { finishOpenRouterLogin } from '../../ai/openRouterLogin'
 import { keyStore } from '../../db/keyStore'
 import { preferencesRepo } from '../../db/repos'

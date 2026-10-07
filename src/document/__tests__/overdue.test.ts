@@ -33,7 +33,8 @@ describe('overdueInvoices', () => {
 describe('newReminder', () => {
   it('writes an unnumbered reminder letter quoting the invoice, due date and balance', () => {
     const invoice = sent('1', '2026-09-15', 4000)
-    const reminder = newReminder(invoice, 6000, { id: 'r', today: '2026-10-07', newId: (n) => `b${n}` })
+    let n = 1
+    const reminder = newReminder(invoice, 6000, { id: 'r', today: '2026-10-07', newId: () => `b${n++}` })
     expect(documentSchema.parse(reminder)).toEqual(reminder)
     expect(reminder).toMatchObject({ type: 'reminder', number: '', reminderFor: '1', status: 'draft' })
     expect(JSON.stringify(reminder.blocks)).toContain('INV-1')

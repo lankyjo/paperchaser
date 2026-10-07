@@ -6,16 +6,7 @@ import { DeleteItemDialog } from './outline/DeleteItemDialog'
 import { OutlineLineItems } from './outline/OutlineLineItems'
 import { cn } from '@/lib/utils'
 
-// Left-pane outline: header and footer visibility, and the line items under Items.
-interface BlockVisibility {
-  header?: boolean
-  billTo?: boolean
-  items?: boolean
-  totals?: boolean
-  footer?: boolean
-}
-
-export type BlockId = 'header' | 'billTo' | 'items' | 'totals' | 'footer'
+export type BlockId = 'header' | 'items' | 'footer'
 
 export interface OutlinePaneProps {
   model: DocumentModel
@@ -38,6 +29,7 @@ const BLOCKS: Array<{ id: BlockId; label: string }> = [
   { id: 'footer', label: 'Footer' },
 ]
 
+// Left-pane outline: header and footer visibility, and the line items under Items.
 export function OutlinePane({
   model,
   selectedBlockId,
@@ -51,7 +43,7 @@ export function OutlinePane({
   onMoveUp,
   onMoveDown,
 }: OutlinePaneProps) {
-  const visibility: BlockVisibility = model.settings?.blockVisibility ?? {}
+  const visibility = model.settings?.blockVisibility ?? {}
   const lineItems = model.lineItems ?? []
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 

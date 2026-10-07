@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { minorToRaw, parseToMinor } from '../../document/money'
+import { minorToPercent, minorToRaw, parseToMinor, percentToMinor } from '../../document/money'
 import type { CatalogItem } from '../../project/catalog'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
@@ -9,10 +9,10 @@ export function ServiceForm({ item, onSave }: { item: CatalogItem; onSave: (next
   const [name, setName] = useState(item.name)
   const [description, setDescription] = useState(item.description)
   const [price, setPrice] = useState(item.priceMinor ? minorToRaw(item.priceMinor, 'EUR') : '')
-  const [tax, setTax] = useState(String(item.taxRateMinor / 100))
+  const [tax, setTax] = useState(String(minorToPercent(item.taxRateMinor)))
   const submit = (event: FormEvent) => {
     event.preventDefault()
-    onSave({ ...item, name: name.trim(), description, priceMinor: parseToMinor(price, 'EUR') ?? 0, taxRateMinor: Math.round((Number(tax) || 0) * 100) })
+    onSave({ ...item, name: name.trim(), description, priceMinor: parseToMinor(price, 'EUR') ?? 0, taxRateMinor: percentToMinor(Number(tax) || 0) })
   }
   return (
     <form onSubmit={submit} className="grid gap-2 sm:grid-cols-[2fr_3fr_1fr_1fr_auto]">

@@ -13,14 +13,14 @@ import { db as rawDb } from './db'
 import { announceSave } from './documentChannel'
 
 // Company profile row; companyRepo adds the singleton key.
-export interface CompanyRow extends Company {
+interface CompanyRow extends Company {
   id: string
 }
 
 // Catalog item: minimal product shape.
 
 // Key-value preference row; `key` is the primary key.
-export interface PreferenceRow {
+interface PreferenceRow {
   key: string
   value: unknown
 }

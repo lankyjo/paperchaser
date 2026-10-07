@@ -9,7 +9,7 @@ import { createClient } from '../../project/client'
 import { createProject } from '../../project/project'
 import { exportProject, exportWorkspace, importProject, replaceWorkspace } from '../backupRepo'
 import { db } from '../db'
-import { clientsRepo, countersRepo, documentsRepo, projectsRepo } from '../repos'
+import { assetsRepo, clientsRepo, countersRepo, documentsRepo, projectsRepo } from '../repos'
 
 const NOW = '2026-10-07T10:00:00.000Z'
 
@@ -46,5 +46,11 @@ describe('workspace backup', () => {
     await replaceWorkspace(backup)
     expect((await projectsRepo.list()).map((p) => p.id)).toEqual(['p1'])
     expect(await documentsRepo.get('i1')).toBeDefined()
+  })
+
+  it('drops images no restored document uses', async () => {
+    const backup = await exportWorkspace()
+    await replaceWorkspace({ ...backup, assets: [{ id: 'orphan', dataUrl: 'data:image/png;base64,AA', width: 1, height: 1 }] })
+    expect(await assetsRepo.get('orphan')).toBeUndefined()
   })
 })

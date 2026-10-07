@@ -4,6 +4,7 @@ import type { DocumentModel } from '../../document/types'
 import type { Project } from '../../project/project'
 import { Button } from '../ui/button'
 import { useQuoteActions } from './useQuoteActions'
+import { todayIso } from '../../lib/todayIso'
 
 const STATE_LABELS = { draft: 'Draft', sent: 'Awaiting answer', accepted: 'Accepted', declined: 'Declined', expired: 'Expired', superseded: 'Superseded' } as const
 
@@ -17,7 +18,7 @@ interface QuoteActionsProps {
 export function QuoteActions({ quote, project, save }: QuoteActionsProps) {
   const actions = useQuoteActions(quote, project, save)
   const [lost, setLost] = useState(project?.state === 'lost')
-  const state = quoteState(quote, new Date().toLocaleDateString('en-CA'))
+  const state = quoteState(quote, todayIso())
   return (
     <>
       <span className="rounded-full border px-2 py-0.5 text-xs">{STATE_LABELS[state]}</span>

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { finalizeDocument } from '../finalize'
 import { newInvoice } from '../newInvoice'
-import { invoiceBalance, newReceiptForPayment, paymentStatus, type Payment } from '../payments'
+import { invoiceBalance, newReceiptForPayment, openInvoices, paidTotal, paymentStatus, type Payment } from '../payments'
 import { documentSchema, type DocumentModel } from '../types'
 
 const invoice = finalizeDocument(
@@ -33,5 +33,17 @@ describe('newReceiptForPayment', () => {
     expect(documentSchema.parse(receipt)).toEqual(receipt)
     expect(receipt).toMatchObject({ type: 'receipt', projectId: 'p1', receiptFor: { invoiceId: 'i1', paymentId: 'a' }, customer: invoice.customer })
     expect(receipt.lineItems).toEqual([expect.objectContaining({ title: 'Payment received for INV-0007', quantity: 1, unitPriceMinor: 4000, taxRateMinor: 0 })])
+  })
+})
+
+describe('paidTotal and openInvoices', () => {
+  it('sums payments with refunds negative', () => {
+    expect(paidTotal(withPayments(pay('a', 6000), pay('b', -1000)))).toBe(5000)
+  })
+
+  it('lists sent invoices with a balance left after payments', () => {
+    const paid = { ...withPayments(pay('a', 10000)), id: 'i2' }
+    const draft = { ...invoice, id: 'i3', status: 'draft' as const }
+    expect(openInvoices([invoice, paid, draft])).toEqual([{ invoice, balanceMinor: 10000 }])
   })
 })
