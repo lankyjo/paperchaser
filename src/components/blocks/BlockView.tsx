@@ -3,6 +3,8 @@ import type { Block, BlockType } from '../../document/blocks'
 import { HeadingBlockView } from './HeadingBlockView'
 import { KeyValueBlockView } from './KeyValueBlockView'
 import { RichTextBlockView } from './RichTextBlockView'
+import { StepsBlockView } from './StepsBlockView'
+import { TableBlockView } from './TableBlockView'
 
 type BlockViewProps<T extends BlockType> = { block: Extract<Block, { type: T }>; onChange?: (next: Block) => void }
 
@@ -10,6 +12,8 @@ const views: { [T in BlockType]: ComponentType<BlockViewProps<T>> } = {
   heading: HeadingBlockView,
   richText: RichTextBlockView,
   keyValue: KeyValueBlockView,
+  table: TableBlockView,
+  steps: StepsBlockView,
 }
 
 // Renders one block with the view for its type; editable when onChange is given.

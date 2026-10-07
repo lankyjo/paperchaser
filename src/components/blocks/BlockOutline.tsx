@@ -1,15 +1,7 @@
 import { ArrowDown, ArrowUp, Eye, EyeOff } from 'lucide-react'
-import type { Block, BlockType } from '../../document/blocks'
-import { getPlainText } from '../../document/richtext'
+import { blockSummary, type Block, type BlockType } from '../../document/blocks'
+import { BLOCK_LABELS as TYPE_LABELS } from '../../strings/blockLabels'
 import { Button } from '../ui/button'
-
-const TYPE_LABELS: Record<BlockType, string> = { heading: 'Heading', richText: 'Text', keyValue: 'Details list' }
-
-function summary(block: Block): string {
-  if (block.type === 'heading') return block.text
-  if (block.type === 'keyValue') return block.title
-  return getPlainText(block.content)
-}
 
 interface BlockOutlineProps {
   blocks: Block[]
@@ -26,7 +18,7 @@ export function BlockOutline({ blocks, onMove, onToggleHidden, onAdd }: BlockOut
         {blocks.map((block, idx) => (
           <li key={block.id} className="flex items-center gap-1 rounded border bg-background px-2 py-1">
             <span className={`flex-1 truncate ${block.hidden ? 'text-muted-foreground line-through' : ''}`}>
-              <span className="text-muted-foreground">{TYPE_LABELS[block.type]}</span> {summary(block)}
+              <span className="text-muted-foreground">{TYPE_LABELS[block.type]}</span> {blockSummary(block)}
             </span>
             <button type="button" aria-label={`Move ${TYPE_LABELS[block.type]} up`} disabled={idx === 0} onClick={() => onMove(block.id, -1)} className="p-0.5 disabled:opacity-30">
               <ArrowUp className="size-3.5" />

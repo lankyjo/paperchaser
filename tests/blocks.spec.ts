@@ -34,3 +34,26 @@ test('a welcome document is built from blocks that can be edited, hidden, reorde
   await expect(pageRoot.getByText("We're excited to work with you")).toHaveCount(0)
   await expect(outline).toHaveCount(4)
 })
+
+test('table and numbered-steps blocks can be added and filled in', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Quick invoice' }).click()
+  await page.goto('/')
+  await page.getByRole('link', { name: 'Untitled project' }).click()
+  await page.getByRole('button', { name: 'Start welcome' }).click()
+  const pageRoot = page.locator('#print-root')
+
+  await page.getByRole('button', { name: 'Add table' }).click()
+  const table = pageRoot.locator('table').last()
+  await table.locator('th [contenteditable]').first().click()
+  await page.keyboard.type('File')
+  await page.keyboard.press('Enter')
+  await pageRoot.getByRole('button', { name: 'Add row' }).last().click()
+  await expect(table.locator('tbody tr')).toHaveCount(2)
+  await expect(table.locator('th').first()).toHaveText('File')
+
+  await page.getByRole('button', { name: 'Add numbered steps' }).click()
+  await pageRoot.getByRole('button', { name: 'Add step' }).click()
+  await expect(pageRoot.locator('ol li')).toHaveCount(2)
+  await expect(pageRoot.getByText('02', { exact: true })).toBeVisible()
+})

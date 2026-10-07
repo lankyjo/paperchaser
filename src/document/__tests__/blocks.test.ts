@@ -5,11 +5,13 @@ import { addBlock, blockSchema, moveBlock, toggleBlockHidden, updateBlock, type 
 const heading: Block = { id: 'b1', type: 'heading', text: 'Welcome' }
 const intro: Block = { id: 'b2', type: 'richText', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hi' }] }] }
 const glance: Block = { id: 'b3', type: 'keyValue', title: 'At a glance', rows: [{ label: 'Start', value: '1 Nov' }] }
+const files: Block = { id: 'b4', type: 'table', columns: ['File', 'Format'], rows: [['Logo', 'SVG']] }
+const nextSteps: Block = { id: 'b5', type: 'steps', items: [{ title: 'Discovery call', description: 'Align on goals' }] }
 const blocks = [heading, intro, glance]
 
 describe('blockSchema', () => {
   it('round-trips every tracer block type through JSON', () => {
-    for (const block of blocks) expect(blockSchema.parse(JSON.parse(JSON.stringify(block)))).toEqual(block)
+    for (const block of [...blocks, files, nextSteps]) expect(blockSchema.parse(JSON.parse(JSON.stringify(block)))).toEqual(block)
   })
 })
 
@@ -18,6 +20,11 @@ describe('block operations', () => {
     const next = addBlock(blocks, 'keyValue', 'b1', 'new')
     expect(next.map((b) => b.id)).toEqual(['b1', 'new', 'b2', 'b3'])
     expect(next[1]).toEqual({ id: 'new', type: 'keyValue', title: '', rows: [{ label: '', value: '' }] })
+  })
+
+  it('starts a table with two columns and one row, and steps with one item', () => {
+    expect(addBlock([], 'table', null, 't')[0]).toEqual({ id: 't', type: 'table', columns: ['', ''], rows: [['', '']] })
+    expect(addBlock([], 'steps', null, 's')[0]).toEqual({ id: 's', type: 'steps', items: [{ title: '', description: '' }] })
   })
 
   it('moves a block up or down and ignores moves past either end', () => {
