@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { canVoid } from '../../document/credits'
 import { isNumberedType } from '../../document/finalize'
 import { preFinalizeWarnings } from '../../document/finalizeChecks'
 import { getPlainText } from '../../document/richtext'
@@ -8,6 +9,7 @@ import { PaymentsPanel } from '../payments/PaymentsPanel'
 import { Button } from '../ui/button'
 import { FinalizeDialog } from './FinalizeDialog'
 import { useDocumentLifecycle } from './useDocumentLifecycle'
+import { VoidButton } from './VoidButton'
 
 interface LifecycleBarProps {
   model: DocumentModel
@@ -33,15 +35,19 @@ export function LifecycleBar({ model, shared, history }: LifecycleBarProps) {
           </Button>
         ) : (
           <>
-            <span className="rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">Sent{number && ` · ${number}`}</span>
+            <span className="rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
+              {model.status === 'void' ? 'Void' : 'Sent'}
+              {number && ` · ${number}`}
+            </span>
             <Button size="sm" variant="outline" onClick={lifecycle.print}>
               Print
             </Button>
-            {canUnsend && (
+            {canUnsend && model.status !== 'void' && (
               <Button size="sm" variant="ghost" onClick={() => void lifecycle.unsend()}>
                 Back to draft
               </Button>
             )}
+            {model.type === 'invoice' && canVoid(model) && <VoidButton onVoid={() => void lifecycle.voidDocument()} />}
           </>
         )}
         {changes.length > 0 && lifecycle.pullLatest && (
@@ -68,7 +74,7 @@ export function LifecycleBar({ model, shared, history }: LifecycleBarProps) {
           }}
         />
       </div>
-      {model.type === 'invoice' && model.status !== 'draft' && (
+      {model.type === 'invoice' && model.status === 'sent' && (
         <PaymentsPanel invoice={model} onSave={(payments) => void lifecycle.savePayments(payments)} />
       )}
     </>

@@ -117,6 +117,8 @@ export const documentSchema = z.object({
   payments: z
     .array(z.object({ id: z.string(), date: z.iso.date(), amountMinor: z.int(), method: z.string(), note: z.string().optional() }))
     .optional(),
+  // On a credit note: the invoice it corrects.
+  creditFor: z.string().optional(),
   // On a receipt: the invoice and payment it confirms.
   receiptFor: z.object({ invoiceId: z.string(), paymentId: z.string() }).optional(),
   // How line prices treat tax; set from the project and frozen once sent.
@@ -131,7 +133,7 @@ export const documentSchema = z.object({
   issueDate: z.iso.date(),
   number: textFieldSchema,
   // Explicit status; the watermark derives from it and is never stored.
-  status: z.enum(['draft', 'sent', 'paid']),
+  status: z.enum(['draft', 'sent', 'paid', 'void']),
   company: companySchema,
   customer: customerSchema,
   lineItems: z.array(lineItemSchema),

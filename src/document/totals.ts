@@ -110,6 +110,6 @@ function mergeRates(a: Map<number, number>, b: Map<number, number>): Map<number,
   return merged
 }
 
-export function deriveWatermark(status: 'draft' | 'sent' | 'paid'): 'draft' | null {
+export function deriveWatermark(status: 'draft' | 'sent' | 'paid' | 'void'): 'draft' | null {
   return status === 'draft' ? 'draft' : null
 }

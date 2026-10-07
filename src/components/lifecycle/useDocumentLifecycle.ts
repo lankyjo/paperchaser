@@ -1,4 +1,5 @@
 import { documentsRepo } from '../../db/repos'
+import { voidDocument } from '../../document/credits'
 import { unsendDocument } from '../../document/finalize'
 import type { DocumentModel } from '../../document/types'
 import { pullLatest, type SharedData } from '../../project/sharedData'
@@ -20,6 +21,7 @@ export function useDocumentLifecycle(
     },
     print: () => printDocument(model),
     unsend: () => save(unsendDocument(model)),
+    voidDocument: () => save(voidDocument(model)),
     // Payments change after sending, so they save outside the read-only editor and outside undo.
     savePayments: (payments: NonNullable<DocumentModel['payments']>) => save({ ...model, payments }),
     pullLatest: shared ? () => save(pullLatest(model, shared)) : undefined,
