@@ -3,6 +3,7 @@ import type { Table } from 'dexie'
 
 import { referencedAssetIds } from '../document/assets'
 import { finalizeDocument, isNumberedType, nextNumber, type Counter } from '../document/finalize'
+import { revisionNumber } from '../document/quotes'
 import { getPlainText } from '../document/richtext'
 import type { Company, DocumentModel } from '../document/types'
 import type { Client } from '../project/client'
@@ -110,8 +111,8 @@ async function saveIfCurrent(doc: DocumentModel, expectedRev: number): Promise<D
 async function finalizeInTransaction(doc: DocumentModel, now: Date): Promise<DocumentModel> {
   return rawDb.transaction('rw', 'counters', 'documents', async () => {
     await assertCurrent(doc.id, doc.rev ?? 0)
-    let number: string | null = null
-    if (isNumberedType(doc.type) && getPlainText(doc.number) === '') {
+    let number: string | null = revisionNumber(doc)
+    if (number === null && isNumberedType(doc.type) && getPlainText(doc.number) === '') {
       const counter = await countersRepo.get(doc.type)
       const next = nextNumber(counter, now)
       await db.counters.put(next.counter)

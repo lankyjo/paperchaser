@@ -17,6 +17,7 @@ export function useDocumentLifecycle(
   const { replace, getRev } = history
   const save = async (next: DocumentModel) => replace(await documentsRepo.save(next, getRev()))
   return {
+    save,
     finalizeAndPrint: async () => {
       const finalized = await documentsRepo.finalize({ ...model, rev: getRev() }, new Date())
       replace(finalized)

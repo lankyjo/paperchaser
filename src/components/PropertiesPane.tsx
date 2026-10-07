@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { CurrencyCard } from './properties/CurrencyCard'
 import { ItemProperties } from './properties/ItemProperties'
+import { ValidUntilCard } from './properties/ValidUntilCard'
 
 // Right pane: the selected line item's properties, otherwise the document settings.
 export interface PropertiesPaneProps {
@@ -18,6 +19,7 @@ export interface PropertiesPaneProps {
   onLogoChange: (logo: string | null) => void
   onPageSizeChange: (pageSize: PageSize) => void
   onLineItemChange?: (id: string, patch: Partial<DocumentModel['lineItems'][number]>) => void
+  onValidUntilChange?: (date: string | undefined) => void
 }
 
 export function PropertiesPane({
@@ -29,6 +31,7 @@ export function PropertiesPane({
   onLogoChange,
   onPageSizeChange,
   onLineItemChange,
+  onValidUntilChange,
 }: PropertiesPaneProps) {
   if (selectedItemId !== null) {
     const item = model.lineItems.find((li) => li.id === selectedItemId)
@@ -45,6 +48,7 @@ export function PropertiesPane({
       <TemplateGallery selected={template} onSelect={onTemplateChange} />
       <BrandingPanel model={model} template={template} onBrandingChange={onBrandingChange} onLogoChange={onLogoChange} />
       <CurrencyCard currency={model.currency} />
+      {model.type === 'quote' && onValidUntilChange && <ValidUntilCard validUntil={model.validUntil} onChange={onValidUntilChange} />}
       <Card size="sm">
         <CardHeader>
           <CardTitle>Page size</CardTitle>

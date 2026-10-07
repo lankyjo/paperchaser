@@ -53,6 +53,9 @@ export function DocumentPage({ model, template, branding, pageSize, editable = f
       watermark={watermarkText === null ? null : { text: watermarkText, color: resolved.accent }}
     >
       {visibility.header !== false && <HeaderPreset tokens={resolved} model={model} />}
+      {model.type === 'quote' && model.validUntil && (
+        <p style={{ margin: '0 0 var(--tpl-section-gap)' }}>Valid until {new Date(`${model.validUntil}T00:00:00`).toLocaleDateString(model.locale ?? 'de-DE')}</p>
+      )}
       {documentBlocks(model).filter((b) => !b.hidden).map(renderBlock)}
       {visibility.footer !== false && <FooterPreset tokens={resolved} model={model} />}
     </PageFrame>

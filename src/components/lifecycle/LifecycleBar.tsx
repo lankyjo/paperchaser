@@ -10,6 +10,7 @@ import { pullLatestChanges, type SharedData } from '../../project/sharedData'
 import { PaymentsPanel } from '../payments/PaymentsPanel'
 import { Button } from '../ui/button'
 import { FinalizeDialog } from './FinalizeDialog'
+import { QuoteActions } from './QuoteActions'
 import { useDocumentLifecycle } from './useDocumentLifecycle'
 import { VoidButton } from './VoidButton'
 
@@ -28,7 +29,7 @@ export function LifecycleBar({ model, shared, project, history }: LifecycleBarPr
   const changes = shared && model.status === 'draft' && model.frozen ? pullLatestChanges(model, shared) : []
   const number = getPlainText(model.number)
   // Once money is recorded the document stays sent; corrections go through a credit note.
-  const canUnsend = (model.payments ?? []).length === 0
+  const canUnsend = (model.payments ?? []).length === 0 && model.outcome === undefined && model.supersededBy === undefined
 
   return (
     <>
@@ -55,6 +56,7 @@ export function LifecycleBar({ model, shared, project, history }: LifecycleBarPr
               </Button>
             )}
             {model.type === 'invoice' && canVoid(model) && <VoidButton onVoid={() => void lifecycle.voidDocument()} />}
+            {model.type === 'quote' && <QuoteActions quote={model} project={project} save={lifecycle.save} />}
           </>
         )}
         {changes.length > 0 && lifecycle.pullLatest && (

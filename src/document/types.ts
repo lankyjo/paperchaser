@@ -119,6 +119,13 @@ export const documentSchema = z.object({
   payments: z
     .array(z.object({ id: z.string(), date: z.iso.date(), amountMinor: z.int(), method: z.string(), note: z.string().optional() }))
     .optional(),
+  // Quotes: last valid day, the client's answer, and the revision chain.
+  validUntil: z.iso.date().optional(),
+  outcome: z.enum(['accepted', 'declined']).optional(),
+  revisionOf: z.string().optional(),
+  revision: z.int().min(2).optional(),
+  revisionBase: z.string().optional(),
+  supersededBy: z.string().optional(),
   // On an invoice created from an agreement's payment schedule: the row it bills.
   scheduleRef: z.object({ agreementId: z.string(), rowId: z.string() }).optional(),
   // On a credit note: the invoice it corrects.

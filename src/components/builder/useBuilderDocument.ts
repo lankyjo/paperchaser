@@ -52,6 +52,7 @@ export function useBuilderDocument(
     onLogoChange: settings.changeLogo,
     onPageSizeChange: settings.changePageSize,
     onLineItemChange: items.changeLineItem,
+    onValidUntilChange: (validUntil: string | undefined) => commit({ ...model, validUntil }),
   }
 
   return { history: { ...history, commit }, settings, selection, items, sections, outlineProps, sharedPropertiesProps, commitCustomerName }

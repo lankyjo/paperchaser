@@ -138,6 +138,12 @@ describe('finalizing', () => {
     expect((await countersRepo.get('invoice')).next).toBe(2)
   })
 
+  it('numbers a quote revision from its base without touching the counter', async () => {
+    const revision = { ...draftInvoice('r'), type: 'quote' as const, revision: 2, revisionBase: 'Q-0004', revisionOf: 'q1' }
+    expect((await documentsRepo.finalize(revision, new Date('2026-10-07'))).number).toBe('Q-0004-R2')
+    expect((await countersRepo.get('quote')).next).toBe(1)
+  })
+
   it('does not number documents that are never numbered', async () => {
     const welcome = await documentsRepo.finalize({ ...draftInvoice('w'), type: 'welcome' }, new Date('2026-10-07'))
     expect(welcome.number).toBe('')
