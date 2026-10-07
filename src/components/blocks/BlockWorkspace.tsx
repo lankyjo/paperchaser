@@ -40,6 +40,11 @@ export function BlockWorkspace({ model: initial, shared, project }: { model: Doc
           </Button>
         </div>
       </header>
+      {model.type === 'agreement' && (
+        <p role="note" className="mx-4 rounded border px-3 py-2 text-xs text-muted-foreground print:hidden">
+          These clauses are a plain-language starting point, not legal advice. Review them for your country before sending.
+        </p>
+      )}
       {!project?.archived && <LifecycleBar model={model} shared={shared} project={project} history={history} />}
       <main className="flex flex-1 flex-col gap-4 px-2 pb-10 lg:flex-row print:p-0">
         {editable && <aside className="shrink-0 lg:w-64 print:hidden">

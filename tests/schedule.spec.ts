@@ -19,7 +19,6 @@ test('an agreement schedule creates deposit and balance invoices, and flags a se
   await expect(page.getByLabel('Project fee')).toHaveValue('1000')
 
   await page.getByRole('button', { name: 'Start client agreement' }).click()
-  await page.getByRole('button', { name: 'Add payment schedule' }).click()
   const pageRoot = page.locator('#print-root')
   await expect(pageRoot).toContainText('Payment schedule · €1,000.00')
   const agreementUrl = page.url()

@@ -48,7 +48,7 @@ test('a drawn signature is trimmed and stored, with a blank client signature lin
   await page.getByRole('button', { name: 'Start client agreement' }).click()
   const pageRoot = page.locator('#print-root')
 
-  await page.getByRole('button', { name: 'Add signature' }).click()
+  // Agreements start with a signature block, so the test uses that one.
   await expect(pageRoot.getByText('Client signature', { exact: true })).toBeVisible()
   await pageRoot.getByRole('button', { name: 'Draw signature' }).click()
   const pad = pageRoot.getByLabel('Signature drawing area')
