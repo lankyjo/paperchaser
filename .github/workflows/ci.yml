@@ -1,5 +1,5 @@
 # CI baseline — ROADMAP Phase 1 SC4
-# Gates in order: install -> lint -> typecheck -> unit tests -> build -> parity test.
+# Gates in order: install -> conventions (lint, comments, naming, no useEffect) -> typecheck -> unit tests -> build -> parity test.
 # Golden baselines are committed-only (Pitfall 5): the parity suite's write
 # path (`pnpm test:update`) is a local, code-reviewed step — never part of CI.
 name: CI
@@ -15,7 +15,7 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
+      - run: pnpm check:conventions
       - run: pnpm typecheck
       - run: pnpm test:unit
       - run: pnpm build

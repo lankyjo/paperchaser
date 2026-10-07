@@ -1,0 +1,23 @@
+ls:
+  src:
+    .dir: kebab-case | regex:__tests__
+    .ts: camelCase | regex:__root
+    .tsx: PascalCase | regex:index | regex:__root | regex:main
+    .test.ts: camelCase
+    .css: kebab-case
+  src/components/ui:
+    .tsx: kebab-case
+  scripts:
+    .dir: kebab-case | regex:__tests__
+    .ts: camelCase
+    .test.ts: camelCase
+  tests:
+    .dir: kebab-case
+    .ts: camelCase
+    .spec.ts: camelCase
+
+ignore:
+  - node_modules
+  - tests/artifacts
+  - tests/fixtures
+  - src/assets

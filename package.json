@@ -11,7 +11,11 @@
     "preview": "vite preview",
     "test": "playwright test tests/parity.spec.ts",
     "test:unit": "vitest run",
-    "test:update": "UPDATE_BASELINES=1 playwright test tests/parity.spec.ts -g baseline"
+    "test:update": "UPDATE_BASELINES=1 playwright test tests/parity.spec.ts -g baseline",
+    "check:comments": "node scripts/findCommentViolations.ts",
+    "check:naming": "ls-lint",
+    "check:no-use-effect": "! grep -rnE '\\buse(Layout)?Effect\\s*\\(' src --include='*.tsx'",
+    "check:conventions": "pnpm lint && pnpm check:comments && pnpm check:naming && pnpm check:no-use-effect"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -34,6 +38,7 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@ls-lint/ls-lint": "^2.3.1",
     "@napi-rs/canvas": "^1.0.7",
     "@playwright/test": "1.62.1",
     "@tailwindcss/vite": "4.3.3",
@@ -42,6 +47,7 @@
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.1.0",
     "fake-indexeddb": "6.2.5",
+    "oxc-parser": "^0.153.0",
     "oxlint": "^1.79.0",
     "pdfjs-dist": "6.2.108",
     "pixelmatch": "7.2.0",
