@@ -5,6 +5,7 @@ import { minimalTokens } from './templates/minimal'
 import { noirLedgerTokens } from './templates/noirLedger'
 import { atelierTokens } from './templates/atelier'
 import { statementTokens } from './templates/statement'
+import { swissTokens } from './templates/swiss'
 import { DOC_TYPE_IDS, DOC_TYPES } from './docTypes'
 import type { Branding, DocumentModel, PageSize, TemplateId } from './types'
 
@@ -112,6 +113,7 @@ export const TEMPLATE_VERSIONS: Record<TemplateId, TemplateTokens[]> = {
   noirLedger: [noirLedgerTokens],
   atelier: [atelierTokens],
   statement: [statementTokens],
+  swiss: [swissTokens],
 }
 
 // Display name of each template.
@@ -121,6 +123,7 @@ export const TEMPLATE_NAMES: Record<TemplateId, string> = {
   noirLedger: 'Noir Ledger',
   atelier: 'Atelier',
   statement: 'Statement',
+  swiss: 'Swiss',
 }
 
 // The current version of each template; must cover exactly the ids in types.ts (pinned by a unit test).

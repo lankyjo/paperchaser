@@ -4,6 +4,21 @@
   width: 100%;
   border-collapse: collapse;
   margin-bottom: var(--tpl-section-gap);
+  /* Fixed columns, so a table split across pages keeps the same widths on every page. */
+  table-layout: fixed;
+}
+
+.doc-items th:nth-child(1) {
+  width: 24%;
+}
+
+.doc-items th:nth-child(3) {
+  width: 7%;
+}
+
+.doc-items th:nth-child(4),
+.doc-items th:nth-child(5) {
+  width: 15%;
 }
 
 .doc-items tr {

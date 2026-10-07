@@ -5,6 +5,7 @@ import type { DocumentModel, TemplateId } from '../../document/types'
 import { atelierLayout } from './atelier/atelierLayout'
 import { noirLedgerLayout } from './noir-ledger/noirLedgerLayout'
 import { statementLayout } from './statement/statementLayout'
+import { swissLayout } from './swiss/swissLayout'
 
 export interface RegionProps {
   model: DocumentModel
@@ -32,4 +33,5 @@ export const TEMPLATE_LAYOUTS: Partial<Record<TemplateId, TemplateLayout>> = {
   noirLedger: noirLedgerLayout,
   atelier: atelierLayout,
   statement: statementLayout,
+  swiss: swissLayout,
 }

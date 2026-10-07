@@ -15,7 +15,7 @@ export function TableBlockView({ block, onChange, range }: { block: TableBlock; 
 
   return (
     <div>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
         <thead>
           <tr>
             {block.columns.map((col, c) => (

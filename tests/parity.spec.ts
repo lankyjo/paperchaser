@@ -13,6 +13,8 @@ import { A4_WIDTH_PX, blendColor, countPixelsInRange, cropY, diffFraction, norma
 // Golden-image parity: the preview pages, the printed pages and the rasterized PDF of the torture fixture must agree page for page.
 
 const FIXTURE = 'invoice-torture'
+// Each test loops over every template, so it needs more than the default 30s.
+test.describe.configure({ timeout: 180_000 })
 const TEMPLATES = Object.keys(TEMPLATE_REGISTRY) as TemplateId[]
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const FIXTURES_DIR = path.join(HERE, 'fixtures')

@@ -1,0 +1,155 @@
+/* Swiss: oversized heavy type, black rules, a single red accent. */
+
+.swiss-red {
+  color: var(--tpl-accent);
+}
+
+.swiss-brand {
+  display: flex;
+  justify-content: space-between;
+  gap: 12mm;
+}
+
+.swiss-brand img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  margin-bottom: 6px;
+}
+
+.swiss-brand h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.swiss-address {
+  text-align: right;
+  color: var(--tpl-muted);
+  line-height: 1.5;
+}
+
+.swiss-title {
+  margin: 12mm 0 0 -5px;
+  font-size: var(--tpl-title-size);
+  font-weight: var(--tpl-title-weight);
+  letter-spacing: -0.065em;
+  line-height: 0.85;
+}
+
+.swiss-title-long {
+  font-size: 72px;
+}
+
+.swiss-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 7mm 0 var(--tpl-section-gap);
+  border-top: 3px solid var(--tpl-ink);
+}
+
+.swiss-strip > div {
+  padding: 12px 12px 0 0;
+}
+
+.swiss-strip dt,
+.tpl-swiss .doc-parties-title,
+.tpl-swiss .doc-items th,
+.tpl-swiss .doc-totals-grand span:first-child {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--tpl-ink);
+}
+
+.swiss-strip dd {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.tpl-swiss .doc-parties {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  border-top: 1px solid var(--tpl-ink);
+  padding-top: 12px;
+}
+
+.tpl-swiss .doc-parties > div {
+  grid-column: 2;
+  color: var(--tpl-muted);
+}
+
+.tpl-swiss .doc-parties > div:first-of-type {
+  grid-row: 1;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--tpl-ink);
+}
+
+.tpl-swiss .doc-heading {
+  border-top: 1px solid var(--tpl-ink);
+  padding-top: 10px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.tpl-swiss .doc-items thead tr {
+  border-top: 1px solid var(--tpl-ink);
+  border-bottom-color: var(--tpl-ink);
+}
+
+.tpl-swiss .doc-items th {
+  padding: 10px 0;
+}
+
+.tpl-swiss .doc-items td {
+  padding: 12px 0;
+  font-size: 12px;
+}
+
+.tpl-swiss .doc-items td + td,
+.tpl-swiss .doc-items th + th {
+  padding-left: 10px;
+}
+
+.tpl-swiss .doc-items-title {
+  font-weight: 600;
+}
+
+.tpl-swiss .doc-items-description {
+  color: #555555;
+  font-size: 11px;
+}
+
+.tpl-swiss .doc-totals {
+  max-width: none;
+  color: #555555;
+  font-size: 12px;
+}
+
+.tpl-swiss .doc-totals-row:not(.doc-totals-grand) {
+  width: 70mm;
+  margin-left: auto;
+  padding: 4px 0;
+}
+
+/* Grand total across the full width: small label left, huge amount right. */
+.tpl-swiss .doc-totals-grand {
+  align-items: flex-end;
+  margin-top: 8mm;
+  padding-top: 14px;
+  border-top: 3px solid var(--tpl-ink);
+  color: var(--tpl-ink);
+}
+
+.tpl-swiss .doc-totals-grand span:last-child {
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  line-height: 0.85;
+}
