@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { clientsRepo, documentsRepo, projectsRepo } from '../../db/repos'
+import { newWelcome } from '../../document/newWelcome'
 import type { DocumentModel } from '../../document/types'
 import { useMountEffect } from '../../hooks/useMountEffect'
 import { createClient, type Client } from '../../project/client'
@@ -40,5 +41,16 @@ export function useProject(projectId: string) {
     await save({ ...project, clientId: client.id })
   }
 
-  return { data, save, createClientFor }
+  const createWelcome = async (): Promise<DocumentModel> => {
+    const doc = newWelcome({
+      id: crypto.randomUUID(),
+      projectId,
+      today: new Date().toLocaleDateString('en-CA'),
+      newId: () => crypto.randomUUID(),
+    })
+    await documentsRepo.put(doc)
+    return doc
+  }
+
+  return { data, save, createClientFor, createWelcome }
 }

@@ -1,12 +1,14 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { getPlainText } from '../../document/richtext'
+import { Button } from '../ui/button'
 import { ClientPicker } from './ClientPicker'
 import { ProjectDetailsForm } from './ProjectDetailsForm'
 import { useProject } from './useProject'
 
 // A project's shared details, client and documents.
 export function ProjectPage({ projectId }: { projectId: string }) {
-  const { data, save, createClientFor } = useProject(projectId)
+  const { data, save, createClientFor, createWelcome } = useProject(projectId)
+  const navigate = useNavigate()
   if (data === null) return null
   const { project, documents, clients } = data
   if (project === null) return <p className="p-6 text-sm">Project not found.</p>
@@ -33,7 +35,18 @@ export function ProjectPage({ projectId }: { projectId: string }) {
         <ProjectDetailsForm key={project.id} project={project} onSave={(next) => void save(next)} />
       </section>
       <section className="rounded-lg border bg-card p-4">
-        <h2 className="mb-2 font-medium">Documents</h2>
+        <div className="mb-2 flex items-center justify-between">
+          <h2 className="font-medium">Documents</h2>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() =>
+              void createWelcome().then((doc) => navigate({ to: '/documents/$documentId', params: { documentId: doc.id } }))
+            }
+          >
+            New welcome document
+          </Button>
+        </div>
         <ul className="flex flex-col gap-1 text-sm">
           {documents.map((doc) => (
             <li key={doc.id}>

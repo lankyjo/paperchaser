@@ -7,7 +7,7 @@ import { creativeTokens } from './templates/creative'
 import { freelancerTokens } from './templates/freelancer'
 import { minimalTokens } from './templates/minimal'
 import { modernTokens } from './templates/modern'
-import type { Branding, PageSize, TemplateId } from './types'
+import type { Branding, DocumentModel, PageSize, TemplateId } from './types'
 
 export type { Branding, PageSize, TemplateId }
 
@@ -25,10 +25,18 @@ export const FONT_STACKS: Record<FontId, string> = {
 }
 
 // English document title by type, rendered by the header presets.
-export const DOC_TITLES: Record<'invoice' | 'quote' | 'receipt', string> = {
-  invoice: 'Invoice',
+export const DOC_TITLES: Record<DocumentModel['type'], string> = {
   quote: 'Quote',
+  agreement: 'Client Agreement',
+  welcome: 'Welcome',
+  brief: 'Project Brief',
+  invoice: 'Invoice',
+  deliveryGuide: 'Delivery Guide',
+  monthlyReport: 'Monthly Report',
   receipt: 'Receipt',
+  thankYou: 'Thank You',
+  feedback: 'Feedback',
+  creditNote: 'Credit Note',
 }
 
 // Paper sizes; A4 is the parity harness geometry.

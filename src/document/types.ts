@@ -2,6 +2,7 @@
 
 import * as z from 'zod'
 
+import { blockSchema } from './blocks'
 import { CURRENCY_DECIMALS } from './money'
 import { richTextDocSchema } from './richtext'
 import type { RichTextDoc } from './richtext'
@@ -88,8 +89,22 @@ export const documentSchema = z.object({
   overrides: z.array(z.enum(['customer.name', 'customer.address'])).optional(),
   // z.object() strips unknown keys rather than rejecting them.
   id: z.string(),
-  // One model shared across invoice, quote and receipt.
-  type: z.enum(['invoice', 'quote', 'receipt']),
+  // One model for every pipeline document; money documents also use line items and totals.
+  type: z.enum([
+    'quote',
+    'agreement',
+    'welcome',
+    'brief',
+    'invoice',
+    'deliveryGuide',
+    'monthlyReport',
+    'receipt',
+    'thankYou',
+    'feedback',
+    'creditNote',
+  ]),
+  // Ordered content blocks; documents without line items are built entirely from these.
+  blocks: z.array(blockSchema).optional(),
   // Adding a currency means adding it to CURRENCY_DECIMALS.
   currency: z.enum(Object.keys(CURRENCY_DECIMALS) as [string, ...string[]]),
   // Enforces YYYY-MM-DD.
