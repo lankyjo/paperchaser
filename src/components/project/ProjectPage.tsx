@@ -1,4 +1,5 @@
 import { Link, useNavigate } from '@tanstack/react-router'
+import { isTaxModeLocked } from '../../project/sharedData'
 import { ClientPicker } from './ClientPicker'
 import { ProjectDetailsForm } from './ProjectDetailsForm'
 import { StepPicker } from './StepPicker'
@@ -39,7 +40,7 @@ export function ProjectPage({ projectId }: { projectId: string }) {
       </section>
       <section className="rounded-lg border bg-card p-4">
         <h2 className="mb-3 font-medium">Project details</h2>
-        <ProjectDetailsForm key={project.id} project={project} onSave={(next) => void save(next)} />
+        <ProjectDetailsForm key={project.id} project={project} taxModeLocked={isTaxModeLocked(documents)} onSave={(next) => void save(next)} />
       </section>
     </main>
   )

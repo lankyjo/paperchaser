@@ -104,6 +104,8 @@ export const documentSchema = z.object({
     'feedback',
     'creditNote',
   ]),
+  // How line prices treat tax; set from the project and frozen once sent.
+  taxMode: z.enum(['exclusive', 'inclusive', 'none']).optional(),
   // Ordered content blocks; documents without line items are built entirely from these.
   blocks: z.array(blockSchema).optional(),
   // Adding a currency means adding it to CURRENCY_DECIMALS.

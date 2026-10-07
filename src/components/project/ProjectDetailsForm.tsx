@@ -1,17 +1,25 @@
 import { useState, type FormEvent } from 'react'
 import { minorToRaw, parseToMinor } from '../../document/money'
+import type { TaxMode } from '../../document/totals'
 import type { Project } from '../../project/project'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 
 // Title, fee, dates and deliverables shared by every document in the project.
-export function ProjectDetailsForm({ project, onSave }: { project: Project; onSave: (next: Project) => void }) {
+const TAX_MODES: { value: TaxMode; label: string }[] = [
+  { value: 'exclusive', label: 'Prices exclude tax' },
+  { value: 'inclusive', label: 'Prices include tax' },
+  { value: 'none', label: 'No tax' },
+]
+
+export function ProjectDetailsForm({ project, taxModeLocked, onSave }: { project: Project; taxModeLocked: boolean; onSave: (next: Project) => void }) {
   const [title, setTitle] = useState(project.title)
   const [fee, setFee] = useState(project.feeMinor === undefined ? '' : minorToRaw(project.feeMinor, 'EUR'))
   const [startDate, setStartDate] = useState(project.startDate ?? '')
   const [dueDate, setDueDate] = useState(project.dueDate ?? '')
   const [deliverables, setDeliverables] = useState((project.deliverables ?? []).join('\n'))
+  const [taxMode, setTaxMode] = useState<TaxMode>(project.taxMode ?? 'exclusive')
 
   const submit = (event: FormEvent) => {
     event.preventDefault()
@@ -22,6 +30,7 @@ export function ProjectDetailsForm({ project, onSave }: { project: Project; onSa
       startDate: startDate || undefined,
       dueDate: dueDate || undefined,
       deliverables: deliverables.split('\n').map((l) => l.trim()).filter(Boolean),
+      taxMode,
     })
   }
 
@@ -34,6 +43,23 @@ export function ProjectDetailsForm({ project, onSave }: { project: Project; onSa
       <div className="grid gap-1">
         <Label htmlFor="project-fee">Project fee</Label>
         <Input id="project-fee" inputMode="decimal" value={fee} onChange={(e) => setFee(e.target.value)} />
+      </div>
+      <div className="grid gap-1">
+        <Label htmlFor="project-tax">Tax</Label>
+        <select
+          id="project-tax"
+          className="h-8 rounded-md border bg-transparent px-2 text-sm disabled:opacity-60"
+          value={taxMode}
+          disabled={taxModeLocked}
+          onChange={(e) => setTaxMode(e.target.value as TaxMode)}
+        >
+          {TAX_MODES.map((m) => (
+            <option key={m.value} value={m.value}>
+              {m.label}
+            </option>
+          ))}
+        </select>
+        {taxModeLocked && <p className="text-[11px] text-muted-foreground">Locked because a money document has been sent.</p>}
       </div>
       <div className="grid gap-1">
         <Label htmlFor="project-start">Start date</Label>

@@ -40,7 +40,7 @@ export function DocumentPage({ model, template, branding, pageSize, editable = f
       case 'lineItems':
         return <LineItemsTable key={block.id} model={model} lineNets={totals.lineNets} onCommit={editable ? onCommit : undefined} />
       case 'totals':
-        return <TotalsSection key={block.id} subtotalMinor={totals.subtotalMinor} taxMinor={totals.taxMinor} grandTotalMinor={totals.grandTotalMinor} />
+        return <TotalsSection key={block.id} subtotalMinor={totals.subtotalMinor} taxMinor={totals.taxMinor} grandTotalMinor={totals.grandTotalMinor} taxMode={model.taxMode} />
       default:
         return <BlockView key={block.id} block={block} onChange={changeBlock} />
     }

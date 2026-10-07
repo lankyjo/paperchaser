@@ -238,3 +238,37 @@ describe('deriveWatermark — derives from status, never stored (D-11)', () => {
     expect(deriveWatermark('paid')).toBeNull()
   })
 })
+
+describe('computeTotals — tax modes', () => {
+  it('inclusive: prices already contain tax, which is extracted rather than added', () => {
+    const totals = computeTotals({ taxMode: 'inclusive', lineItems: [{ quantity: 1, unitPriceMinor: 11900, taxRateMinor: 1900 }] })
+    expect(totals.subtotalMinor).toBe(11900)
+    expect(totals.taxMinor).toBe(1900)
+    expect(totals.grandTotalMinor).toBe(11900)
+  })
+
+  it('inclusive: tax is extracted per rate group after the document discount, rounding once per group', () => {
+    const totals = computeTotals({
+      taxMode: 'inclusive',
+      lineItems: [
+        { quantity: 1, unitPriceMinor: 11900, taxRateMinor: 1900 },
+        { quantity: 1, unitPriceMinor: 10700, taxRateMinor: 700 },
+      ],
+      discount: { kind: 'percent', value: 1000 },
+    })
+    expect(totals.subtotalMinor).toBe(22600)
+    expect(totals.discountMinor).toBe(2260)
+    expect(totals.taxByRate).toEqual([
+      { rateMinor: 1900, taxMinor: 1710 },
+      { rateMinor: 700, taxMinor: 630 },
+    ])
+    expect(totals.grandTotalMinor).toBe(20340)
+  })
+
+  it('none: no tax is charged whatever the line rates say', () => {
+    const totals = computeTotals({ taxMode: 'none', lineItems: [{ quantity: 2, unitPriceMinor: 5000, taxRateMinor: 1900 }] })
+    expect(totals.taxMinor).toBe(0)
+    expect(totals.taxByRate).toEqual([])
+    expect(totals.grandTotalMinor).toBe(10000)
+  })
+})

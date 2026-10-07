@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { newInvoice } from '../../document/newInvoice'
 import { getPlainText } from '../../document/richtext'
 import { createClient } from '../client'
-import { applySharedData, resetOverride, sharedFromClient, trackOverrides } from '../sharedData'
+import { applySharedData, isTaxModeLocked, resetOverride, sharedFromClient, trackOverrides } from '../sharedData'
 
 const client = { ...createClient({ id: 'c1', name: 'Acme Coffee' }), billingAddress: ['300 Main St', 'Portland'] }
 const shared = sharedFromClient(client)
@@ -40,5 +40,18 @@ describe('resetOverride', () => {
     const reset = resetOverride(overridden, 'customer.name', shared)
     expect(getPlainText(reset.customer.name)).toBe('Acme Coffee')
     expect(reset.overrides).toEqual([])
+  })
+})
+
+describe('tax mode', () => {
+  it('flows from the project into drafts but never into sent documents', () => {
+    const inclusive = { ...shared, taxMode: 'inclusive' as const }
+    expect(applySharedData(draft, inclusive).taxMode).toBe('inclusive')
+    expect(applySharedData({ ...draft, status: 'sent' }, inclusive).taxMode).toBeUndefined()
+  })
+
+  it('locks once any money document has been sent', () => {
+    expect(isTaxModeLocked([{ type: 'invoice', status: 'draft' }, { type: 'welcome', status: 'sent' }])).toBe(false)
+    expect(isTaxModeLocked([{ type: 'invoice', status: 'sent' }])).toBe(true)
   })
 })

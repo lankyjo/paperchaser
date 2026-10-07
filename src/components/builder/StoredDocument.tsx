@@ -18,7 +18,7 @@ async function loadWithProjectData(documentId: string): Promise<Loaded | null> {
   if (doc === undefined) return null
   const project = await projectsRepo.get(doc.projectId)
   const client = project?.clientId === undefined ? undefined : await clientsRepo.get(project.clientId)
-  const shared = sharedFromClient(client)
+  const shared = sharedFromClient(client, project?.taxMode)
   return { model: applySharedData(doc, shared), shared }
 }
 

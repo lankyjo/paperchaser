@@ -1,4 +1,6 @@
+import { isMoneyDocument } from '../document/documentBlocks'
 import { getPlainText } from '../document/richtext'
+import type { TaxMode } from '../document/totals'
 import type { DocumentModel } from '../document/types'
 import type { Client } from './client'
 
@@ -7,10 +9,16 @@ export type SharedField = NonNullable<DocumentModel['overrides']>[number]
 export interface SharedData {
   customerName: string
   customerAddress: string[]
+  taxMode?: TaxMode
 }
 
-export function sharedFromClient(client: Client | undefined): SharedData {
-  return { customerName: client?.name ?? '', customerAddress: client?.billingAddress ?? [] }
+export function sharedFromClient(client: Client | undefined, taxMode?: TaxMode): SharedData {
+  return { customerName: client?.name ?? '', customerAddress: client?.billingAddress ?? [], taxMode }
+}
+
+// Tax mode stays editable only while every money document is still a draft.
+export function isTaxModeLocked(documents: Pick<DocumentModel, 'type' | 'status'>[]): boolean {
+  return documents.some((d) => isMoneyDocument(d) && d.status !== 'draft')
 }
 
 const sharedValue: Record<SharedField, (doc: DocumentModel) => string> = {
@@ -34,7 +42,8 @@ const FIELDS = Object.keys(sharedValue) as SharedField[]
 export function applySharedData(doc: DocumentModel, shared: SharedData): DocumentModel {
   if (doc.status !== 'draft') return doc
   const overrides = doc.overrides ?? []
-  return FIELDS.filter((f) => !overrides.includes(f)).reduce((next, f) => withProjectValue(next, f, shared), doc)
+  const withTaxMode = shared.taxMode === undefined ? doc : { ...doc, taxMode: shared.taxMode }
+  return FIELDS.filter((f) => !overrides.includes(f)).reduce((next, f) => withProjectValue(next, f, shared), withTaxMode)
 }
 
 // A shared field counts as overridden exactly when its text differs from the project value.
