@@ -113,6 +113,12 @@ export const documentSchema = z.object({
       totals: z.object({ lineNets: z.array(z.int()), subtotalMinor: z.int(), taxMinor: z.int(), grandTotalMinor: z.int() }),
     })
     .optional(),
+  // Money received against this invoice; refunds are negative.
+  payments: z
+    .array(z.object({ id: z.string(), date: z.iso.date(), amountMinor: z.int(), method: z.string(), note: z.string().optional() }))
+    .optional(),
+  // On a receipt: the invoice and payment it confirms.
+  receiptFor: z.object({ invoiceId: z.string(), paymentId: z.string() }).optional(),
   // How line prices treat tax; set from the project and frozen once sent.
   taxMode: z.enum(['exclusive', 'inclusive', 'none']).optional(),
   // Ordered content blocks; documents without line items are built entirely from these.

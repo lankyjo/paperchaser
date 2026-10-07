@@ -20,6 +20,8 @@ export function useDocumentLifecycle(
     },
     print: () => printDocument(model),
     unsend: () => save(unsendDocument(model)),
+    // Payments change after sending, so they save outside the read-only editor and outside undo.
+    savePayments: (payments: NonNullable<DocumentModel['payments']>) => save({ ...model, payments }),
     pullLatest: shared ? () => save(pullLatest(model, shared)) : undefined,
   }
 }

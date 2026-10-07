@@ -29,7 +29,7 @@ export function DocumentPage({ model, template, branding, pageSize, editable = f
   const HeaderPreset = headerPresets[resolved.header.style]
   const FooterPreset = footerPresets[resolved.footer.style]
   const visibility = model.settings?.blockVisibility ?? {}
-  const watermarkText = resolveWatermarkText(branding ?? model.branding, model.status)
+  const watermarkText = resolveWatermarkText(branding ?? model.branding, model)
   const changeBlock =
     editable && onCommit ? (block: Block) => onCommit({ ...model, blocks: documentBlocks(model).map((b) => (b.id === block.id ? block : b)) }) : undefined
 
