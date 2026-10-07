@@ -39,3 +39,30 @@ test('images upload compressed, are stored once, and uploaded SVG scripts never 
   expect(await page.evaluate(() => (window as { __pwned?: boolean }).__pwned)).toBeUndefined()
   await expect(pageRoot.locator('figure img').last()).toHaveAttribute('src', /^data:image\/(webp|png)/)
 })
+
+test('a drawn signature is trimmed and stored, with a blank client signature line', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Quick invoice' }).click()
+  await page.goto('/')
+  await page.getByRole('link', { name: 'Untitled project' }).click()
+  await page.getByRole('button', { name: 'Start client agreement' }).click()
+  const pageRoot = page.locator('#print-root')
+
+  await page.getByRole('button', { name: 'Add signature' }).click()
+  await expect(pageRoot.getByText('Client signature', { exact: true })).toBeVisible()
+  await pageRoot.getByRole('button', { name: 'Draw signature' }).click()
+  const pad = pageRoot.getByLabel('Signature drawing area')
+  const box = (await pad.boundingBox())!
+  await page.mouse.move(box.x + 40, box.y + 60)
+  await page.mouse.down()
+  await page.mouse.move(box.x + 140, box.y + 30, { steps: 5 })
+  await page.mouse.move(box.x + 200, box.y + 80, { steps: 5 })
+  await page.mouse.up()
+  await pageRoot.getByRole('button', { name: 'Use signature' }).click()
+
+  const signature = pageRoot.getByRole('img', { name: /^Signature of/ })
+  await expect(signature).toHaveAttribute('src', /^data:image\/png/)
+  const { width, height } = await signature.evaluate((img: HTMLImageElement) => ({ width: img.naturalWidth, height: img.naturalHeight }))
+  expect(width).toBeLessThan(600)
+  expect(height).toBeLessThan(200)
+})

@@ -60,3 +60,11 @@ describe('image block', () => {
     expect(addBlock([], 'image', null, 'i')[0]).toEqual({ id: 'i', type: 'image', assetId: '', alt: '' })
   })
 })
+
+describe('signature block', () => {
+  it('round-trips and starts unsigned with a client signature line', () => {
+    const sig: Block = { id: 's', type: 'signature', assetId: 'abc', name: 'Maya Lindqvist', role: 'Founder', clientLine: true }
+    expect(blockSchema.parse(JSON.parse(JSON.stringify(sig)))).toEqual(sig)
+    expect(addBlock([], 'signature', null, 's')[0]).toEqual({ id: 's', type: 'signature', assetId: '', name: '', role: '', clientLine: true })
+  })
+})

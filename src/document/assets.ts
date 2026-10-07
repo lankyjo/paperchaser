@@ -5,7 +5,7 @@ export function referencedAssetIds(documents: { blocks?: Block[] }[]): Set<strin
   const ids = new Set<string>()
   for (const doc of documents) {
     for (const block of doc.blocks ?? []) {
-      if (block.type === 'image' && block.assetId !== '') ids.add(block.assetId)
+      if ((block.type === 'image' || block.type === 'signature') && block.assetId !== '') ids.add(block.assetId)
     }
   }
   return ids

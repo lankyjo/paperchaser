@@ -1,14 +1,8 @@
 import type { Block } from '../../document/blocks'
-import { useAsset } from '../../hooks/useAsset'
 import { useImageUpload } from '../../hooks/useImageUpload'
+import { StoredImage } from './StoredImage'
 
 type ImageBlock = Extract<Block, { type: 'image' }>
-
-function StoredImage({ assetId, alt }: { assetId: string; alt: string }) {
-  const asset = useAsset(assetId)
-  if (asset === undefined) return null
-  return <img src={asset.dataUrl} alt={alt} style={{ display: 'block', maxWidth: '100%', height: 'auto' }} />
-}
 
 // An uploaded image; while editing, a file picker replaces it and errors (bad file, storage full) are shown.
 export function ImageBlockView({ block, onChange }: { block: ImageBlock; onChange?: (next: Block) => void }) {

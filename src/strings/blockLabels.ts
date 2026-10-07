@@ -11,4 +11,5 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   rating: 'Rating questions',
   checklist: 'Checklist',
   image: 'Image',
+  signature: 'Signature',
 }

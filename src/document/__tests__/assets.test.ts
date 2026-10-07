@@ -7,8 +7,9 @@ describe('referencedAssetIds', () => {
     const docs = [
       { blocks: [{ id: 'b1', type: 'image' as const, assetId: 'a1', alt: '' }, { id: 'b2', type: 'heading' as const, text: 'x' }] },
       { blocks: [{ id: 'b3', type: 'image' as const, assetId: 'a2', alt: '' }, { id: 'b4', type: 'image' as const, assetId: 'a1', alt: '' }] },
+      { blocks: [{ id: 'b5', type: 'signature' as const, assetId: 'sig', name: '', role: '', clientLine: true }] },
       {},
     ]
-    expect(referencedAssetIds(docs)).toEqual(new Set(['a1', 'a2']))
+    expect(referencedAssetIds(docs)).toEqual(new Set(['a1', 'a2', 'sig']))
   })
 })

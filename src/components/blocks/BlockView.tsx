@@ -7,6 +7,7 @@ import { ImageBlockView } from './ImageBlockView'
 import { KeyValueBlockView } from './KeyValueBlockView'
 import { MetricsBlockView } from './MetricsBlockView'
 import { RatingBlockView } from './RatingBlockView'
+import { SignatureBlockView } from './SignatureBlockView'
 import { RichTextBlockView } from './RichTextBlockView'
 import { StepsBlockView } from './StepsBlockView'
 import { TableBlockView } from './TableBlockView'
@@ -24,6 +25,7 @@ const views: { [T in BlockType]: ComponentType<BlockViewProps<T>> } = {
   rating: RatingBlockView,
   checklist: ChecklistBlockView,
   image: ImageBlockView,
+  signature: SignatureBlockView,
 }
 
 // Renders one block with the view for its type; editable when onChange is given.
