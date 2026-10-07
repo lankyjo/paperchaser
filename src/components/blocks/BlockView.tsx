@@ -3,6 +3,7 @@ import type { Block, BlockType } from '../../document/blocks'
 import { ChartBlockView } from './ChartBlockView'
 import { ChecklistBlockView } from './ChecklistBlockView'
 import { HeadingBlockView } from './HeadingBlockView'
+import { ImageBlockView } from './ImageBlockView'
 import { KeyValueBlockView } from './KeyValueBlockView'
 import { MetricsBlockView } from './MetricsBlockView'
 import { RatingBlockView } from './RatingBlockView'
@@ -22,6 +23,7 @@ const views: { [T in BlockType]: ComponentType<BlockViewProps<T>> } = {
   chart: ChartBlockView,
   rating: RatingBlockView,
   checklist: ChecklistBlockView,
+  image: ImageBlockView,
 }
 
 // Renders one block with the view for its type; editable when onChange is given.

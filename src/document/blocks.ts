@@ -38,6 +38,7 @@ export const blockSchema = z.discriminatedUnion('type', [
     title: z.string(),
     items: z.array(z.object({ text: z.string(), checked: z.boolean().optional() })),
   }),
+  z.object({ ...base, type: z.literal('image'), assetId: z.string(), alt: z.string() }),
 ])
 
 export type Block = z.infer<typeof blockSchema>
@@ -53,6 +54,7 @@ const emptyBlock: Record<BlockType, (id: string) => Block> = {
   chart: (id) => ({ id, type: 'chart', title: '', series: [{ label: '', value: 0 }, { label: '', value: 0 }] }),
   rating: (id) => ({ id, type: 'rating', title: '', questions: [{ text: '' }] }),
   checklist: (id) => ({ id, type: 'checklist', title: '', items: [{ text: '' }] }),
+  image: (id) => ({ id, type: 'image', assetId: '', alt: '' }),
 }
 
 export function addBlock(blocks: Block[], type: BlockType, afterId: string | null, id: string): Block[] {
@@ -87,6 +89,7 @@ const summaries: { [T in BlockType]: (block: Extract<Block, { type: T }>) => str
   chart: (b) => b.title,
   rating: (b) => b.title,
   checklist: (b) => b.title,
+  image: (b) => b.alt,
 }
 
 // Short text that identifies a block in the outline.

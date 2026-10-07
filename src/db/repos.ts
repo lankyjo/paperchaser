@@ -1,6 +1,7 @@
 // Repos are the only Dexie touchpoints; nothing outside this file reads or writes db tables.
 import type { Table } from 'dexie'
 
+import { referencedAssetIds } from '../document/assets'
 import type { Company, DocumentModel } from '../document/types'
 import type { Client } from '../project/client'
 import type { Project } from '../project/project'
@@ -24,6 +25,13 @@ export interface PreferenceRow {
   value: unknown
 }
 
+export interface AssetRow {
+  id: string
+  dataUrl: string
+  width: number
+  height: number
+}
+
 interface Tables {
   company: Table<CompanyRow>
   clients: Table<Client>
@@ -31,6 +39,7 @@ interface Tables {
   documents: Table<DocumentModel>
   preferences: Table<PreferenceRow>
   projects: Table<Project>
+  assets: Table<AssetRow>
 }
 
 // Dexie typings expose table props only on subclasses; a plain instance has them at runtime, so cast once.
@@ -64,6 +73,18 @@ export const companyRepo = {
   get: async (): Promise<Company | undefined> => {
     const row = await db.company.get(COMPANY_ID)
     return row && { name: row.name, address: row.address, email: row.email, logo: row.logo }
+  },
+}
+
+export const assetsRepo = {
+  put: (asset: AssetRow) => db.assets.put(asset),
+  get: (id: string) => db.assets.get(id),
+  // Deletes images no document references and returns how many were removed.
+  pruneUnreferenced: async (): Promise<number> => {
+    const used = referencedAssetIds(await db.documents.toArray())
+    const orphans = (await db.assets.toCollection().primaryKeys()).filter((id) => !used.has(id))
+    await db.assets.bulkDelete(orphans)
+    return orphans.length
   },
 }
 

@@ -52,3 +52,11 @@ describe('block operations', () => {
     expect(updateBlock(blocks, { ...heading, text: 'Hello' }).slice(1)).toEqual(blocks.slice(1))
   })
 })
+
+describe('image block', () => {
+  it('round-trips and starts empty with no asset', () => {
+    const image: Block = { id: 'i', type: 'image', assetId: 'abc', alt: 'Moodboard' }
+    expect(blockSchema.parse(JSON.parse(JSON.stringify(image)))).toEqual(image)
+    expect(addBlock([], 'image', null, 'i')[0]).toEqual({ id: 'i', type: 'image', assetId: '', alt: '' })
+  })
+})

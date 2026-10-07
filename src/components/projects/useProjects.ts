@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { documentsRepo, projectsRepo } from '../../db/repos'
+import { assetsRepo, documentsRepo, projectsRepo } from '../../db/repos'
 import { newInvoice } from '../../document/newInvoice'
 import type { DocumentModel } from '../../document/types'
 import { useMountEffect } from '../../hooks/useMountEffect'
@@ -22,6 +22,7 @@ export function useProjects() {
 
   useMountEffect(() => {
     void reload()
+    void assetsRepo.pruneUnreferenced()
   })
 
   const createWithInvoice = async (title: string): Promise<DocumentModel> => {

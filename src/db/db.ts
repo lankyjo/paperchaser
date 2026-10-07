@@ -48,3 +48,6 @@ db.version(5).stores({
   customers: null,
   clients: 'id, name',
 })
+
+// Images stored once, keyed by a hash of their content.
+db.version(6).stores({ assets: 'id' })

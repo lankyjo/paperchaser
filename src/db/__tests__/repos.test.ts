@@ -7,7 +7,7 @@ import type { DocumentModel } from '../../document/types'
 import { db } from '../db'
 import { createProject } from '../../project/project'
 import { createClient } from '../../project/client'
-import { catalogRepo, clientsRepo, companyRepo, documentsRepo, preferencesRepo, projectsRepo } from '../repos'
+import { assetsRepo, catalogRepo, clientsRepo, companyRepo, documentsRepo, preferencesRepo, projectsRepo } from '../repos'
 
 // Fixture-shaped synthetic document, never real PII.
 const DOC: DocumentModel = {
@@ -75,9 +75,9 @@ describe('projectsRepo', () => {
 })
 
 describe('db schema drift guard', () => {
-  it('declares the six stores with id-keyed primary keys and the indexes queries rely on', async () => {
+  it('declares the stores with id-keyed primary keys and the indexes queries rely on', async () => {
     const names = db.tables.map((t) => t.name).sort()
-    expect(names).toEqual(['catalog', 'clients', 'company', 'documents', 'preferences', 'projects'])
+    expect(names).toEqual(['assets', 'catalog', 'clients', 'company', 'documents', 'preferences', 'projects'])
     const byName = new Map(db.tables.map((t) => [t.name, t.schema]))
     expect(byName.get('documents')?.primKey.src).toBe('id')
     expect(byName.get('documents')?.indexes.map((i) => i.name).sort()).toEqual(['projectId', 'status', 'type', 'updatedAt'])
@@ -102,6 +102,26 @@ describe('companyRepo (singleton profile)', () => {
 
   it('get returns undefined before any profile is stored', async () => {
     expect(await companyRepo.get()).toBeUndefined()
+  })
+})
+
+describe('assetsRepo', () => {
+  const asset = (id: string) => ({ id, dataUrl: `data:image/webp;base64,${id}`, width: 10, height: 10 })
+
+  it('stores an image once per content id', async () => {
+    await assetsRepo.put(asset('a1'))
+    await assetsRepo.put(asset('a1'))
+    expect(await db.table('assets').count()).toBe(1)
+    expect(await assetsRepo.get('a1')).toEqual(asset('a1'))
+  })
+
+  it('prunes assets no document references', async () => {
+    await assetsRepo.put(asset('used'))
+    await assetsRepo.put(asset('orphan'))
+    await documentsRepo.put({ ...DOC, blocks: [{ id: 'b', type: 'image', assetId: 'used', alt: '' }] })
+    expect(await assetsRepo.pruneUnreferenced()).toBe(1)
+    expect(await assetsRepo.get('orphan')).toBeUndefined()
+    expect(await assetsRepo.get('used')).toBeDefined()
   })
 })
 
