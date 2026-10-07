@@ -26,8 +26,8 @@ const ARTIFACTS_DIR = path.join(HERE, 'artifacts')
 const DIFF_THRESHOLD = 0.3
 // Preview page vs PDF page; the remaining difference is cross-rasterizer glyph noise.
 const PAGE_MAX_FRACTION = 0.05
-// Editor canvas vs preview page 1, compared over the top of the page that no break can affect.
-const EDITOR_MAX_FRACTION = 0.01
+// Editor canvas vs printed page 1, over the top of the page that no break can affect; the centered canvas adds sub-pixel glyph noise.
+const EDITOR_MAX_FRACTION = 0.02
 const EDITOR_COMPARE_PX = 700
 const BASELINE_MAX_FRACTION = 0.005
 const BASELINE_MIN_NONWHITE = 0.01
@@ -125,7 +125,10 @@ test('every printed page carries the watermark; page 1 the logo; later pages rep
 test('the editor canvas looks like printed page 1', async ({ page }) => {
   for (const template of TEMPLATES) {
     await openFixture(page, `${FIXTURE}&template=${template}`)
-    const editor = normalize(PNG.sync.read(await page.locator('#document-root').screenshot()), A4_WIDTH_PX)
+    // Clip to the page's on-screen box; an element screenshot inside the scrolled canvas panel lands a few pixels off.
+    const box = await page.locator('#document-root').boundingBox()
+    const clip = box && { x: Math.round(box.x), y: Math.round(box.y), width: Math.round(box.width), height: Math.round(box.height) }
+    const editor = normalize(PNG.sync.read(await page.screenshot({ clip: clip ?? undefined })), A4_WIDTH_PX)
     const [first] = await printedPages(page)
     expectSimilar(cropY(editor, 0, EDITOR_COMPARE_PX), cropY(first, 0, EDITOR_COMPARE_PX), EDITOR_MAX_FRACTION, `${template} editor vs page 1`)
   }

@@ -41,5 +41,5 @@ test('an agreement schedule creates deposit and balance invoices, and flags a se
   await expect(pageRoot.getByRole('alert')).toContainText('80%')
   await expect(page.getByText('Saved', { exact: true })).toBeVisible()
   await page.goto(depositUrl)
-  await expect(page.getByRole('alert')).toContainText('no longer matches')
+  await expect(page.getByRole('alert').filter({ hasText: 'no longer matches' })).toContainText('no longer matches')
 })

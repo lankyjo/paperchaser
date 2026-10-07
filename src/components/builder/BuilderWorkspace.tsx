@@ -13,12 +13,9 @@ import { MobileFormattingFooter } from '../edit/MobileFormattingFooter'
 import { PagedDocument } from '../paged-document/PagedDocument'
 import { PrintPreviewDialog } from '../PrintPreviewDialog'
 import { BuilderHeader } from './BuilderHeader'
+import { EditorLayout } from './EditorLayout'
 import { cn } from '@/lib/utils'
-import { MobileSheets } from '../mobile/MobileSheets'
-import { DesktopWorkspace } from '../workspace/DesktopWorkspace'
-import { WorkspaceContext } from '../workspace/workspaceContext'
 import { MobileItemSheet } from './MobileItemSheet'
-import { MobileStack } from './MobileStack'
 import { useBuilderDocument } from './useBuilderDocument'
 import { useCanvasZoom } from './useCanvasZoom'
 
@@ -74,27 +71,12 @@ export function BuilderWorkspace({
         {editable && <AiPanel model={model} commit={commit} />}
         <PagedDocument model={model} template={settings.template} branding={model.branding} pageSize={settings.pageSize} variant="print" />
         <ScheduleContext.Provider value={scheduleActions}>
-          {isDesktop ? (
-            <WorkspaceContext.Provider
-              value={{
-                ...layout,
-                editable,
-                sections,
-                zoom,
-                propertiesProps: { ...sharedPropertiesProps, selectedItemId: selection.selectedItemId },
-                onCommit: commit,
-                onInsertItem: items.insertItem,
-                showExplainer,
-              }}
-            >
-              <DesktopWorkspace />
-            </WorkspaceContext.Provider>
-          ) : (
-            <>
-              <MobileSheets model={model} propertiesProps={sharedPropertiesProps} showExplainer={showExplainer} />
-              <MobileStack {...layout} editable={editable} sections={sections} saveFailed={saveState === 'failed'} onCommit={commit} />
-            </>
-          )}
+          <EditorLayout
+            workspace={{ ...layout, editable, sections, zoom, propertiesProps: { ...sharedPropertiesProps, selectedItemId: selection.selectedItemId }, onCommit: commit, onInsertItem: items.insertItem, showExplainer }}
+            isDesktop={isDesktop}
+            saveFailed={saveState === 'failed'}
+            sharedPropertiesProps={sharedPropertiesProps}
+          />
         </ScheduleContext.Provider>
         <PrintPreviewDialog
           open={previewOpen}
