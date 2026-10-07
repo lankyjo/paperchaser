@@ -10,6 +10,7 @@ import { pullLatestChanges, type SharedData } from '../../project/sharedData'
 import { PaymentsPanel } from '../payments/PaymentsPanel'
 import { Button } from '../ui/button'
 import { FinalizeDialog } from './FinalizeDialog'
+import { NextMonthButton } from './NextMonthButton'
 import { QuoteActions } from './QuoteActions'
 import { useDocumentLifecycle } from './useDocumentLifecycle'
 import { VoidButton } from './VoidButton'
@@ -59,6 +60,7 @@ export function LifecycleBar({ model, shared, project, history }: LifecycleBarPr
             {model.type === 'quote' && <QuoteActions quote={model} project={project} save={lifecycle.save} />}
           </>
         )}
+        {(model.type === 'invoice' || model.type === 'monthlyReport') && <NextMonthButton doc={model} />}
         {changes.length > 0 && lifecycle.pullLatest && (
           <div role="status" className="flex flex-wrap items-center gap-2 rounded border px-2 py-1">
             <span>Project data changed since this was sent:</span>
