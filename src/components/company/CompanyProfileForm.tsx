@@ -1,66 +1,40 @@
-import { useState, type FormEvent } from 'react'
-import { getPlainText } from '../../document/richtext'
 import type { Company } from '../../document/types'
-import { LocalImage } from '../document-page/LocalImage'
-import { useLogoUpload } from '../branding/useLogoUpload'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 import { Textarea } from '../ui/textarea'
+import { LogoPicker } from './LogoPicker'
+import { useCompanyProfileForm } from './useCompanyProfileForm'
 
-const EMPTY: Company = { name: '', address: [], email: '', logo: null }
-
-// Your business name, contact, address, tax ID and logo, printed as the sender on every document.
-export function CompanyProfileForm({ initial = EMPTY, submitLabel, onSave }: { initial?: Company; submitLabel: string; onSave: (company: Company) => void }) {
-  const [name, setName] = useState(getPlainText(initial.name))
-  const [email, setEmail] = useState(getPlainText(initial.email))
-  const [address, setAddress] = useState(initial.address.map(getPlainText).join('\n'))
-  const [taxId, setTaxId] = useState(initial.taxId ?? '')
-  const [logo, setLogo] = useState(initial.logo)
-  const { logoError, inputRef, readLogoFile } = useLogoUpload(setLogo)
-
-  const submit = (event: FormEvent) => {
-    event.preventDefault()
-    const lines = address.split('\n').map((line) => line.trim()).filter((line) => line !== '')
-    onSave({ name: name.trim(), email: email.trim(), address: lines, logo, ...(taxId.trim() !== '' && { taxId: taxId.trim() }) })
-  }
-
+// Your business name, contact, address, tax ID, payment details and logos, printed as the sender on every document.
+export function CompanyProfileForm({ initial, submitLabel, onSave }: { initial?: Company; submitLabel: string; onSave: (company: Company) => void }) {
+  const form = useCompanyProfileForm(initial, onSave)
   return (
-    <form onSubmit={submit} className="grid gap-3">
+    <form onSubmit={form.submit} className="grid gap-3">
       <div className="grid gap-1.5">
         <Label htmlFor="company-name">Business name</Label>
-        <Input id="company-name" value={name} onChange={(e) => setName(e.target.value)} required />
+        <Input id="company-name" value={form.name} onChange={(e) => form.setName(e.target.value)} required />
       </div>
       <div className="grid gap-1.5">
         <Label htmlFor="company-email">Email</Label>
-        <Input id="company-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <Input id="company-email" type="email" value={form.email} onChange={(e) => form.setEmail(e.target.value)} />
       </div>
       <div className="grid gap-1.5">
         <Label htmlFor="company-address">Address</Label>
-        <Textarea id="company-address" rows={3} value={address} onChange={(e) => setAddress(e.target.value)} placeholder={'Street\nCity and postcode\nCountry'} />
+        <Textarea id="company-address" rows={3} value={form.address} onChange={(e) => form.setAddress(e.target.value)} placeholder={'Street\nCity and postcode\nCountry'} />
       </div>
       <div className="grid gap-1.5">
         <Label htmlFor="company-tax-id">Tax ID (optional)</Label>
-        <Input id="company-tax-id" value={taxId} onChange={(e) => setTaxId(e.target.value)} />
+        <Input id="company-tax-id" value={form.taxId} onChange={(e) => form.setTaxId(e.target.value)} />
       </div>
-      <div className="flex items-center gap-3">
-        {logo !== null && <LocalImage src={logo} alt="Your logo" className="size-12 rounded object-contain ring-1 ring-foreground/10" />}
-        <Button type="button" variant="outline" size="sm" onClick={() => inputRef.current?.click()}>
-          {logo === null ? 'Add logo' : 'Change logo'}
-        </Button>
-        {logo !== null && (
-          <Button type="button" variant="ghost" size="sm" onClick={() => setLogo(null)}>
-            Remove logo
-          </Button>
-        )}
-        <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/svg+xml" aria-label="Logo file" className="hidden" onChange={(e) => {
-            readLogoFile(e.target.files?.[0])
-            // Lets the same file be picked again after removing it.
-            e.target.value = ''
-          }} />
+      <div className="grid gap-1.5">
+        <Label htmlFor="company-payment">Payment details (optional)</Label>
+        <Textarea id="company-payment" rows={3} value={form.payment} onChange={(e) => form.setPayment(e.target.value)} placeholder={'Bank name\nIBAN or account number\nSWIFT / BIC'} />
+        <p className="text-xs text-muted-foreground">Printed on quotes, invoices, receipts and credit notes.</p>
       </div>
-      {logoError && <p className="text-xs text-destructive">Couldn't load that file. Use a PNG, JPG or SVG up to 2 MB.</p>}
-      <Button type="submit" disabled={name.trim() === ''}>
+      <LogoPicker label="Logo" value={form.logo} onChange={form.setLogo} />
+      <LogoPicker label="Logo for dark templates (optional)" value={form.logoOnDark} onChange={form.setLogoOnDark} />
+      <Button type="submit" disabled={form.name.trim() === ''}>
         {submitLabel}
       </Button>
     </form>

@@ -1,5 +1,6 @@
 import { documentFacts } from '../../../document/pageLayout'
 import type { RegionProps } from '../templateLayouts'
+import { PaymentDetails } from '../../document-page/PaymentDetails'
 import { DOC_LABELS } from '../../../strings/documentLabels'
 
 // Closing line and the sender's contact details in three columns under a hairline.
@@ -19,6 +20,7 @@ export function CorrespondenceFooter({ model }: RegionProps) {
             {facts.companyLines.join(', ')}
           </div>
         )}
+        <PaymentDetails model={model} labelClassName="corr-contact-label" />
         {facts.number !== '' && (
           <div>
             <b>{DOC_LABELS.reference}</b>

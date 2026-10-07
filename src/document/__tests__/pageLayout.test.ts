@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { FIXTURE_MAP } from '../fixtures'
-import { pageItemsFor, pageSizeFor } from '../pageLayout'
+import { documentFacts, pageItemsFor, pageSizeFor } from '../pageLayout'
 import type { DocumentModel } from '../types'
 
 const invoice = FIXTURE_MAP['invoice-torture']
@@ -35,5 +35,18 @@ describe('pageItemsFor', () => {
   it('drops header and footer when hidden in settings', () => {
     const doc: DocumentModel = { ...invoice, dueDate: undefined, blocks: [], settings: { blockVisibility: { header: false, footer: false } } }
     expect(pageItemsFor(doc)).toEqual([])
+  })
+})
+
+describe('documentFacts', () => {
+  const company = { ...invoice.company, payment: ['Harbor Credit Union', 'IBAN DE89 3704 0044 0532 0130 00'] }
+
+  it('prints your payment details on money documents', () => {
+    expect(documentFacts({ ...invoice, company }).payment).toEqual(company.payment)
+  })
+
+  it('leaves payment details off documents nobody pays', () => {
+    expect(documentFacts({ ...invoice, type: 'welcome', company }).payment).toEqual([])
+    expect(documentFacts({ ...invoice, company: { ...invoice.company, payment: undefined } }).payment).toEqual([])
   })
 })

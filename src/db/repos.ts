@@ -152,7 +152,9 @@ export const companyRepo = {
   },
   get: async (): Promise<Company | undefined> => {
     const row = await db.company.get(COMPANY_ID)
-    return row && { name: row.name, address: row.address, email: row.email, logo: row.logo, ...(row.taxId !== undefined && { taxId: row.taxId }) }
+    if (!row) return undefined
+    const { id: _id, ...company } = row
+    return company
   },
 }
 

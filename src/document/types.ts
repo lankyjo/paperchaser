@@ -68,6 +68,10 @@ export const companySchema = z.object({
   email: textFieldSchema,
   logo: logoSchema,
   taxId: z.string().optional(),
+  // How clients pay you (bank, IBAN, payment link), one line each; printed on money documents.
+  payment: z.array(z.string()).optional(),
+  // A light version of the logo for dark templates; absent uses the normal logo.
+  logoOnDark: logoSchema.optional(),
 })
 
 const customerSchema = z.object({

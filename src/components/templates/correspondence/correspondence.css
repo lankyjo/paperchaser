@@ -150,7 +150,8 @@
   text-transform: none;
 }
 
-.corr-contact b {
+.corr-contact b,
+.corr-contact-label {
   display: block;
   color: var(--tpl-ink);
   font-weight: 500;

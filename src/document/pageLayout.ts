@@ -83,5 +83,6 @@ export function documentFacts(doc: DocumentModel) {
     // Issued first, then the due or valid-until date when there is one.
     dates: [{ label: DOC_LABELS.issued, value: formatDocDate(doc.issueDate, doc.locale) }, ...(dueOrValid ? [dueOrValid] : [])],
     amount: isMoneyDocument(doc) ? formatMoney(printedTotals(doc).grandTotalMinor, doc.currency, doc.locale) : null,
+    payment: isMoneyDocument(doc) ? (doc.company.payment ?? []).filter((line) => line.trim() !== '') : [],
   }
 }

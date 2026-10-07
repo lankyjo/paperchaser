@@ -988,6 +988,22 @@
               },
               "taxId": {
                 "type": "string"
+              },
+              "payment": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "logoOnDark": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               }
             },
             "required": [
@@ -1436,6 +1452,22 @@
         },
         "taxId": {
           "type": "string"
+        },
+        "payment": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "logoOnDark": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [

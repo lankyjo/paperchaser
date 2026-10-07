@@ -25,7 +25,7 @@ export const DOC_LABELS = {
   paymentSchedule: 'Payment schedule',
   clientSignature: 'Client signature',
   nameAndDate: 'Name and date',
-  footerPayment: 'Please transfer within 14 days to the bank account stated on the invoice.',
+  paymentDetails: 'Payment details',
   footerThanks: 'Thank you for your business.',
   legalNotice: 'These clauses are a plain-language starting point, not legal advice. Review them for your country before sending.',
 } as const

@@ -202,3 +202,9 @@
   font-weight: 600;
   letter-spacing: -0.02em;
 }
+
+.statement-pay {
+  font-size: 10.5px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}

@@ -1,5 +1,6 @@
 import { documentFacts } from '../../../document/pageLayout'
 import { CompanyLogo } from '../CompanyLogo'
+import { PaymentDetails } from '../../document-page/PaymentDetails'
 import type { RegionProps } from '../templateLayouts'
 import { DOC_LABELS } from '../../../strings/documentLabels'
 
@@ -27,6 +28,7 @@ export function StatementHeader({ model }: RegionProps) {
             </div>
           ))}
         </div>
+        <PaymentDetails model={model} className="statement-pay" labelClassName="statement-label" />
         <div className="statement-note">
           <b>{facts.company}</b>
           {facts.companyLines.map((line) => (

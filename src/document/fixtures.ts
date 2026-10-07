@@ -45,6 +45,7 @@ export const FIXTURE_MAP: Record<string, DocumentModel> = {
       address: ['12 Miller Street', 'Berlin 10115', 'Germany'].map(ast),
       email: ast('billing@example-printers.test'),
       logo: LOGO_DATA_URL,
+      payment: ['Berliner Sparkasse', 'IBAN DE89 3704 0044 0532 0130 00', 'BIC BELADEBEXXX'],
     },
     customer: {
       name: ast('José Álvarez García'),
@@ -129,6 +130,7 @@ export const FIXTURE_MAP: Record<string, DocumentModel> = {
       address: ['12 Harbor Lane', 'Portland, OR 97201', 'United States'].map(ast),
       email: ast('hello@northwind-studio.test'),
       logo: null, // no logo, so the header renders without the img element
+      payment: ['Harbor Credit Union', 'IBAN DE89 3704 0044 0532 0130 00', 'SWIFT HCUSUS44'],
     },
     customer: {
       name: ast('Acme Coffee Roasters'),

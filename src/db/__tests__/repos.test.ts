@@ -93,6 +93,9 @@ describe('companyRepo (singleton profile)', () => {
   it('put then get returns the company; a second put replaces it (one profile)', async () => {
     await companyRepo.put(COMPANY)
     expect(await companyRepo.get()).toEqual(COMPANY)
+    const full = { ...COMPANY, taxId: 'DE123', payment: ['IBAN DE89'], logoOnDark: 'asset:dark' }
+    await companyRepo.put(full)
+    expect(await companyRepo.get()).toEqual(full)
 
     const replacement = { ...COMPANY, name: 'Acme GmbH 2.0' }
     await companyRepo.put(replacement)

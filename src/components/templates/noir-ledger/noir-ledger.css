@@ -192,3 +192,20 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.noir-pay {
+  margin-top: var(--tpl-section-gap);
+  width: 90mm;
+  padding: 14px 18px;
+  border: 1px solid var(--tpl-border);
+  line-height: 1.7;
+}
+
+.noir-pay-label {
+  margin-bottom: 6px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--tpl-accent);
+}
