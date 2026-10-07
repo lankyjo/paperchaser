@@ -3,6 +3,7 @@ import type { DocumentModel, PageSize, TemplateId } from '../../document/types'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import type { Project } from '../../project/project'
 import type { SharedData } from '../../project/sharedData'
+import { AiPanel } from '../ai/AiPanel'
 import { LifecycleBar } from '../lifecycle/LifecycleBar'
 import { ProjectDataContext } from './projectDataContext'
 import { MobileFormattingFooter } from '../edit/MobileFormattingFooter'
@@ -61,6 +62,7 @@ export function BuilderWorkspace({
           onOpenPreview={() => setPreviewOpen(true)}
         />
         {editableProp && <LifecycleBar model={model} shared={shared} project={project} history={history} />}
+        {editable && <AiPanel model={model} commit={commit} />}
         {isDesktop ? (
           <DesktopPanes
             {...layout}

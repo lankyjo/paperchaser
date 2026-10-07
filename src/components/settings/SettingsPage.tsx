@@ -4,6 +4,7 @@ import { nextNumber } from '../../document/finalize'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { AccountantExport } from './AccountantExport'
+import { AiSettingsSection } from './AiSettingsSection'
 import { BackupSection } from './BackupSection'
 import { useNumbering } from './useNumbering'
 
@@ -36,6 +37,7 @@ export function SettingsPage() {
       <Button onClick={() => void save()}>Save numbering</Button>
       <BackupSection />
       <AccountantExport />
+      <AiSettingsSection />
     </main>
   )
 }

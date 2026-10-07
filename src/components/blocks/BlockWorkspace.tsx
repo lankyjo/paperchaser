@@ -8,6 +8,7 @@ import { BlockOutline } from './BlockOutline'
 import { DocumentPage } from '../DocumentPage'
 import type { Project } from '../../project/project'
 import { applySharedData, type SharedData } from '../../project/sharedData'
+import { AiPanel } from '../ai/AiPanel'
 import { useHistory } from '../edit/useHistory'
 import { LifecycleBar } from '../lifecycle/LifecycleBar'
 import { blockActions } from './blockActions'
@@ -46,6 +47,7 @@ export function BlockWorkspace({ model: initial, shared, project }: { model: Doc
         </p>
       )}
       {!project?.archived && <LifecycleBar model={model} shared={shared} project={project} history={history} />}
+      {editable && <AiPanel model={model} commit={commit} />}
       <main className="flex flex-1 flex-col gap-4 px-2 pb-10 lg:flex-row print:p-0">
         {editable && <aside className="shrink-0 lg:w-64 print:hidden">
           <BlockOutline blocks={actions.blocks} canHide={actions.canHide} onMove={actions.moveBlock} onToggleHidden={actions.toggleHidden} onAdd={actions.addBlock} />

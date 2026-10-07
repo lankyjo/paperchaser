@@ -1,6 +1,6 @@
 import Dexie, { type Table } from 'dexie'
 
-export type KeyProvider = 'openrouter' | 'anthropic' | 'openai'
+export type KeyProvider = 'openrouter'
 
 // A separate database for API keys, so workspace backups and exports can never include them.
 class SecretsDb extends Dexie {
