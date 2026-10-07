@@ -7,7 +7,7 @@ type TableBlock = Extract<Block, { type: 'table' }>
 const cellStyle = { padding: '6px 8px 6px 0', borderBottom: '1px solid var(--tpl-border)', textAlign: 'left', verticalAlign: 'top' } as const
 
 // A display table such as a delivery file list; headers and cells are plain text.
-export function TableBlockView({ block, onChange }: { block: TableBlock; onChange?: (next: Block) => void }) {
+export function TableBlockView({ block, onChange, range }: { block: TableBlock; onChange?: (next: Block) => void; range?: [number, number] }) {
   const editable = onChange !== undefined
   const setColumn = (c: number, text: string) => onChange?.({ ...block, columns: block.columns.map((v, i) => (i === c ? text : v)) })
   const setCell = (r: number, c: number, text: string) =>
@@ -27,14 +27,14 @@ export function TableBlockView({ block, onChange }: { block: TableBlock; onChang
         </thead>
         <tbody>
           {block.rows.map((row, r) => (
-            <tr key={r}>
+            <tr key={r} data-unit>
               {row.map((value, c) => (
                 <td key={c} style={cellStyle}>
                   <PlainTextCell value={value} placeholder="—" editable={editable} onCommit={(text) => setCell(r, c, text)} />
                 </td>
               ))}
             </tr>
-          ))}
+          )).slice(...(range ?? []))}
         </tbody>
       </table>
       {onChange && (

@@ -4,8 +4,19 @@ import { RichTextCell } from '../edit/RichTextCell'
 
 type RichTextBlock = Extract<Block, { type: 'richText' }>
 
-export function RichTextBlockView({ block, onChange }: { block: RichTextBlock; onChange?: (next: Block) => void }) {
-  if (!onChange) return <div><AstView value={block.content} /></div>
+// Read-only text renders one unit per top-level paragraph or list so pagination can break between them.
+export function RichTextBlockView({ block, onChange, range }: { block: RichTextBlock; onChange?: (next: Block) => void; range?: [number, number] }) {
+  if (!onChange) {
+    return (
+      <div>
+        {block.content.slice(...(range ?? [])).map((node, i) => (
+          <div key={i} data-unit>
+            <AstView value={[node]} />
+          </div>
+        ))}
+      </div>
+    )
+  }
   return (
     <RichTextCell
       key={JSON.stringify(block.content)}

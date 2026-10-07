@@ -19,12 +19,12 @@ test('an agreement schedule creates deposit and balance invoices, and flags a se
   await expect(page.getByLabel('Project fee')).toHaveValue('1000')
 
   await page.getByRole('button', { name: 'Start client agreement' }).click()
-  const pageRoot = page.locator('#print-root')
+  const pageRoot = page.locator('#document-root')
   await expect(pageRoot).toContainText('Payment schedule · €1,000.00')
   const agreementUrl = page.url()
 
   await pageRoot.getByRole('button', { name: 'Create invoice' }).first().click()
-  await expect(page.locator('#print-root')).toContainText('Deposit (50%)')
+  await expect(page.locator('#document-root')).toContainText('Deposit (50%)')
   await page.getByRole('button', { name: 'Finalize and print' }).click()
   await page.getByRole('button', { name: /Finalize/ }).last().click()
   await expect(page.getByText('Sent · INV-0001')).toBeVisible()
@@ -33,8 +33,8 @@ test('an agreement schedule creates deposit and balance invoices, and flags a se
   await page.goto(agreementUrl)
   await expect(pageRoot.getByRole('button', { name: 'Open INV-0001' })).toBeVisible()
   await pageRoot.getByRole('button', { name: 'Create invoice' }).click()
-  await expect(page.locator('#print-root')).toContainText('Less INV-0001')
-  await expect(page.locator('#print-root')).toContainText('€500.00')
+  await expect(page.locator('#document-root')).toContainText('Less INV-0001')
+  await expect(page.locator('#document-root')).toContainText('€500.00')
 
   await page.goto(agreementUrl)
   await pageRoot.getByLabel('Percent').first().fill('30')

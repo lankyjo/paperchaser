@@ -1178,18 +1178,14 @@
             "type": "string",
             "enum": [
               "blank",
-              "minimal",
-              "modern",
-              "corporate",
-              "freelancer",
-              "agency",
-              "creative"
+              "minimal"
             ]
           },
           "pageSize": {
             "type": "string",
             "enum": [
               "a4",
+              "letter",
               "a5",
               "a3"
             ]

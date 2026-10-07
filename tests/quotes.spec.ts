@@ -17,7 +17,7 @@ test('a quote is revised as -R2, only the latest revision can be accepted, and a
   await page.getByRole('button', { name: 'Start quote' }).click()
   await page.getByLabel('Valid until').fill('2099-12-31')
   await page.getByRole('button', { name: 'Add item' }).click()
-  await page.locator('#print-root [data-numeric-cell]').nth(1).click()
+  await page.locator('#document-root [data-numeric-cell]').nth(1).click()
   await page.keyboard.type('2500')
   await page.keyboard.press('Enter')
   await expect(page.getByText('Saved', { exact: true })).toBeVisible()

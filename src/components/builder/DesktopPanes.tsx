@@ -57,6 +57,7 @@ export function DesktopPanes({
           style={{ transform: `scale(${zoom})`, transformOrigin: 'top center', boxShadow: '0 4px 24px rgba(0, 0, 0, 0.12)' }}
         >
           <DocumentPage
+            id="document-root"
             model={model}
             template={template}
             branding={model.branding}

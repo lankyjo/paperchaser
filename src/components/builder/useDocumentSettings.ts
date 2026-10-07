@@ -1,4 +1,5 @@
 import type { Branding, DocumentModel, PageSize, TemplateId } from '../../document/types'
+import { pageSizeFor } from '../../document/pageLayout'
 import type { BlockId } from '../OutlinePane'
 
 // Document-level settings (template, page size, branding, logo, block visibility), all committed to history.
@@ -19,7 +20,7 @@ export function useDocumentSettings(model: DocumentModel, commit: (next: Documen
 
   return {
     template: model.template,
-    pageSize: model.pageSize ?? 'a4',
+    pageSize: pageSizeFor(model),
     changeTemplate,
     changeBranding,
     changeLogo,

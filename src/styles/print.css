@@ -1,32 +1,17 @@
-/* Print projection — the entire PDF path (RESEARCH Pattern 1).
-   The SAME DOM the screen renders is printed; @page + @media print differ only
-   by media.
+/* Printing outputs only #print-root: one fixed-size .document-page per sheet, already split by the app. */
 
-   Geometry contract (harness-measured, plan 01-02): #print-root stays in normal
-   flow in BOTH projections (its inline position:relative beats any stylesheet
-   absolute flip, so the print stylesheet must not rely on one). The A4 page
-   block is 210mm wide with 15mm padding, so content sits at exactly 15mm from
-   the page edge in the preview, the print projection, and the rasterized PDF
-   page. */
-
-/* The A4 page block carries its own 15mm padding (DocumentPage pageStyle), so
-   @page margin must be 0: with a 15mm @page margin AND 15mm element padding the
-   content would sit at 30mm — a 15mm double offset from the on-screen preview
-   (harness-measured, plan 01-02). The 15mm print margin is enforced by the page
-   block; the visual output is identical to an @page-margin document. */
+/* Each page carries its own 15mm padding, so the sheet margin is 0. */
 @page {
   size: A4;
   margin: 0;
 }
 
-/* PDF-02 (plan 03-05): named page rules for A5/A3. The page context takes
-   ONLY size/margin/page-orientation descriptors — never CSS variables or
-   colors (MDN @page; RESEARCH Pitfall 2). The inherited `page` property on
-   #print-root selects the paper, so the className and the @page name MUST
-   match ('a5' <-> @page a5) or window.print() silently falls back to the
-   unnamed A4 default (Pitfall 2). A4 stays the unnamed default (PDF-01);
-   harness page.pdf({ format }) agrees by default (format wins, playwright
-   preferCSSPageSize=false). */
+/* Named pages pick the paper; the class on each page must match the @page name. */
+@page letter {
+  size: letter;
+  margin: 0;
+}
+
 @page a5 {
   size: A5;
   margin: 0;
@@ -37,19 +22,19 @@
   margin: 0;
 }
 
-#print-root.page-a5 {
+.document-page.page-letter {
+  page: letter;
+}
+
+.document-page.page-a5 {
   page: a5;
 }
 
-#print-root.page-a3 {
+.document-page.page-a3 {
   page: a3;
 }
 
-/* Watermark overlay — shared by BOTH projections. On screen it is the WYSIWYG
-   draft mark over the canvas; in print it is the absolute overlay at top:40%.
-   Styling it only inside @media print made the screen projection render "DRAFT"
-   as an in-flow text line, shifting the whole document by one line (parity
-   break caught by the 01-02 harness). */
+/* DRAFT / VOID / PAID overlay, the same on screen and on every printed page. */
 .watermark {
   position: absolute;
   top: 40%;
@@ -64,43 +49,18 @@
 }
 
 @media print {
-  /* App chrome is hidden by visibility (display:none would destroy the
-     #print-root subtree, which lives inside .app-shell). Its layout is
-     neutralized so the shell cannot push the document 24px down the page
-     (padding 24px 0 / min-height 100vh) — harness-measured, plan 01-02. */
-  .app-shell {
-    padding: 0 !important;
-    min-height: 0 !important;
+  body > :not(#print-root) {
+    display: none !important;
   }
 
-  body * {
-    visibility: hidden;
-  }
-
-  #print-root,
-  #print-root * {
-    visibility: visible;
-  }
-
-  #print-root {
+  #print-root .document-page {
     margin: 0;
-    box-shadow: none;
+    break-after: page;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
-  /* repeat the line-item table header on every printed page */
-  thead {
-    display: table-header-group;
-  }
-
-  /* line-item rows never split across pages */
-  tr {
-    break-inside: avoid;
-  }
-
-  /* 04-05: zoom wrapper reset — inline scale must not leak to print/PDF */
-  [style*='scale'] {
-    transform: none !important;
+  #print-root .document-page:last-child {
+    break-after: auto;
   }
 }

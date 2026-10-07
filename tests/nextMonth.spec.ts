@@ -6,7 +6,7 @@ test('"New for next month" starts a draft a month later from a monthly report', 
   await page.goto('/')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start monthly report' }).click()
-  const heading = page.locator('#print-root h2 [contenteditable]').first()
+  const heading = page.locator('#document-root h2 [contenteditable]').first()
   await heading.click()
   await page.keyboard.press('ControlOrMeta+a')
   await page.keyboard.type('Results for December 2026')
@@ -16,7 +16,7 @@ test('"New for next month" starts a draft a month later from a monthly report', 
 
   await page.getByRole('button', { name: 'New for next month' }).click()
   await expect(page).not.toHaveURL(firstUrl)
-  await expect(page.locator('#print-root')).toContainText('Results for January 2027')
+  await expect(page.locator('#document-root')).toContainText('Results for January 2027')
   await page.goBack()
-  await expect(page.locator('#print-root')).toContainText('Results for December 2026')
+  await expect(page.locator('#document-root')).toContainText('Results for December 2026')
 })

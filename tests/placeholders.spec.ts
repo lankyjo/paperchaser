@@ -6,7 +6,7 @@ test('sample placeholders are highlighted, survive editing around them, and disa
   await page.goto('/')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start welcome' }).click()
-  const pageRoot = page.locator('#print-root')
+  const pageRoot = page.locator('#document-root')
   const chip = pageRoot.locator('.placeholder-node')
   await expect(chip).toHaveText('[Client name]')
 

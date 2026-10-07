@@ -13,7 +13,7 @@ test('the project page lists ten steps, opens any step, and tracks status and pr
 
   const brief = page.getByRole('listitem', { name: 'Project Brief' })
   await brief.getByRole('button', { name: 'Start project brief' }).click()
-  await expect(page.locator('#print-root').getByRole('heading', { name: 'Project Brief' }).first()).toBeVisible()
+  await expect(page.locator('#document-root').getByRole('heading', { name: 'Project Brief' }).first()).toBeVisible()
   await page.goBack()
 
   await expect(brief.getByText('Draft', { exact: true })).toBeVisible()

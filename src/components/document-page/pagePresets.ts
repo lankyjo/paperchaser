@@ -13,12 +13,11 @@ interface PresetProps {
   model: DocumentModel
 }
 
-// Header preset per resolved header style; standard-offset reuses HeaderStandard with a page-level offset.
+// Header preset per resolved header style.
 export const headerPresets: Record<HeaderStyle, ComponentType<PresetProps>> = {
   standard: HeaderStandard,
   banner: HeaderBanner,
   compact: HeaderCompact,
-  'standard-offset': HeaderStandard,
 }
 
 export const footerPresets: Record<FooterStyle, ComponentType<PresetProps>> = {

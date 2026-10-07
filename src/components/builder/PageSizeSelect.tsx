@@ -8,7 +8,7 @@ export function PageSizeSelect({ value, onChange }: { value: PageSize; onChange:
     <Select
       value={value}
       onValueChange={(next) => {
-        if (next !== null && (next === 'a4' || next === 'a5' || next === 'a3')) onChange(next)
+        if (next !== null && next in PAGE_SIZES) onChange(next)
       }}
     >
       <SelectTrigger size="sm" aria-label="Page size" className="hidden lg:flex">

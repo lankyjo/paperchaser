@@ -4,6 +4,7 @@ import { getPlainText } from '../document/richtext'
 import { BrandingPanel } from './BrandingPanel'
 import { TemplateGallery } from './TemplateGallery'
 import { PAGE_SIZES } from '../document/tokens'
+import { pageSizeFor } from '../document/pageLayout'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { CurrencyCard } from './properties/CurrencyCard'
@@ -42,7 +43,7 @@ export function PropertiesPane({
     return <ItemProperties item={item} currency={model.currency} locale={model.locale} onLineItemChange={onLineItemChange} />
   }
 
-  const currentPageSize: PageSize = model.pageSize ?? 'a4'
+  const currentPageSize: PageSize = pageSizeFor(model)
   const docNumber = getPlainText(model.number)
   const dateField = DOC_TYPES[model.type].dateField
 
@@ -62,7 +63,7 @@ export function PropertiesPane({
           <Select
             value={currentPageSize}
             onValueChange={(next) => {
-              if (next !== null && (next === 'a4' || next === 'a5' || next === 'a3')) onPageSizeChange(next)
+              if (next !== null && next in PAGE_SIZES) onPageSizeChange(next)
             }}
           >
             <SelectTrigger className="w-full" aria-label="Page size">

@@ -25,7 +25,7 @@ export function LineItemRow({
   onPatch?: (patch: Partial<LineItem>) => void
 }) {
   return (
-    <tr style={rowStyle}>
+    <tr style={rowStyle} data-unit>
       <td style={{ padding: '6px 0', verticalAlign: 'top' }}>
         {onPatch ? (
           <RichTextCell

@@ -15,5 +15,5 @@ test('a project in Nigerian naira with British formatting prints amounts that wa
   await expect(page.getByLabel('Project fee')).toHaveValue('1250000.5')
 
   await page.getByRole('listitem', { name: 'Invoice' }).getByRole('link').first().click()
-  await expect(page.locator('#print-root').getByText('Grand total').locator('..')).toContainText('NGN')
+  await expect(page.locator('#document-root').getByText('Grand total').locator('..')).toContainText('NGN')
 })

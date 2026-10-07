@@ -13,7 +13,7 @@ test('a saved service is inserted into an invoice as a priced line item', async 
   await page.goto('/')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
   await page.getByLabel('Add from services').selectOption({ label: 'Logo design' })
-  const pageRoot = page.locator('#print-root')
+  const pageRoot = page.locator('#document-root')
   await expect(pageRoot).toContainText('Logo design')
   await expect(pageRoot).toContainText('Three concepts')
   await expect(pageRoot.getByText('Grand total').locator('..')).toContainText('1,428.00')

@@ -9,11 +9,14 @@ export function LineItemsTable({
   model,
   lineNets,
   onCommit,
+  range,
 }: {
   model: DocumentModel
   lineNets: number[]
   onCommit?: (next: DocumentModel) => void
+  range?: [number, number]
 }) {
+  const from = range?.[0] ?? 0
   const patchItem = (id: string, patch: Partial<DocumentModel['lineItems'][number]>) =>
     onCommit?.({ ...model, lineItems: model.lineItems.map((li) => (li.id === id ? { ...li, ...patch } : li)) })
 
@@ -29,13 +32,13 @@ export function LineItemsTable({
         </tr>
       </thead>
       <tbody>
-        {model.lineItems.map((item, index) => (
+        {model.lineItems.slice(from, range?.[1]).map((item, i) => (
           <LineItemRow
             key={item.id}
             item={item}
             currency={model.currency}
             locale={model.locale}
-            netMinor={lineNets[index]}
+            netMinor={lineNets[from + i]}
             rowStyle={row}
             onPatch={onCommit ? (patch) => patchItem(item.id, patch) : undefined}
           />

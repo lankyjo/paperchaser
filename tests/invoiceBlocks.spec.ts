@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 test('an invoice is built from sections: terms can be added and moved, line items and totals cannot be hidden', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
-  const pageRoot = page.locator('#print-root')
+  const pageRoot = page.locator('#document-root')
   const sections = page.getByRole('navigation', { name: 'Blocks' })
 
   await expect(sections.getByRole('listitem')).toHaveCount(3)

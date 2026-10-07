@@ -8,7 +8,7 @@ test('a welcome document is built from blocks that can be edited, hidden, reorde
   await page.getByRole('link', { name: 'Acme rebrand' }).click()
   await page.getByRole('button', { name: 'Start welcome' }).click()
 
-  const pageRoot = page.locator('#print-root')
+  const pageRoot = page.locator('#document-root')
   await expect(pageRoot.getByRole('heading', { name: 'Welcome to the team' })).toBeVisible()
 
   const heading = pageRoot.getByRole('heading', { name: 'Welcome to the team' }).locator('[contenteditable]')
@@ -41,7 +41,7 @@ test('table and numbered-steps blocks can be added and filled in', async ({ page
   await page.goto('/')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start welcome' }).click()
-  const pageRoot = page.locator('#print-root')
+  const pageRoot = page.locator('#document-root')
 
   await page.getByRole('button', { name: 'Add table' }).click()
   const table = pageRoot.locator('table').last()
@@ -64,7 +64,7 @@ test('a chart takes pasted CSV, reports bad lines, and draws one bar per row; me
   await page.goto('/')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start welcome' }).click()
-  const pageRoot = page.locator('#print-root')
+  const pageRoot = page.locator('#document-root')
 
   await page.getByRole('button', { name: 'Add chart' }).click()
   await pageRoot.getByLabel('Paste CSV').fill('Week,Views\nW1,120\nW2,lots\nW3,"1,450"')
@@ -83,7 +83,7 @@ test('rating and checklist blocks print empty boxes and log answers when clicked
   await page.goto('/')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start feedback' }).click()
-  const pageRoot = page.locator('#print-root')
+  const pageRoot = page.locator('#document-root')
 
   await page.getByRole('button', { name: 'Add rating questions' }).click()
   await expect(pageRoot.getByRole('button', { pressed: true })).toHaveCount(0)

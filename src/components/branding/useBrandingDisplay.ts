@@ -22,11 +22,7 @@ export function useBrandingDisplay(branding: Partial<Branding>, template: Templa
   const bodyFont = FONT_OPTIONS.some((o) => o.value === (branding.bodyFont ?? resolved.fonts.bodyFontId))
     ? (branding.bodyFont ?? resolved.fonts.bodyFontId)
     : null
-  // standard-offset renders with HeaderStandard, so it displays as Standard.
-  const headerStyle = (branding.headerStyle ??
-    (resolved.header.style === 'standard-offset' ? 'standard' : resolved.header.style)) as
-    | (typeof HEADER_OPTIONS)[number]['value']
-    | null
+  const headerStyle: (typeof HEADER_OPTIONS)[number]['value'] = branding.headerStyle ?? resolved.header.style
   const footerStyle = FOOTER_OPTIONS.some((o) => o.value === (branding.footerStyle ?? resolved.footer.style))
     ? (branding.footerStyle ?? resolved.footer.style)
     : null

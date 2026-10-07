@@ -162,3 +162,10 @@ export const FIXTURE_MAP: Record<string, DocumentModel> = {
     ],
   },
 }
+
+// One line item whose description is taller than a page, so the oversized-section warning shows.
+FIXTURE_MAP['invoice-oversized'] = {
+  ...FIXTURE_MAP['invoice-simple'],
+  id: 'oversized-invoice',
+  lineItems: FIXTURE_MAP['invoice-simple'].lineItems.map((li) => ({ ...li, description: ast('Long running description. '.repeat(1200)) })),
+}

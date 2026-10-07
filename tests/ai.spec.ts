@@ -26,9 +26,9 @@ test('a local model suggestion is reviewed, accepted, and can be undone; protect
   const suggestion = page.getByRole('region', { name: 'AI suggestion' })
   await expect(suggestion).toContainText('Heading: Welcome aboard, Acme')
   await suggestion.getByRole('button', { name: 'Accept' }).click()
-  await expect(page.locator('#print-root').getByRole('heading', { name: 'Welcome aboard, Acme' })).toBeVisible()
+  await expect(page.locator('#document-root').getByRole('heading', { name: 'Welcome aboard, Acme' })).toBeVisible()
   await page.getByRole('button', { name: 'Undo' }).click()
-  await expect(page.locator('#print-root').getByRole('heading', { name: 'Welcome to the team' })).toBeVisible()
+  await expect(page.locator('#document-root').getByRole('heading', { name: 'Welcome to the team' })).toBeVisible()
 
   operations = [{ op: 'replace', path: '/status', valueJson: '"sent"' }]
   await ai.getByRole('button', { name: 'Suggest' }).click()

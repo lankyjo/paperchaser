@@ -22,7 +22,7 @@ test('images upload compressed, are stored once, and uploaded SVG scripts never 
   await page.goto('/')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start welcome' }).click()
-  const pageRoot = page.locator('#print-root')
+  const pageRoot = page.locator('#document-root')
 
   await page.getByRole('button', { name: 'Add image' }).click()
   await pageRoot.getByLabel('Upload image').setInputFiles({ name: 'red.png', mimeType: 'image/png', buffer: PNG })
@@ -46,7 +46,7 @@ test('a drawn signature is trimmed and stored, with a blank client signature lin
   await page.goto('/')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start client agreement' }).click()
-  const pageRoot = page.locator('#print-root')
+  const pageRoot = page.locator('#document-root')
 
   // Agreements start with a signature block, so the test uses that one.
   await expect(pageRoot.getByText('Client signature', { exact: true })).toBeVisible()
@@ -74,7 +74,7 @@ test('a logo upload is stored as a compressed asset, rendered in the header, and
   await expect(page).toHaveURL(/\/documents\//)
   const docUrl = page.url()
   await page.locator('input[type="file"][accept*="image/png"]').setInputFiles({ name: 'logo.png', mimeType: 'image/png', buffer: PNG })
-  const logo = page.locator('#print-root img.document-logo')
+  const logo = page.locator('#document-root img.document-logo')
   await expect(logo).toHaveAttribute('src', /^data:image\/(webp|png)/)
   expect(await assetCount(page)).toBe(1)
   await expect(page.getByText('Saved', { exact: true })).toBeVisible()

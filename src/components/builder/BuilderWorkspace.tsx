@@ -7,6 +7,7 @@ import { AiPanel } from '../ai/AiPanel'
 import { LifecycleBar } from '../lifecycle/LifecycleBar'
 import { ProjectDataContext } from './projectDataContext'
 import { MobileFormattingFooter } from '../edit/MobileFormattingFooter'
+import { PagedDocument } from '../paged-document/PagedDocument'
 import { PrintPreviewDialog } from '../PrintPreviewDialog'
 import { BuilderHeader } from './BuilderHeader'
 import { DesktopPanes } from './DesktopPanes'
@@ -33,8 +34,7 @@ export function BuilderWorkspace({
   const editable = editableProp && model.status === 'draft' && saveState !== 'stale'
   const { zoom, zoomIn, zoomOut } = useCanvasZoom()
   const [previewOpen, setPreviewOpen] = useState(false)
-  // Print always uses the desktop canvas so the document renders exactly once.
-  const isDesktop = useMediaQuery('(min-width: 1024px), print')
+  const isDesktop = useMediaQuery('(min-width: 1024px)')
   const layout = { model, template: settings.template, pageSize: settings.pageSize, outlineProps }
 
   return (
@@ -58,6 +58,7 @@ export function BuilderWorkspace({
         />
         {editableProp && <LifecycleBar model={model} shared={shared} project={project} history={history} />}
         {editable && <AiPanel model={model} commit={commit} />}
+        <PagedDocument model={model} template={settings.template} branding={model.branding} pageSize={settings.pageSize} variant="print" />
         {isDesktop ? (
           <DesktopPanes
             {...layout}

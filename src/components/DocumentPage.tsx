@@ -1,19 +1,11 @@
-import type { Block } from '../document/blocks'
-import { DOC_TYPES } from '../document/docTypes'
-import { documentBlocks } from '../document/documentBlocks'
-import { printedTotals } from '../document/finalize'
+import { isSplittable, pageSizeFor, resolvePage } from '../document/pageLayout'
+import { toCssVars } from '../document/resolveTokens'
 import type { Branding, DocumentModel, PageSize, TemplateId } from '../document/types'
-import { resolveTokens, toCssVars } from '../document/resolveTokens'
-import { watermarkFor } from '../document/watermark'
-import { BlockView } from './blocks/BlockView'
-import { BillToSection } from './document-page/BillToSection'
-import { LineItemsTable } from './document-page/LineItemsTable'
+import { DocumentItem } from './document-page/DocumentItem'
 import { PageFrame } from './document-page/PageFrame'
-import { footerPresets, headerPresets } from './document-page/pagePresets'
-import { DateLine } from './document-page/DateLine'
-import { TotalsSection } from './document-page/TotalsSection'
 
 interface DocumentPageProps {
+  id?: string
   model: DocumentModel
   template?: TemplateId
   branding?: Partial<Branding>
@@ -22,43 +14,22 @@ interface DocumentPageProps {
   onCommit?: (next: DocumentModel) => void
 }
 
-const DATE_LABELS = { validUntil: 'Valid until', dueDate: 'Due' }
-
-// Every document rendered on screen and in print: frame, header, its blocks in order, footer. Templates only change tokens.
-export function DocumentPage({ model, template, branding, pageSize, editable = false, onCommit }: DocumentPageProps) {
-  const resolved = resolveTokens(template ?? model.template ?? 'minimal', branding ?? model.branding)
-  const totals = printedTotals(model)
-  const HeaderPreset = headerPresets[resolved.header.style]
-  const FooterPreset = footerPresets[resolved.footer.style]
-  const visibility = model.settings?.blockVisibility ?? {}
-  const dateField = DOC_TYPES[model.type].dateField
-  const watermarkText = watermarkFor(model, branding ?? model.branding)
-  const changeBlock =
-    editable && onCommit ? (block: Block) => onCommit({ ...model, blocks: documentBlocks(model).map((b) => (b.id === block.id ? block : b)) }) : undefined
-
-  const renderBlock = (block: Block) => {
-    switch (block.type) {
-      case 'parties':
-        return <BillToSection key={block.id} model={model} editable={editable} onCommit={onCommit} />
-      case 'lineItems':
-        return <LineItemsTable key={block.id} model={model} lineNets={totals.lineNets} onCommit={editable ? onCommit : undefined} />
-      case 'totals':
-        return <TotalsSection key={block.id} subtotalMinor={totals.subtotalMinor} taxMinor={totals.taxMinor} grandTotalMinor={totals.grandTotalMinor} taxMode={model.taxMode} currency={model.currency} locale={model.locale} />
-      default:
-        return <BlockView key={block.id} block={block} model={model} onChange={changeBlock} />
-    }
-  }
-
+// The whole document as one growing page, used for editing and for measuring page breaks.
+export function DocumentPage({ id, model, template, branding, pageSize, editable = false, onCommit }: DocumentPageProps) {
+  const { tokens, totals, watermark, items } = resolvePage(model, template, branding)
   return (
     <PageFrame
-      pageSize={pageSize ?? model.pageSize}
-      cssVars={toCssVars(resolved)}
-      watermark={watermarkText === null ? null : { text: watermarkText, color: resolved.accent }}
+      id={id}
+      pageSize={pageSize ?? pageSizeFor(model)}
+      cssVars={toCssVars(tokens)}
+      watermark={watermark === null ? null : { text: watermark, color: tokens.accent }}
     >
-      {visibility.header !== false && <HeaderPreset tokens={resolved} model={model} />}
-      {dateField && model[dateField] && <DateLine label={DATE_LABELS[dateField]} date={model[dateField]} locale={model.locale} />}
-      {documentBlocks(model).filter((b) => !b.hidden).map(renderBlock)}
-      {visibility.footer !== false && <FooterPreset tokens={resolved} model={model} />}
+      {items.map((item) => (
+        <div key={item.id} data-page-item={item.id} data-splittable={isSplittable(item) || undefined} data-keep-with-next={item.block?.type === 'heading' || undefined}>
+          <DocumentItem item={item} model={model} tokens={tokens} totals={totals} editable={editable} onCommit={onCommit} />
+        </div>
+      ))}
+      <div data-page-end />
     </PageFrame>
   )
 }

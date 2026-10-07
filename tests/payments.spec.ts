@@ -10,7 +10,7 @@ test('payments on a sent invoice update the balance and stamp, create receipts, 
   await page.goto('/')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
   await page.getByRole('button', { name: 'Add item' }).click()
-  const pageRoot = page.locator('#print-root')
+  const pageRoot = page.locator('#document-root')
   const price = pageRoot.locator('[data-numeric-cell]').nth(1)
   await price.click()
   await page.keyboard.type('100')

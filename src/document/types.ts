@@ -76,8 +76,8 @@ const customerSchema = z.object({
 })
 
 // Render selectors are optional and resolve at render time, so older stored documents render without migration.
-const templateIdSchema = z.enum(['blank', 'minimal', 'modern', 'corporate', 'freelancer', 'agency', 'creative'])
-const pageSizeSchema = z.enum(['a4', 'a5', 'a3'])
+const templateIdSchema = z.enum(['blank', 'minimal'])
+const pageSizeSchema = z.enum(['a4', 'letter', 'a5', 'a3'])
 const brandingSchema = z
   .object({
     primaryColor: z.string(),
@@ -163,7 +163,7 @@ export const documentSchema = z.object({
   shippingFees: z.array(shippingFeeSchema).optional(),
   // Style-only render selector; absent resolves to 'minimal'.
   template: templateIdSchema.optional(),
-  // Paper size; absent resolves to 'a4'.
+  // Paper size; absent resolves from the locale (Letter in Letter countries, else A4).
   pageSize: pageSizeSchema.optional(),
   // Per-document branding overrides; absent uses template defaults.
   branding: brandingSchema.optional(),

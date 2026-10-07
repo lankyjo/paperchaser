@@ -1,19 +1,14 @@
 // Template token registry: each template is a plain token object in src/document/templates/; no React, DOM or Dexie.
 
-import { agencyTokens } from './templates/agency'
 import { blankTokens } from './templates/blank'
-import { corporateTokens } from './templates/corporate'
-import { creativeTokens } from './templates/creative'
-import { freelancerTokens } from './templates/freelancer'
 import { minimalTokens } from './templates/minimal'
-import { modernTokens } from './templates/modern'
 import { DOC_TYPE_IDS, DOC_TYPES } from './docTypes'
 import type { Branding, DocumentModel, PageSize, TemplateId } from './types'
 
 export type { Branding, PageSize, TemplateId }
 
 type FontId = 'geist' | 'geist-mono' | 'source-serif-4' | 'system'
-export type HeaderStyle = 'standard' | 'banner' | 'compact' | 'standard-offset'
+export type HeaderStyle = 'standard' | 'banner' | 'compact'
 export type FooterStyle = 'minimal' | 'standard' | 'detailed'
 
 // FontId to CSS font-family stack (all bundled via @fontsource).
@@ -31,6 +26,7 @@ export const DOC_TITLES = Object.fromEntries(DOC_TYPE_IDS.map((t) => [t, DOC_TYP
 // Paper sizes; A4 is the parity harness geometry.
 export const PAGE_SIZES: Record<PageSize, { label: string; width: string; height: string }> = {
   a4: { label: 'A4', width: '210mm', height: '297mm' },
+  letter: { label: 'US Letter', width: '215.9mm', height: '279.4mm' },
   a5: { label: 'A5', width: '148mm', height: '210mm' },
   a3: { label: 'A3', width: '297mm', height: '420mm' },
 }
@@ -38,6 +34,7 @@ export const PAGE_SIZES: Record<PageSize, { label: string; width: string; height
 // Page geometry in CSS px at 96dpi, derived from A4 794x1123 by ISO aspect; the print-preview dialog slices pages by these.
 export const PAGE_SIZE_PX: Record<PageSize, { width: number; height: number }> = {
   a4: { width: 794, height: 1123 },
+  letter: { width: 816, height: 1056 },
   a5: { width: Math.round(794 * (148 / 210)), height: Math.round(1123 * (148 / 210)) },
   a3: { width: Math.round(794 * (297 / 210)), height: Math.round(1123 * (297 / 210)) },
 }
@@ -60,9 +57,9 @@ export interface TemplateTokens {
     bodyFontId: FontId
     titleSize: string
     titleWeight: number
-    // Label/meta font (Agency/Creative mono uppercase labels).
+    // Label/meta font.
     labelFontId: FontId
-    // Letter-spacing for label-style text (Agency 0.12em, Minimal 0.08em).
+    // Letter-spacing for label-style text.
     labelLetterspacing: string
   }
   borders: {
@@ -72,12 +69,8 @@ export interface TemplateTokens {
   spacing: {
     sectionGap: string
     pagePadding: string
-    // Decoration band width (Modern 4mm top, Agency 8px top, Creative 8mm left); '0px' = no band.
-    bandWidth: string
-    // Panel/total-card corner radius (Freelancer/Creative 6px, Modern 4px); '0px' = square.
+    // Panel corner radius; '0px' = square.
     radius: string
-    // Creative 18mm left padding (band offset); absent falls back to pagePadding.
-    pagePaddingLeft?: string
   }
   header: {
     style: HeaderStyle
@@ -106,9 +99,4 @@ export interface ResolvedTokens extends TemplateTokens {
 export const TEMPLATE_REGISTRY: Record<TemplateId, TemplateTokens> = {
   blank: blankTokens,
   minimal: minimalTokens,
-  modern: modernTokens,
-  corporate: corporateTokens,
-  freelancer: freelancerTokens,
-  agency: agencyTokens,
-  creative: creativeTokens,
 }

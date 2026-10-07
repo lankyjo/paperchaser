@@ -14,7 +14,7 @@ const prints = (page: import('@playwright/test').Page) => page.evaluate(() => (w
 test('finalize warns, numbers, locks and prints; back to draft keeps the number', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
-  const pageRoot = page.locator('#print-root')
+  const pageRoot = page.locator('#document-root')
   await expect(pageRoot.locator('[contenteditable="true"]').first()).toBeVisible()
 
   await page.getByRole('button', { name: 'Finalize and print' }).click()
@@ -74,7 +74,7 @@ test('an unsent invoice keeps its snapshot until the latest project data is pull
   await expect(card.getByLabel('Name')).toHaveCount(0)
   await page.goto(invoiceUrl)
 
-  const billTo = page.locator('#print-root section', { has: page.getByRole('heading', { name: 'Bill to' }) })
+  const billTo = page.locator('#document-root section', { has: page.getByRole('heading', { name: 'Bill to' }) })
   await expect(billTo.locator('[contenteditable]').first()).toHaveText('Acme Coffee')
   await expect(page.getByRole('status')).toContainText('Client name: Acme Coffee → Acme Coffee Roasters')
   await page.getByRole('button', { name: 'Pull latest' }).click()

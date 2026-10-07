@@ -24,7 +24,6 @@ export const blankTokens: TemplateTokens = {
   spacing: {
     sectionGap: '8mm', // compact sections
     pagePadding: '15mm', // harness geometry contract (all templates)
-    bandWidth: '0px', // no band
     radius: '0px', // no rounded panels
   },
   header: {

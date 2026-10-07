@@ -14,7 +14,8 @@ import { RichTextBlockView } from './RichTextBlockView'
 import { StepsBlockView } from './StepsBlockView'
 import { TableBlockView } from './TableBlockView'
 
-type BlockViewProps<T extends ContentBlockType> = { block: Extract<Block, { type: T }>; model: DocumentModel; onChange?: (next: Block) => void }
+// range limits a splittable block to a [from, to) slice of its rows, paragraphs or steps when split across pages.
+type BlockViewProps<T extends ContentBlockType> = { block: Extract<Block, { type: T }>; model: DocumentModel; onChange?: (next: Block) => void; range?: [number, number] }
 
 const views: { [T in ContentBlockType]: ComponentType<BlockViewProps<T>> } = {
   heading: HeadingBlockView,
@@ -32,11 +33,11 @@ const views: { [T in ContentBlockType]: ComponentType<BlockViewProps<T>> } = {
 }
 
 // Renders one block with the view for its type; editable when onChange is given.
-export function BlockView({ block, model, onChange }: { block: ContentBlock; model: DocumentModel; onChange?: (next: Block) => void }) {
+export function BlockView({ block, model, onChange, range }: { block: ContentBlock; model: DocumentModel; onChange?: (next: Block) => void; range?: [number, number] }) {
   const View = views[block.type] as ComponentType<BlockViewProps<ContentBlockType>>
   return (
     <div style={{ marginBottom: 'var(--tpl-section-gap)' }}>
-      <View block={block} model={model} onChange={onChange} />
+      <View block={block} model={model} onChange={onChange} range={range} />
     </div>
   )
 }

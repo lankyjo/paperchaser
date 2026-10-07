@@ -3,11 +3,11 @@ import { PAGE_SIZES } from '../../document/tokens'
 import type { PageSize } from '../../document/types'
 
 // Page block at the page size's mm dimensions with a fixed 15mm padding; @page margin stays 0 so the margin is not doubled.
-function pageStyleFor(pageSize: PageSize): CSSProperties {
+function pageStyleFor(pageSize: PageSize, fixedHeight: boolean): CSSProperties {
   const g = PAGE_SIZES[pageSize]
   return {
     width: g.width,
-    minHeight: g.height,
+    ...(fixedHeight ? { height: g.height, overflow: 'hidden' } : { minHeight: g.height }),
     margin: '0 auto',
     padding: '15mm',
     boxSizing: 'border-box',
@@ -21,20 +21,19 @@ function pageStyleFor(pageSize: PageSize): CSSProperties {
 }
 
 interface PageFrameProps {
-  pageSize: PageSize | undefined
+  id?: string
+  pageSize: PageSize
+  // A printed page is exactly one sheet tall; the editor page grows with its content.
+  fixedHeight?: boolean
   cssVars: Record<string, string>
   watermark: { text: string; color: string } | null
   children: ReactNode
 }
 
-// The printable page root shared by every document kind: size, template variables and watermark.
-export function PageFrame({ pageSize, cssVars, watermark, children }: PageFrameProps) {
+// A page shared by every document kind: size, template variables and watermark.
+export function PageFrame({ id, pageSize, fixedHeight = false, cssVars, watermark, children }: PageFrameProps) {
   return (
-    <div
-      id="print-root"
-      className={pageSize && pageSize !== 'a4' ? `page-${pageSize}` : undefined}
-      style={{ ...pageStyleFor(pageSize ?? 'a4'), ...(cssVars as CSSProperties) }}
-    >
+    <div id={id} className={`document-page page-${pageSize}`} style={{ ...pageStyleFor(pageSize, fixedHeight), ...(cssVars as CSSProperties) }}>
       {watermark !== null && (
         // Inline accent color; print.css only holds a fallback color.
         <div className="watermark" aria-hidden="true" style={{ color: watermark.color }}>

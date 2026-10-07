@@ -25,6 +25,7 @@ export function MobileStack({
         <div className="flex justify-center overflow-auto">
           <div style={{ transform: 'scale(0.55)', transformOrigin: 'top center', boxShadow: '0 2px 12px rgba(0,0,0,0.12)' }}>
             <DocumentPage
+              id="document-root"
               model={model}
               template={template}
               branding={model.branding}
