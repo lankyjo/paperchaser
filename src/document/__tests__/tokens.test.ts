@@ -1,8 +1,9 @@
+import { createHash } from 'node:crypto'
 import { describe, expect, it } from 'vitest'
 
 import { FIXTURE_MAP } from '../fixtures'
 import { documentSchema } from '../types'
-import { TEMPLATE_REGISTRY, type TemplateId } from '../tokens'
+import { TEMPLATE_VERSIONS, TEMPLATE_REGISTRY, type TemplateId } from '../tokens'
 import { resolveTokens, toCssVars } from '../resolveTokens'
 
 describe('resolveTokens — Minimal defaults + D-04 accent fallback (03-01)', () => {
@@ -74,6 +75,28 @@ describe('TEMPLATE_REGISTRY', () => {
     for (const id of Object.keys(TEMPLATE_REGISTRY)) {
       expect(TEMPLATE_REGISTRY[id as TemplateId].spacing.pagePadding, id).toBe('15mm')
     }
+  })
+})
+
+// Fingerprint of every published template version; append, never edit.
+const PUBLISHED = { blank: ['36e5a0fbec7f'], minimal: ['3df0477aca6d'] }
+
+describe('template versions', () => {
+  it('renders a frozen document with the template version it was sent with', () => {
+    expect(resolveTokens('minimal', undefined, 1).palette).toEqual(TEMPLATE_VERSIONS.minimal[0].palette)
+  })
+
+  it('renders the current version when none is recorded or the recorded one is unknown', () => {
+    const current = TEMPLATE_VERSIONS.minimal.at(-1)
+    expect(resolveTokens('minimal').palette).toEqual(current?.palette)
+    expect(resolveTokens('minimal', undefined, 99).palette).toEqual(current?.palette)
+  })
+
+  // Published versions are frozen: change a design by appending a new version, then add its fingerprint here.
+  it('never changes a published version', () => {
+    const fingerprint = (v: unknown) => createHash('sha256').update(JSON.stringify(v)).digest('hex').slice(0, 12)
+    const fingerprints = Object.fromEntries(Object.entries(TEMPLATE_VERSIONS).map(([id, versions]) => [id, versions.map(fingerprint)]))
+    expect(fingerprints).toEqual(PUBLISHED)
   })
 })
 

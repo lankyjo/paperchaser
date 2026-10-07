@@ -46,7 +46,7 @@ export const PAGE_PADDING_PX = (15 * 96) / 25.4
 export function resolvePage(doc: DocumentModel, template?: TemplateId, branding?: Partial<Branding>) {
   const brand = branding ?? doc.branding
   return {
-    tokens: resolveTokens(template ?? doc.template ?? 'minimal', brand),
+    tokens: resolveTokens(template ?? doc.template ?? 'minimal', brand, doc.frozen?.templateVersion),
     totals: printedTotals(doc),
     watermark: watermarkFor(doc, brand),
     items: pageItemsFor(doc),

@@ -1,14 +1,14 @@
 // Resolves template + branding overrides into tokens and the --tpl-* CSS variable map; no React, DOM or Dexie.
 
-import { FONT_STACKS, TEMPLATE_REGISTRY, type ResolvedTokens, type TemplateId } from './tokens'
+import { FONT_STACKS, TEMPLATE_REGISTRY, TEMPLATE_VERSIONS, type ResolvedTokens, type TemplateId } from './tokens'
 import type { Branding } from './types'
 
 // Accent fallback when neither branding nor the template defines one.
 const DEFAULT_ACCENT = '#1d4ed8'
 
-// Merges only explicitly set branding keys over template defaults, so switching template re-derives unset fields.
-export function resolveTokens(template: TemplateId, branding?: Partial<Branding>): ResolvedTokens {
-  const base = TEMPLATE_REGISTRY[template]
+// Merges only explicitly set branding keys over the template (at a recorded version, else current), so switching template re-derives unset fields.
+export function resolveTokens(template: TemplateId, branding?: Partial<Branding>, version?: number): ResolvedTokens {
+  const base = (version !== undefined && TEMPLATE_VERSIONS[template][version - 1]) || TEMPLATE_REGISTRY[template]
   return {
     ...base,
     palette: {

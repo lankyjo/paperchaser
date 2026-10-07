@@ -1,5 +1,6 @@
 import { DOC_TYPE_IDS, DOC_TYPES } from './docTypes'
 import { computeTotals } from './totals'
+import { TEMPLATE_VERSIONS } from './tokens'
 import type { DocumentModel } from './types'
 
 export interface Counter {
@@ -22,14 +23,14 @@ export function nextNumber(counter: Counter, now: Date): { number: string; count
   return { number, counter: { ...counter, next: seq + 1, ...(counter.yearlyReset && { year }) } }
 }
 
-// Marks a document sent with its number and freezes the totals it was sent with.
+// Marks a document sent with its number and freezes the totals and template version it was sent with.
 export function finalizeDocument(doc: DocumentModel, number: string | null, finalizedAt: string): DocumentModel {
   const { lineNets, subtotalMinor, taxMinor, grandTotalMinor } = computeTotals(doc)
   return {
     ...doc,
     status: 'sent',
     ...(number !== null && { number }),
-    frozen: { finalizedAt, totals: { lineNets, subtotalMinor, taxMinor, grandTotalMinor } },
+    frozen: { finalizedAt, totals: { lineNets, subtotalMinor, taxMinor, grandTotalMinor }, templateVersion: TEMPLATE_VERSIONS[doc.template ?? 'minimal'].length },
   }
 }
 

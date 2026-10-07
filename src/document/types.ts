@@ -118,6 +118,8 @@ export const documentSchema = z.object({
     .object({
       finalizedAt: z.iso.datetime(),
       totals: z.object({ lineNets: z.array(z.int()), subtotalMinor: z.int(), taxMinor: z.int(), grandTotalMinor: z.int() }),
+      // Template version the document was sent with; absent on documents sent before versions existed.
+      templateVersion: z.int().positive().optional(),
     })
     .optional(),
   // Money received against this invoice; refunds are negative.

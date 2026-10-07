@@ -95,8 +95,11 @@ export interface ResolvedTokens extends TemplateTokens {
   accent: string
 }
 
-// Template tokens keyed by TemplateId; must cover exactly the ids in types.ts (pinned by a unit test).
-export const TEMPLATE_REGISTRY: Record<TemplateId, TemplateTokens> = {
-  blank: blankTokens,
-  minimal: minimalTokens,
+// Every published version of each template, oldest first; sent documents keep rendering with the version they recorded.
+export const TEMPLATE_VERSIONS: Record<TemplateId, TemplateTokens[]> = {
+  blank: [blankTokens],
+  minimal: [minimalTokens],
 }
+
+// The current version of each template; must cover exactly the ids in types.ts (pinned by a unit test).
+export const TEMPLATE_REGISTRY = Object.fromEntries(Object.entries(TEMPLATE_VERSIONS).map(([id, versions]) => [id, versions[versions.length - 1]])) as Record<TemplateId, TemplateTokens>

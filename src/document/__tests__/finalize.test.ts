@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { pullLatestChanges } from '../../project/sharedData'
 import { canUnsend, finalizeDocument, isLiveDraft, isNumberedType, nextNumber, printedTotals, unsendDocument, type Counter } from '../finalize'
 import { newInvoice } from '../newInvoice'
+import { TEMPLATE_VERSIONS } from '../tokens'
 import type { DocumentModel } from '../types'
 
 const counter: Counter = { type: 'invoice', prefix: 'INV-', next: 7, yearlyReset: false }
@@ -28,7 +29,15 @@ describe('finalizeDocument', () => {
   it('numbers, marks sent and freezes the computed totals', () => {
     const sent = finalizeDocument(draft, 'INV-0007', '2026-10-07T10:00:00.000Z')
     expect(sent).toMatchObject({ status: 'sent', number: 'INV-0007' })
-    expect(sent.frozen).toEqual({ finalizedAt: '2026-10-07T10:00:00.000Z', totals: { lineNets: [10000], subtotalMinor: 10000, taxMinor: 1900, grandTotalMinor: 11900 } })
+    expect(sent.frozen).toEqual({
+      finalizedAt: '2026-10-07T10:00:00.000Z',
+      totals: { lineNets: [10000], subtotalMinor: 10000, taxMinor: 1900, grandTotalMinor: 11900 },
+      templateVersion: TEMPLATE_VERSIONS.minimal.length,
+    })
+  })
+
+  it('records the version of the template it was sent with', () => {
+    expect(finalizeDocument({ ...draft, template: 'blank' }, null, '2026-10-07T10:00:00.000Z').frozen?.templateVersion).toBe(TEMPLATE_VERSIONS.blank.length)
   })
 
   it('prints the frozen totals even if the line items change afterwards', () => {
