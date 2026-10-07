@@ -9,7 +9,7 @@
  * copy at DocumentPage.tsx:27 was deleted in plan 02-02).
  */
 
-import { CURRENCY_DECIMALS, roundMinor } from './money'
+import { roundMinor } from './money'
 
 // D-06: percent (in % minor units, 1900 = 19%) or flat minor units
 export interface Discount {
@@ -37,12 +37,10 @@ export interface Totals {
 }
 
 export function computeTotals(doc: {
-  currency: string
   lineItems: Array<{ quantity: number; unitPriceMinor: number; taxRateMinor: number; discount?: Discount }>
   discount?: Discount
   shippingFees?: ShippingFee[]
 }): Totals {
-  const decimals = CURRENCY_DECIMALS[doc.currency] ?? 2
   const lineNets = doc.lineItems.map((item) => {
     const gross = item.quantity * item.unitPriceMinor // only float source — round per line (D-01)
     const lineDiscount = item.discount
@@ -50,12 +48,12 @@ export function computeTotals(doc: {
         ? (gross * item.discount.value) / 10000
         : item.discount.value
       : 0
-    return roundMinor(gross - lineDiscount, decimals) // once per line, never cascades
+    return roundMinor(gross - lineDiscount, 0) // once per line, never cascades
   })
   const subtotalMinor = lineNets.reduce((a, b) => a + b, 0)
   const discountMinor = doc.discount
     ? doc.discount.kind === 'percent'
-      ? roundMinor((subtotalMinor * doc.discount.value) / 10000, decimals)
+      ? roundMinor((subtotalMinor * doc.discount.value) / 10000, 0)
       : doc.discount.value
     : 0
   const discountedSubtotalMinor = subtotalMinor - discountMinor
@@ -63,7 +61,7 @@ export function computeTotals(doc: {
   const taxByRate = new Map<number, number>() // D-04: grouped by rate
   const addTax = (net: number, rateMinor: number) => {
     if (rateMinor === 0) return
-    const t = roundMinor((net * rateMinor) / 10000, decimals) // D-03: tax on the ROUNDED net
+    const t = roundMinor((net * rateMinor) / 10000, 0) // tax on the rounded net, never the raw float
     taxByRate.set(rateMinor, (taxByRate.get(rateMinor) ?? 0) + t)
   }
   doc.lineItems.forEach((item, i) => addTax(lineNets[i], item.taxRateMinor))

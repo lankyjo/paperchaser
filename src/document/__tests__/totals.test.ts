@@ -21,7 +21,6 @@ describe('computeTotals — per-line rounding (D-01/D-03, Pitfall 1)', () => {
     // Sum of rounded nets: 212. Rounded raw sum: round(105.5 + 105.5) = 211.
     // Per-line rounding wins (D-01) — the .5-boundary companion case.
     const totals = computeTotals({
-      currency: 'JPY',
       lineItems: [
         { quantity: 0.5, unitPriceMinor: 211, taxRateMinor: 1900 },
         { quantity: 0.5, unitPriceMinor: 211, taxRateMinor: 1900 },
@@ -34,12 +33,28 @@ describe('computeTotals — per-line rounding (D-01/D-03, Pitfall 1)', () => {
 
   it('EUR fractional-quantity case: qty 0.1 × 1000¢ at 19% → subtotal 100, grand total 119', () => {
     const totals = computeTotals({
-      currency: 'EUR',
       lineItems: [{ quantity: 0.1, unitPriceMinor: 1000, taxRateMinor: 1900 }],
     })
     expect(totals.subtotalMinor).toBe(100)
     expect(totals.taxMinor).toBe(19) // 100 × 19% = 19¢
     expect(totals.grandTotalMinor).toBe(119)
+  })
+
+  it('EUR amounts are whole cents: qty 0.5 × 211¢ rounds to 106¢, never 105.5¢', () => {
+    const totals = computeTotals({
+      lineItems: [{ quantity: 0.5, unitPriceMinor: 211, taxRateMinor: 1900 }],
+    })
+    expect(totals.lineNets).toEqual([106])
+    expect(totals.taxMinor).toBe(20) // 106 × 19% = 20.14 → 20¢
+    expect(totals.grandTotalMinor).toBe(126)
+  })
+
+  it('EUR percent document discount rounds to whole cents', () => {
+    const totals = computeTotals({
+      lineItems: [{ quantity: 1, unitPriceMinor: 333, taxRateMinor: 0 }],
+      discount: { kind: 'percent', value: 1000 },
+    })
+    expect(totals.discountMinor).toBe(33) // 10% of 333 = 33.3 → 33¢
   })
 })
 
@@ -50,7 +65,6 @@ describe('computeTotals — per-currency decimals (D-12)', () => {
 
   it('JPY (0dp) rounds to whole yen: qty 3 × 12345 at 10% → subtotal 37035', () => {
     const totals = computeTotals({
-      currency: 'JPY',
       lineItems: [{ quantity: 3, unitPriceMinor: 12345, taxRateMinor: 1000 }],
     })
     expect(totals.subtotalMinor).toBe(37035)
@@ -67,7 +81,6 @@ describe('computeTotals — tax on the ROUNDED net, never the raw float (D-03)',
     // Tax on the raw float net: 105.5 × 1943/10000 = 20.49865 → 20.
     // Pinning D-03: the engine uses the rounded net, so tax = 21.
     const totals = computeTotals({
-      currency: 'JPY',
       lineItems: [{ quantity: 0.5, unitPriceMinor: 211, taxRateMinor: 1943 }],
     })
     expect(totals.lineNets).toEqual([106])
@@ -80,7 +93,6 @@ describe('computeTotals — tax on the ROUNDED net, never the raw float (D-03)',
 describe('computeTotals — reconciliation invariant Σ lineNets == subtotalMinor (D-01)', () => {
   it('holds on the per-line-rounded JPY document', () => {
     const totals = computeTotals({
-      currency: 'JPY',
       lineItems: [
         { quantity: 0.5, unitPriceMinor: 211, taxRateMinor: 1900 },
         { quantity: 0.5, unitPriceMinor: 211, taxRateMinor: 1900 },
@@ -93,7 +105,6 @@ describe('computeTotals — reconciliation invariant Σ lineNets == subtotalMino
 
   it('holds on a multi-line EUR document', () => {
     const totals = computeTotals({
-      currency: 'EUR',
       lineItems: [
         { quantity: 2, unitPriceMinor: 90000, taxRateMinor: 1900 },
         { quantity: 1, unitPriceMinor: 45000, taxRateMinor: 1900 },
@@ -144,7 +155,6 @@ describe('computeTotals — per-line discounts (D-05/D-06)', () => {
     // If the gross were rounded before discounting (106 − 26.375 = 79.625) it
     // would round to 80 — the fixture pins discount-then-round (D-05/D-06).
     const totals = computeTotals({
-      currency: 'JPY',
       lineItems: [{ quantity: 0.5, unitPriceMinor: 211, taxRateMinor: 1900, discount: { kind: 'percent', value: 2500 } }],
     })
     expect(totals.lineNets).toEqual([79])
@@ -153,7 +163,6 @@ describe('computeTotals — per-line discounts (D-05/D-06)', () => {
 
   it('a per-line flat-amount discount reduces the net by exact minor units', () => {
     const totals = computeTotals({
-      currency: 'EUR',
       lineItems: [{ quantity: 2, unitPriceMinor: 1000, taxRateMinor: 1900, discount: { kind: 'amount', value: 500 } }],
     })
     expect(totals.lineNets).toEqual([1500]) // 2000 − 500
@@ -166,7 +175,6 @@ describe('computeTotals — document-level discount applied to the discounted su
     // Line: qty 2 × 1000 = 2000 with 10% line discount → net 1800.
     // Document discount 10% applies to the LINE-DISCOUNTED subtotal: 180.
     const totals = computeTotals({
-      currency: 'EUR',
       lineItems: [{ quantity: 2, unitPriceMinor: 1000, taxRateMinor: 1900, discount: { kind: 'percent', value: 1000 } }],
       discount: { kind: 'percent', value: 1000 },
     })
@@ -179,7 +187,6 @@ describe('computeTotals — document-level discount applied to the discounted su
 
   it('a flat document discount subtracts exact minor units from the subtotal', () => {
     const totals = computeTotals({
-      currency: 'EUR',
       lineItems: [
         { quantity: 2, unitPriceMinor: 1000, taxRateMinor: 1900 },
         { quantity: 1, unitPriceMinor: 500, taxRateMinor: 1900 },
@@ -197,7 +204,6 @@ describe('computeTotals — document-level discount applied to the discounted su
 describe('computeTotals — shipping/fees are line-like, tax grouped by rate (D-07/D-08/D-04)', () => {
   it('taxed + untaxed entries: amounts sum; taxed tax folds in; untaxed adds no tax', () => {
     const totals = computeTotals({
-      currency: 'EUR',
       lineItems: [{ quantity: 1, unitPriceMinor: 1000, taxRateMinor: 1900 }],
       shippingFees: [
         { label: 'Versand', amountMinor: 400, taxRateMinor: 1900 },
@@ -213,7 +219,6 @@ describe('computeTotals — shipping/fees are line-like, tax grouped by rate (D-
 
   it('multiple entries sharing a rate collapse into ONE taxByRate entry (D-04/D-08)', () => {
     const totals = computeTotals({
-      currency: 'EUR',
       lineItems: [{ quantity: 1, unitPriceMinor: 1000, taxRateMinor: 1900 }],
       shippingFees: [
         { label: 'Versand', amountMinor: 400, taxRateMinor: 1900 },
