@@ -37,6 +37,9 @@ export const PAGE_SIZES: Record<PageSize, { label: string; width: string; height
   a3: { label: 'A3', width: '297mm', height: '420mm' },
 }
 
+// Page sizes as select options: value and label.
+export const PAGE_SIZE_OPTIONS = Object.entries(PAGE_SIZES).map(([value, size]) => ({ value: value as PageSize, label: size.label }))
+
 // Page geometry in CSS px at 96dpi, derived from A4 794x1123 by ISO aspect; the print-preview dialog slices pages by these.
 export const PAGE_SIZE_PX: Record<PageSize, { width: number; height: number }> = {
   a4: { width: 794, height: 1123 },

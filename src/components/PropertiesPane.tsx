@@ -3,7 +3,7 @@ import { DOC_TYPES } from '../document/docTypes'
 import { getPlainText } from '../document/richtext'
 import { BrandingPanel } from './BrandingPanel'
 import { TemplateGallery } from './TemplateGallery'
-import { PAGE_SIZES } from '../document/tokens'
+import { PAGE_SIZE_OPTIONS, PAGE_SIZES } from '../document/tokens'
 import { pageSizeFor } from '../document/pageLayout'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
@@ -61,6 +61,7 @@ export function PropertiesPane({
         </CardHeader>
         <CardContent>
           <Select
+            items={PAGE_SIZE_OPTIONS}
             value={currentPageSize}
             onValueChange={(next) => {
               if (next !== null && next in PAGE_SIZES) onPageSizeChange(next)

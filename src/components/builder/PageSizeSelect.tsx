@@ -1,4 +1,4 @@
-import { PAGE_SIZES } from '../../document/tokens'
+import { PAGE_SIZE_OPTIONS, PAGE_SIZES } from '../../document/tokens'
 import type { PageSize } from '../../document/types'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 export function PageSizeSelect({ value, onChange }: { value: PageSize; onChange: (pageSize: PageSize) => void }) {
   return (
     <Select
+      items={PAGE_SIZE_OPTIONS}
       value={value}
       onValueChange={(next) => {
         if (next !== null && next in PAGE_SIZES) onChange(next)

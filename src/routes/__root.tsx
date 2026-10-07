@@ -1,10 +1,10 @@
 import { Outlet } from '@tanstack/react-router'
 import { UpdateBanner } from '../components/data-safety/UpdateBanner'
 
-/** Root layout — the app chrome. Hidden entirely under @media print (print.css). */
+// Root layout: the app chrome around every page; printing hides it and shows only the printed pages.
 export function RootComponent() {
   return (
-    <div className="app-shell" style={{ minHeight: '100vh', background: '#f3f4f6', padding: '24px 0' }}>
+    <div className="app-shell min-h-screen bg-background py-6 text-foreground">
       <UpdateBanner />
       <Outlet />
     </div>
