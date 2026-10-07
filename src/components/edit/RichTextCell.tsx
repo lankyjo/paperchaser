@@ -86,7 +86,8 @@ export function RichTextCell({ text, onCommit, onCancel, placeholder = 'Type her
         className={`edit-cell ${isEmpty ? 'is-empty' : ''}`}
         style={{ outline: 'none' }}
       >
-        <AstView value={text} />
+        {/* Empty text renders no children so the :empty placeholder shows and the cell stays clickable. */}
+        {!isEmpty && <AstView value={text} />}
       </div>
       {focused && <FloatingToolbar targetRef={ref} />}
     </>

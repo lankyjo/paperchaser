@@ -26,7 +26,7 @@ export function BuilderWorkspace({
   editable?: boolean
   shared?: SharedData
 }) {
-  const { history, settings, selection, items, outlineProps, sharedPropertiesProps, commitCustomerName } =
+  const { history, settings, selection, items, sections, outlineProps, sharedPropertiesProps, commitCustomerName } =
     useBuilderDocument(initialModel, initialTemplate, initialPageSize, shared)
   const { model, commit, undo, redo, saveState, retrySave, canUndo, canRedo, handleKeyDown } = history
   const { zoom, zoomIn, zoomOut } = useCanvasZoom()
@@ -57,6 +57,7 @@ export function BuilderWorkspace({
           <DesktopPanes
             {...layout}
             editable={editable}
+            sections={sections}
             zoom={zoom}
             propertiesProps={{ ...sharedPropertiesProps, selectedItemId: selection.selectedItemId }}
             onCustomerNameCommit={commitCustomerName}

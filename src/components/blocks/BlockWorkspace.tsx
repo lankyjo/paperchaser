@@ -5,13 +5,14 @@ import { SaveIndicator } from '../builder/SaveIndicator'
 import { UndoRedoButtons } from '../builder/UndoRedoButtons'
 import { Button } from '../ui/button'
 import { BlockOutline } from './BlockOutline'
-import { BlockPage } from './BlockPage'
-import { useBlockDocument } from './useBlockDocument'
+import { DocumentPage } from '../DocumentPage'
+import { useHistory } from '../edit/useHistory'
+import { blockActions } from './blockActions'
 
 // Editor for documents built from blocks: outline on the left, editable page on the right.
 export function BlockWorkspace({ model: initial }: { model: DocumentModel }) {
-  const { history, blocks, changeBlock, addBlock, moveBlock, toggleHidden } = useBlockDocument(initial)
-  const { model, undo, redo, canUndo, canRedo, saveState, retrySave, handleKeyDown } = history
+  const { model, commit, undo, redo, canUndo, canRedo, saveState, retrySave, handleKeyDown } = useHistory(initial)
+  const actions = blockActions(model, commit)
 
   return (
     <div className="flex min-h-screen flex-col print:min-h-0" onKeyDown={(e: KeyboardEvent) => handleKeyDown(e)}>
@@ -31,10 +32,10 @@ export function BlockWorkspace({ model: initial }: { model: DocumentModel }) {
       </header>
       <main className="flex flex-1 flex-col gap-4 px-2 pb-10 lg:flex-row print:p-0">
         <aside className="shrink-0 lg:w-64 print:hidden">
-          <BlockOutline blocks={blocks} onMove={moveBlock} onToggleHidden={toggleHidden} onAdd={(type) => addBlock(type, null)} />
+          <BlockOutline blocks={actions.blocks} canHide={actions.canHide} onMove={actions.moveBlock} onToggleHidden={actions.toggleHidden} onAdd={actions.addBlock} />
         </aside>
         <div className="flex flex-1 justify-center overflow-auto">
-          <BlockPage model={model} onBlockChange={changeBlock} />
+          <DocumentPage model={model} editable onCommit={commit} />
         </div>
       </main>
     </div>

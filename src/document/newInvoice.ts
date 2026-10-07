@@ -13,5 +13,10 @@ export function newInvoice({ id, projectId, today }: { id: string; projectId: st
     company: { name: '', address: [], email: '', logo: null },
     customer: { name: '', address: [] },
     lineItems: [],
+    blocks: [
+      { id: 'parties', type: 'parties' },
+      { id: 'lineItems', type: 'lineItems' },
+      { id: 'totals', type: 'totals' },
+    ],
   }
 }

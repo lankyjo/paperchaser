@@ -6,7 +6,7 @@ import { DeleteItemDialog } from './outline/DeleteItemDialog'
 import { OutlineLineItems } from './outline/OutlineLineItems'
 import { cn } from '@/lib/utils'
 
-// Left-pane outline: the five fixed document blocks with visibility toggles, and the line items under Items.
+// Left-pane outline: header and footer visibility, and the line items under Items.
 interface BlockVisibility {
   header?: boolean
   billTo?: boolean
@@ -31,11 +31,10 @@ export interface OutlinePaneProps {
   onMoveDown?: (id: string) => void
 }
 
+// Header and footer frame every page; bill to, items and totals are ordered in the sections list.
 const BLOCKS: Array<{ id: BlockId; label: string }> = [
   { id: 'header', label: 'Header' },
-  { id: 'billTo', label: 'Bill to' },
   { id: 'items', label: 'Items' },
-  { id: 'totals', label: 'Totals' },
   { id: 'footer', label: 'Footer' },
 ]
 
@@ -79,7 +78,7 @@ export function OutlinePane({
             >
               <Lock className="size-3 shrink-0 text-muted-foreground" aria-hidden="true" />
               <span className="flex-1 truncate">{block.label}</span>
-              <button
+              {!isItemsBlock && <button
                 type="button"
                 aria-label={visible ? `Hide ${block.label}` : `Show ${block.label}`}
                 className="shrink-0 rounded p-0.5 hover:bg-foreground/10"
@@ -89,7 +88,7 @@ export function OutlinePane({
                 }}
               >
                 {visible ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5 text-muted-foreground" />}
-              </button>
+              </button>}
             </div>
 
             {isItemsBlock && (

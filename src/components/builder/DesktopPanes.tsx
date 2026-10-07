@@ -1,5 +1,7 @@
 import type { DocumentModel, PageSize, TemplateId } from '../../document/types'
 import type { RichTextDoc } from '../../document/richtext'
+import type { blockActions } from '../blocks/blockActions'
+import { BlockOutline } from '../blocks/BlockOutline'
 import { DocumentPage } from '../DocumentPage'
 import { OutlinePane, type OutlinePaneProps } from '../OutlinePane'
 import { PropertiesPane, type PropertiesPaneProps } from '../PropertiesPane'
@@ -11,6 +13,7 @@ export function DesktopPanes({
   template,
   pageSize,
   editable,
+  sections,
   zoom,
   outlineProps,
   propertiesProps,
@@ -21,6 +24,7 @@ export function DesktopPanes({
   template?: TemplateId
   pageSize: PageSize
   editable: boolean
+  sections: ReturnType<typeof blockActions>
   zoom: number
   outlineProps: OutlinePaneProps
   propertiesProps: PropertiesPaneProps
@@ -31,6 +35,18 @@ export function DesktopPanes({
     <main className="hidden flex-1 overflow-hidden print:flex print:min-h-0 lg:flex">
       <aside className="w-56 shrink-0 overflow-y-auto border-r border-foreground/10 bg-card p-3 print:hidden">
         <OutlinePane {...outlineProps} />
+        {editable && (
+          <div className="mt-4">
+            <h2 className="mb-2 px-1 text-sm font-semibold">Sections</h2>
+            <BlockOutline
+              blocks={sections.blocks}
+              canHide={sections.canHide}
+              onMove={sections.moveBlock}
+              onToggleHidden={sections.toggleHidden}
+              onAdd={sections.addBlock}
+            />
+          </div>
+        )}
       </aside>
 
       <div className="flex flex-1 justify-center overflow-auto px-2 pb-10 print:pb-0">

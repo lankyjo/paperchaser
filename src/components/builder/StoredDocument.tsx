@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { clientsRepo, documentsRepo, projectsRepo } from '../../db/repos'
 import type { DocumentModel } from '../../document/types'
 import { useMountEffect } from '../../hooks/useMountEffect'
+import { isMoneyDocument } from '../../document/documentBlocks'
 import { applySharedData, sharedFromClient, type SharedData } from '../../project/sharedData'
 import { BlockWorkspace } from '../blocks/BlockWorkspace'
 import { ExplainerBanner } from '../explainer/ExplainerBanner'
@@ -34,10 +35,10 @@ export function StoredDocument({ documentId }: { documentId: string }) {
   return (
     <>
       <ExplainerBanner type={loaded.model.type} />
-      {loaded.model.blocks !== undefined ? (
-        <BlockWorkspace model={loaded.model} />
-      ) : (
+      {isMoneyDocument(loaded.model) ? (
         <BuilderWorkspace model={loaded.model} shared={loaded.shared} />
+      ) : (
+        <BlockWorkspace model={loaded.model} />
       )}
     </>
   )

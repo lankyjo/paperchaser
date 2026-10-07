@@ -17,9 +17,5 @@ const MONEY_TYPES = new Set<DocumentModel['type']>(['quote', 'invoice', 'receipt
 export function newDocument({ type, id, projectId, today, newId }: NewDocumentArgs): DocumentModel {
   if (MONEY_TYPES.has(type)) return { ...newInvoice({ id, projectId, today }), type }
   if (type === 'welcome') return newWelcome({ id, projectId, today, newId })
-  return {
-    ...newInvoice({ id, projectId, today }),
-    type,
-    blocks: [{ id: newId(1), type: 'heading', text: DOC_TITLES[type] }],
-  }
+  return { ...newInvoice({ id, projectId, today }), type, blocks: [{ id: newId(1), type: 'heading', text: DOC_TITLES[type] }] }
 }

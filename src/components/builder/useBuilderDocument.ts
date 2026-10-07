@@ -1,6 +1,7 @@
 import type { DocumentModel, PageSize, TemplateId } from '../../document/types'
 import type { RichTextDoc } from '../../document/richtext'
 import { trackOverrides, type SharedData } from '../../project/sharedData'
+import { blockActions } from '../blocks/blockActions'
 import { useHistory } from '../edit/useHistory'
 import type { OutlinePaneProps } from '../OutlinePane'
 import type { PropertiesPaneProps } from '../PropertiesPane'
@@ -22,6 +23,7 @@ export function useBuilderDocument(
   const settings = useDocumentSettings(model, commit, initialTemplate, initialPageSize)
   const selection = useBuilderSelection()
   const items = lineItemActions(model, commit)
+  const sections = blockActions(model, commit)
 
   const commitCustomerName = (name: RichTextDoc) => commit({ ...model, customer: { ...model.customer, name } })
   const deleteItem = (id: string) => {
@@ -53,5 +55,5 @@ export function useBuilderDocument(
     onLineItemChange: items.changeLineItem,
   }
 
-  return { history: { ...history, commit }, settings, selection, items, outlineProps, sharedPropertiesProps, commitCustomerName }
+  return { history: { ...history, commit }, settings, selection, items, sections, outlineProps, sharedPropertiesProps, commitCustomerName }
 }

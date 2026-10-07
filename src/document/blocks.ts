@@ -47,10 +47,15 @@ export const blockSchema = z.discriminatedUnion('type', [
     role: z.string(),
     clientLine: z.boolean(),
   }),
+  z.object({ ...base, type: z.literal('parties') }),
+  z.object({ ...base, type: z.literal('lineItems') }),
+  z.object({ ...base, type: z.literal('totals') }),
 ])
 
 export type Block = z.infer<typeof blockSchema>
 export type BlockType = Block['type']
+export type ContentBlock = Exclude<Block, { type: 'parties' | 'lineItems' | 'totals' }>
+export type ContentBlockType = ContentBlock['type']
 
 const emptyBlock: Record<BlockType, (id: string) => Block> = {
   heading: (id) => ({ id, type: 'heading', text: '' }),
@@ -64,6 +69,9 @@ const emptyBlock: Record<BlockType, (id: string) => Block> = {
   checklist: (id) => ({ id, type: 'checklist', title: '', items: [{ text: '' }] }),
   image: (id) => ({ id, type: 'image', assetId: '', alt: '' }),
   signature: (id) => ({ id, type: 'signature', assetId: '', name: '', role: '', clientLine: true }),
+  parties: (id) => ({ id, type: 'parties' }),
+  lineItems: (id) => ({ id, type: 'lineItems' }),
+  totals: (id) => ({ id, type: 'totals' }),
 }
 
 export function addBlock(blocks: Block[], type: BlockType, afterId: string | null, id: string): Block[] {
@@ -100,6 +108,9 @@ const summaries: { [T in BlockType]: (block: Extract<Block, { type: T }>) => str
   checklist: (b) => b.title,
   image: (b) => b.alt,
   signature: (b) => b.name,
+  parties: () => '',
+  lineItems: () => '',
+  totals: () => '',
 }
 
 // Short text that identifies a block in the outline.
