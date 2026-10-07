@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { loadDocumentForEditing, type LoadedDocument } from './loadDocumentForEditing'
 import { useMountEffect } from '../../hooks/useMountEffect'
-import { isMoneyDocument } from '../../document/documentBlocks'
-import { BlockWorkspace } from '../blocks/BlockWorkspace'
 import { ExplainerBanner } from '../explainer/ExplainerBanner'
 import { BuilderWorkspace } from './BuilderWorkspace'
 
@@ -24,11 +22,7 @@ export function StoredDocument({ documentId }: { documentId: string }) {
           This invoice no longer matches the agreement's payment schedule. Issue a credit note or a new invoice for the difference.
         </p>
       )}
-      {isMoneyDocument(loaded.model) ? (
-        <BuilderWorkspace model={loaded.model} shared={loaded.shared} project={loaded.project} editable={!loaded.project?.archived} />
-      ) : (
-        <BlockWorkspace model={loaded.model} shared={loaded.shared} project={loaded.project} />
-      )}
+      <BuilderWorkspace model={loaded.model} shared={loaded.shared} project={loaded.project} editable={!loaded.project?.archived} />
     </>
   )
 }

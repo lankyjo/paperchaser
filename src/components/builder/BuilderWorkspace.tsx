@@ -1,10 +1,13 @@
 import { useState, type KeyboardEvent } from 'react'
+import { DOC_TYPES } from '../../document/docTypes'
 import type { DocumentModel } from '../../document/types'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import type { Project } from '../../project/project'
 import type { SharedData } from '../../project/sharedData'
 import { AiPanel } from '../ai/AiPanel'
 import { LifecycleBar } from '../lifecycle/LifecycleBar'
+import { ScheduleContext } from '../blocks/scheduleContext'
+import { useScheduleInvoices } from '../blocks/useScheduleInvoices'
 import { ProjectDataContext } from './projectDataContext'
 import { MobileFormattingFooter } from '../edit/MobileFormattingFooter'
 import { PagedDocument } from '../paged-document/PagedDocument'
@@ -16,7 +19,7 @@ import { MobileStack } from './MobileStack'
 import { useBuilderDocument } from './useBuilderDocument'
 import { useCanvasZoom } from './useCanvasZoom'
 
-// The builder around one document: header, desktop panes or mobile stack, preview dialog and mobile sheet.
+// The editor for every document type: header, desktop panes or mobile stack, preview dialog and mobile sheet.
 export function BuilderWorkspace({
   model: initialModel,
   editable: editableProp = true,
@@ -34,6 +37,7 @@ export function BuilderWorkspace({
   const editable = editableProp && model.status === 'draft' && saveState !== 'stale'
   const { zoom, zoomIn, zoomOut } = useCanvasZoom()
   const [previewOpen, setPreviewOpen] = useState(false)
+  const scheduleActions = useScheduleInvoices(model)
   const isDesktop = useMediaQuery('(min-width: 1024px)')
   const layout = { model, template: settings.template, pageSize: settings.pageSize, outlineProps }
 
@@ -56,22 +60,29 @@ export function BuilderWorkspace({
           onPageSizeChange={settings.changePageSize}
           onOpenPreview={() => setPreviewOpen(true)}
         />
+        {DOC_TYPES[model.type].legalNotice && (
+          <p role="note" className="mx-4 rounded border px-3 py-2 text-xs text-muted-foreground print:hidden">
+            These clauses are a plain-language starting point, not legal advice. Review them for your country before sending.
+          </p>
+        )}
         {editableProp && <LifecycleBar model={model} shared={shared} project={project} history={history} />}
         {editable && <AiPanel model={model} commit={commit} />}
         <PagedDocument model={model} template={settings.template} branding={model.branding} pageSize={settings.pageSize} variant="print" />
-        {isDesktop ? (
-          <DesktopPanes
-            {...layout}
-            editable={editable}
-            sections={sections}
-            zoom={zoom}
-            propertiesProps={{ ...sharedPropertiesProps, selectedItemId: selection.selectedItemId }}
-            onCommit={commit}
-            onInsertItem={items.insertItem}
-          />
-        ) : (
-          <MobileStack {...layout} saveFailed={saveState === 'failed'} />
-        )}
+        <ScheduleContext.Provider value={scheduleActions}>
+          {isDesktop ? (
+            <DesktopPanes
+              {...layout}
+              editable={editable}
+              sections={sections}
+              zoom={zoom}
+              propertiesProps={{ ...sharedPropertiesProps, selectedItemId: selection.selectedItemId }}
+              onCommit={commit}
+              onInsertItem={items.insertItem}
+            />
+          ) : (
+            <MobileStack {...layout} editable={editable} sections={sections} saveFailed={saveState === 'failed'} onCommit={commit} />
+          )}
+        </ScheduleContext.Provider>
         <PrintPreviewDialog
           open={previewOpen}
           onOpenChange={setPreviewOpen}

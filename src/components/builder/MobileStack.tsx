@@ -1,6 +1,9 @@
+import { isMoneyDocument } from '../../document/documentBlocks'
 import type { DocumentModel, PageSize, TemplateId } from '../../document/types'
+import type { blockActions } from '../blocks/blockActions'
 import { DocumentPage } from '../DocumentPage'
 import { OutlinePane, type OutlinePaneProps } from '../OutlinePane'
+import { SectionsOutline } from './SectionsOutline'
 
 // Mobile (below 1024px) layout: save error banner, always-visible scaled preview, then the outline.
 export function MobileStack({
@@ -8,14 +11,22 @@ export function MobileStack({
   template,
   pageSize,
   saveFailed,
+  editable,
+  sections,
   outlineProps,
+  onCommit,
 }: {
   model: DocumentModel
   template?: TemplateId
   pageSize: PageSize
   saveFailed: boolean
+  editable: boolean
+  sections: ReturnType<typeof blockActions>
   outlineProps: OutlinePaneProps
+  onCommit: (next: DocumentModel) => void
 }) {
+  // Money documents are edited through the outline and item sheets; block documents directly on the page.
+  const editOnPage = editable && !isMoneyDocument(model)
   return (
     <div className="flex flex-1 flex-col lg:hidden">
       {saveFailed && (
@@ -30,13 +41,15 @@ export function MobileStack({
               template={template}
               branding={model.branding}
               pageSize={pageSize}
-              editable={false}
+              editable={editOnPage}
+              onCommit={editOnPage ? onCommit : undefined}
             />
           </div>
         </div>
       </div>
       <div className="flex-1 overflow-y-auto p-3 pb-20">
-        <OutlinePane {...outlineProps} />
+        {isMoneyDocument(model) && <OutlinePane {...outlineProps} />}
+        {editable && <SectionsOutline sections={sections} />}
       </div>
     </div>
   )

@@ -52,7 +52,7 @@ export function PropertiesPane({
       <h2 className="px-1 text-sm font-semibold">Document</h2>
       <TemplateGallery selected={template} onSelect={onTemplateChange} />
       <BrandingPanel model={model} template={template} onBrandingChange={onBrandingChange} onLogoChange={onLogoChange} />
-      <CurrencyCard currency={model.currency} />
+      {DOC_TYPES[model.type].money && <CurrencyCard currency={model.currency} />}
       {dateField === 'validUntil' && onValidUntilChange && <DateCard title="Valid until" value={model.validUntil} onChange={onValidUntilChange} />}
       {dateField === 'dueDate' && onDueDateChange && <DateCard title="Due date" value={model.dueDate} onChange={onDueDateChange} />}
       <Card size="sm">

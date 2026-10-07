@@ -1,11 +1,12 @@
 import type { DocumentModel, PageSize, TemplateId } from '../../document/types'
 import type { blockActions } from '../blocks/blockActions'
-import { BlockOutline } from '../blocks/BlockOutline'
 import { ServicePicker } from '../catalog/ServicePicker'
+import { isMoneyDocument } from '../../document/documentBlocks'
 import { DocumentPage } from '../DocumentPage'
 import { OutlinePane, type OutlinePaneProps } from '../OutlinePane'
 import { PropertiesPane, type PropertiesPaneProps } from '../PropertiesPane'
 import { cn } from '@/lib/utils'
+import { SectionsOutline } from './SectionsOutline'
 
 // Desktop (1024px and up) three-pane layout: outline, zoomable canvas, properties.
 export function DesktopPanes({
@@ -34,20 +35,9 @@ export function DesktopPanes({
   return (
     <main className="hidden flex-1 overflow-hidden print:flex print:min-h-0 lg:flex">
       <aside className="w-56 shrink-0 overflow-y-auto border-r border-foreground/10 bg-card p-3 print:hidden">
-        <OutlinePane {...outlineProps} />
-        {editable && onInsertItem && <ServicePicker onInsert={onInsertItem} />}
-        {editable && (
-          <div className="mt-4">
-            <h2 className="mb-2 px-1 text-sm font-semibold">Sections</h2>
-            <BlockOutline
-              blocks={sections.blocks}
-              canHide={sections.canHide}
-              onMove={sections.moveBlock}
-              onToggleHidden={sections.toggleHidden}
-              onAdd={sections.addBlock}
-            />
-          </div>
-        )}
+        {isMoneyDocument(model) && <OutlinePane {...outlineProps} />}
+        {editable && onInsertItem && isMoneyDocument(model) && <ServicePicker onInsert={onInsertItem} />}
+        {editable && <SectionsOutline sections={sections} />}
       </aside>
 
       <div className="flex flex-1 justify-center overflow-auto px-2 pb-10 print:pb-0">
