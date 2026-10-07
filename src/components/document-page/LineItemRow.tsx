@@ -3,6 +3,7 @@ import type { DocumentModel } from '../../document/types'
 import { getPlainText } from '../../document/richtext'
 import { NumericCell } from '../edit/NumericCell'
 import { RichTextCell } from '../edit/RichTextCell'
+import { LocalImage } from './LocalImage'
 import { formatMoney } from '../../document/money'
 
 type LineItem = DocumentModel['lineItems'][number]
@@ -36,7 +37,7 @@ export function LineItemRow({
           getPlainText(item.title)
         )}
         {item.image ? (
-          <img
+          <LocalImage
             src={item.image}
             alt=""
             style={{ marginTop: 4, maxHeight: 60, maxWidth: 80, objectFit: 'contain', display: 'block' }}

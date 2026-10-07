@@ -67,3 +67,21 @@ test('a drawn signature is trimmed and stored, with a blank client signature lin
   expect(width).toBeLessThan(600)
   expect(height).toBeLessThan(200)
 })
+
+test('a logo upload is stored as a compressed asset, rendered in the header, and survives pruning', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Quick invoice' }).click()
+  await expect(page).toHaveURL(/\/documents\//)
+  const docUrl = page.url()
+  await page.locator('input[type="file"][accept*="image/png"]').setInputFiles({ name: 'logo.png', mimeType: 'image/png', buffer: PNG })
+  const logo = page.locator('#print-root img.document-logo')
+  await expect(logo).toHaveAttribute('src', /^data:image\/(webp|png)/)
+  expect(await assetCount(page)).toBe(1)
+  await expect(page.getByText('Saved', { exact: true })).toBeVisible()
+
+  await page.goto('/')
+  await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+  await page.goto(docUrl)
+  await expect(logo).toHaveAttribute('src', /^data:image\/(webp|png)/)
+  expect(await assetCount(page)).toBe(1)
+})

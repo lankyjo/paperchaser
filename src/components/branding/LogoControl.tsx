@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { DocumentModel } from '../../document/types'
 import { Button } from '../ui/button'
+import { LocalImage } from '../document-page/LocalImage'
 import { useLogoUpload } from './useLogoUpload'
 
 // Logo picker writing company.logo, the only logo the header renders; removal asks for confirmation.
@@ -20,8 +21,8 @@ export function LogoControl({
       {hasLogo ? (
         <div className="flex items-center gap-2">
           {/* Fixed 48px chip so a huge source image is never laid out at natural size. */}
-          <img
-            src={model.company.logo ?? undefined}
+          <LocalImage
+            src={model.company.logo ?? ''}
             alt=""
             className="size-12 rounded object-cover ring-1 ring-foreground/10"
           />

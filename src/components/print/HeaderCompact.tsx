@@ -2,6 +2,7 @@ import type { ResolvedTokens } from '../../document/tokens'
 import { DOC_TITLES, FONT_STACKS } from '../../document/tokens'
 import type { DocumentModel } from '../../document/types'
 import { getPlainText } from '../../document/richtext'
+import { LocalImage } from '../document-page/LocalImage'
 
 // Header preset: single line with logo and name left, title, number and date right.
 export function HeaderCompact({ tokens, model }: { tokens: ResolvedTokens; model: DocumentModel }) {
@@ -10,7 +11,7 @@ export function HeaderCompact({ tokens, model }: { tokens: ResolvedTokens; model
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12mm' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4mm' }}>
           {model.company.logo !== null && (
-            <img src={model.company.logo} alt="" className="document-logo" style={{ width: 24, height: 24 }} />
+            <LocalImage src={model.company.logo} alt="" className="document-logo" style={{ width: 24, height: 24 }} />
           )}
           <span style={{ fontSize: '16px', fontWeight: 600, fontFamily: FONT_STACKS[tokens.fonts.headingFontId] }}>
             {getPlainText(model.company.name)}

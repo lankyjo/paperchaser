@@ -185,3 +185,14 @@ describe('boundary hardening — precision, size guard, breadth, nested strip, l
     expect(error.path).toEqual(['document', 'company', 'logo'])
   })
 })
+
+describe('stored image references', () => {
+  it('accept asset references for logos and line-item images but never remote URLs', async () => {
+    const { documentSchema } = await import('../types')
+    const { FIXTURE_MAP } = await import('../fixtures')
+    const base = FIXTURE_MAP['invoice-simple']
+    expect(documentSchema.safeParse({ ...base, company: { ...base.company, logo: 'asset:abc' } }).success).toBe(true)
+    expect(documentSchema.safeParse({ ...base, company: { ...base.company, logo: 'https://evil.test/x.png' } }).success).toBe(false)
+    expect(documentSchema.safeParse({ ...base, lineItems: [{ ...base.lineItems[0], image: 'asset:abc' }] }).success).toBe(true)
+  })
+})

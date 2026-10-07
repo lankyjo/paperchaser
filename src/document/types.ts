@@ -3,7 +3,11 @@
 import * as z from 'zod'
 
 import { blockSchema } from './blocks'
+import { ASSET_PREFIX } from './assets'
 import { isSupportedCurrency } from './money'
+
+// Images are inline data: URLs or references into the local asset store, never remote URLs that would fetch on render.
+const isLocalImage = (value: string) => value.startsWith('data:') || value.startsWith(ASSET_PREFIX)
 import { richTextDocSchema } from './richtext'
 import type { RichTextDoc } from './richtext'
 
@@ -29,8 +33,8 @@ const shippingFeeSchema = z.object({
 // Line-item image must be a self-contained data: URL so rendering never fetches remote content.
 const lineItemImageSchema = z
   .string()
-  .refine((value) => value.startsWith('data:'), {
-    message: 'line item image must be a self-contained data: URL',
+  .refine(isLocalImage, {
+    message: 'line item image must be a self-contained data: URL or a stored asset',
   })
 
 const lineItemSchema = z.object({
@@ -54,8 +58,8 @@ const lineItemSchema = z.object({
 const logoSchema = z
   .string()
   .nullable()
-  .refine((value) => value === null || value.startsWith('data:'), {
-    message: 'logo must be a self-contained data: URL or null',
+  .refine((value) => value === null || isLocalImage(value), {
+    message: 'logo must be a self-contained data: URL, a stored asset or null',
   })
 
 export const companySchema = z.object({

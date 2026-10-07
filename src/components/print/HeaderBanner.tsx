@@ -2,6 +2,7 @@ import type { ResolvedTokens } from '../../document/tokens'
 import { DOC_TITLES, FONT_STACKS } from '../../document/tokens'
 import type { DocumentModel } from '../../document/types'
 import { getPlainText } from '../../document/richtext'
+import { LocalImage } from '../document-page/LocalImage'
 
 // Header preset: full-width primary-color band with company name left and title right.
 export function HeaderBanner({ tokens, model }: { tokens: ResolvedTokens; model: DocumentModel }) {
@@ -21,7 +22,7 @@ export function HeaderBanner({ tokens, model }: { tokens: ResolvedTokens; model:
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '4mm' }}>
         {model.company.logo !== null && (
-          <img src={model.company.logo} alt="" className="document-logo" style={{ width: 40, height: 40 }} />
+          <LocalImage src={model.company.logo} alt="" className="document-logo" style={{ width: 40, height: 40 }} />
         )}
         <span style={{ fontSize: '20px', fontWeight: 600, fontFamily: FONT_STACKS[tokens.fonts.headingFontId] }}>
           {getPlainText(model.company.name)}

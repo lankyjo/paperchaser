@@ -13,3 +13,14 @@ describe('referencedAssetIds', () => {
     expect(referencedAssetIds(docs)).toEqual(new Set(['a1', 'a2', 'sig']))
   })
 })
+
+describe('logo and line-item images', () => {
+  it('count as references when stored in the asset store, so pruning keeps them', () => {
+    const doc = {
+      company: { logo: 'asset:logo1' },
+      lineItems: [{ image: 'asset:item1' }, { image: 'data:image/png;base64,AAAA' }, {}],
+      blocks: [],
+    }
+    expect(referencedAssetIds([doc])).toEqual(new Set(['logo1', 'item1']))
+  })
+})
