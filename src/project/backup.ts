@@ -20,7 +20,7 @@ const projectBundleSchema = z.object({
   assets: z.array(assetSchema),
 })
 
-const workspaceBundleSchema = z.object({
+export const workspaceBundleSchema = z.object({
   format: z.literal('paperchaser-workspace'),
   version: z.int(),
   projects: z.array(projectSchema),

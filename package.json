@@ -15,7 +15,8 @@
     "check:comments": "node scripts/findCommentViolations.ts",
     "check:naming": "ls-lint",
     "check:no-use-effect": "! grep -rnE '\\buse(Layout)?Effect\\s*\\(' src --include='*.tsx'",
-    "check:conventions": "pnpm lint && pnpm check:comments && pnpm check:naming && pnpm check:no-use-effect"
+    "check:conventions": "pnpm lint && pnpm check:comments && pnpm check:naming && pnpm check:no-use-effect",
+    "schema:update": "UPDATE_SCHEMA=1 vitest run src/project/__tests__/workspaceSchema.test.ts"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.63",

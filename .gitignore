@@ -31,3 +31,4 @@ tests/artifacts/
 .scratch/
 prototypes/
 .planning/research/.cache/
+workspace.json
