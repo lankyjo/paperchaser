@@ -1,5 +1,6 @@
 import { useState, type KeyboardEvent } from 'react'
 import type { DocumentModel, PageSize, TemplateId } from '../../document/types'
+import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { MobileFormattingFooter } from '../edit/MobileFormattingFooter'
 import { PrintPreviewDialog } from '../PrintPreviewDialog'
 import { BuilderHeader } from './BuilderHeader'
@@ -26,6 +27,8 @@ export function BuilderWorkspace({
   const { model, commit, undo, redo, saveState, retrySave, canUndo, canRedo, handleKeyDown } = history
   const { zoom, zoomIn, zoomOut } = useCanvasZoom()
   const [previewOpen, setPreviewOpen] = useState(false)
+  // Print always uses the desktop canvas so the document renders exactly once.
+  const isDesktop = useMediaQuery('(min-width: 1024px), print')
   const layout = { model, template: settings.currentTemplate, pageSize: settings.currentPageSize, outlineProps }
 
   return (
@@ -45,15 +48,18 @@ export function BuilderWorkspace({
         onPageSizeChange={settings.changePageSize}
         onOpenPreview={() => setPreviewOpen(true)}
       />
-      <DesktopPanes
-        {...layout}
-        editable={editable}
-        zoom={zoom}
-        propertiesProps={{ ...sharedPropertiesProps, selectedItemId: selection.selectedItemId }}
-        onCustomerNameCommit={commitCustomerName}
-        onCommit={commit}
-      />
-      <MobileStack {...layout} saveFailed={saveState === 'failed'} />
+      {isDesktop ? (
+        <DesktopPanes
+          {...layout}
+          editable={editable}
+          zoom={zoom}
+          propertiesProps={{ ...sharedPropertiesProps, selectedItemId: selection.selectedItemId }}
+          onCustomerNameCommit={commitCustomerName}
+          onCommit={commit}
+        />
+      ) : (
+        <MobileStack {...layout} saveFailed={saveState === 'failed'} />
+      )}
       <PrintPreviewDialog
         open={previewOpen}
         onOpenChange={setPreviewOpen}

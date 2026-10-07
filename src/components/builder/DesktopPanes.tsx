@@ -28,7 +28,7 @@ export function DesktopPanes({
   onCommit: (next: DocumentModel) => void
 }) {
   return (
-    <main className="hidden flex-1 overflow-hidden print:min-h-0 lg:flex">
+    <main className="hidden flex-1 overflow-hidden print:flex print:min-h-0 lg:flex">
       <aside className="w-56 shrink-0 overflow-y-auto border-r border-foreground/10 bg-card p-3 print:hidden">
         <OutlinePane {...outlineProps} />
       </aside>
