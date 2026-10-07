@@ -2,12 +2,34 @@ import { fileURLToPath, URL } from 'node:url'
 
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import type { Plugin } from 'vite'
 import { defineConfig } from 'vitest/config'
 import { VitePWA } from 'vite-plugin-pwa'
+
+// Production-only Content-Security-Policy: no inline scripts, no remote images, network limited to AI providers and local models.
+const CONTENT_SECURITY_POLICY = [
+  "default-src 'self'",
+  "script-src 'self'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob:",
+  "font-src 'self' data:",
+  "connect-src 'self' https://openrouter.ai https://api.anthropic.com https://api.openai.com http://localhost:* http://127.0.0.1:*",
+  "worker-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join('; ')
+
+const contentSecurityPolicy: Plugin = {
+  name: 'content-security-policy',
+  apply: 'build',
+  transformIndexHtml: () => [{ tag: 'meta', attrs: { 'http-equiv': 'Content-Security-Policy', content: CONTENT_SECURITY_POLICY }, injectTo: 'head-prepend' }],
+}
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    contentSecurityPolicy,
     react(),
     tailwindcss(),
     VitePWA({
