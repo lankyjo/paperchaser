@@ -12,6 +12,7 @@ interface UseHistory {
   saveState: ReturnType<typeof useAutoSave>['saveState']
   retrySave: () => void
   replace: (next: DocumentModel) => void
+  getRev: () => number
   canUndo: boolean
   canRedo: boolean
   // Bind to the builder root's onKeyDown for Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z and Ctrl+Y.
@@ -23,14 +24,19 @@ export function useHistory(initial: DocumentModel): UseHistory {
   const future = useRef<DocumentModel[]>([])
   const [model, setModel] = useState<DocumentModel>(initial)
   const modelRef = useRef<DocumentModel>(initial)
-  const { saveState, scheduleSave } = useAutoSave()
   const [stackSizes, setStackSizes] = useState({ past: 0, future: 0 })
+  const syncStackSizes = () => setStackSizes({ past: past.current.length, future: future.current.length })
+  const replaceState = (next: DocumentModel) => {
+    past.current = []
+    future.current = []
+    setModel(next)
+    syncStackSizes()
+  }
+  const { saveState, scheduleSave, getRev, setRev } = useAutoSave(initial, replaceState)
 
   // Keep modelRef in sync so the debounced closure always sees the latest.
   // eslint-disable-next-line react-hooks/refs -- sync ref during render without effect (house rule: no useEffect)
   modelRef.current = model
-
-  const syncStackSizes = () => setStackSizes({ past: past.current.length, future: future.current.length })
 
   const commit = (next: DocumentModel) => {
     past.current = [...past.current.slice(-49), modelRef.current]
@@ -60,10 +66,8 @@ export function useHistory(initial: DocumentModel): UseHistory {
 
   // Swaps in a document changed outside editing (finalize, unsend); clears undo so lifecycle steps can't be undone.
   const replace = (next: DocumentModel) => {
-    past.current = []
-    future.current = []
-    setModel(next)
-    syncStackSizes()
+    if (next.rev !== undefined) setRev(next.rev)
+    replaceState(next)
   }
 
   const retrySave = () => {
@@ -88,5 +92,5 @@ export function useHistory(initial: DocumentModel): UseHistory {
   const canUndo = stackSizes.past > 0
   const canRedo = stackSizes.future > 0
 
-  return { model, commit, undo, redo, saveState, retrySave, replace, canUndo, canRedo, handleKeyDown }
+  return { model, commit, undo, redo, saveState, retrySave, replace, getRev, canUndo, canRedo, handleKeyDown }
 }

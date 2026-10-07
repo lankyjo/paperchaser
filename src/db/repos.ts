@@ -8,6 +8,7 @@ import type { Company, DocumentModel } from '../document/types'
 import type { Client } from '../project/client'
 import type { Project } from '../project/project'
 import { db as rawDb } from './db'
+import { announceSave } from './documentChannel'
 
 // Company profile row; companyRepo adds the singleton key.
 export interface CompanyRow extends Company {
@@ -61,6 +62,7 @@ export const documentsRepo = {
   byProject: (projectId: string) => db.documents.where('projectId').equals(projectId).toArray(),
   list: () => db.documents.toArray(),
   finalize: (doc: DocumentModel, now: Date) => finalizeInTransaction(doc, now),
+  save: (doc: DocumentModel, expectedRev: number) => saveIfCurrent(doc, expectedRev),
 }
 
 const DEFAULT_PREFIXES: Partial<Record<DocumentModel['type'], string>> = {
@@ -78,9 +80,36 @@ export const countersRepo = {
   put: (counter: Counter) => db.counters.put(counter),
 }
 
+// Thrown when a save is based on a revision another tab has already replaced.
+export class StaleWriteError extends Error {
+  constructor() {
+    super('This document was changed in another tab.')
+    this.name = 'StaleWriteError'
+  }
+}
+
+async function assertCurrent(id: string, expectedRev: number) {
+  const stored = await db.documents.get(id)
+  if (stored !== undefined && (stored.rev ?? 0) !== expectedRev) throw new StaleWriteError()
+}
+
+// Writes only if the stored revision is the one this edit started from, then bumps it.
+async function saveIfCurrent(doc: DocumentModel, expectedRev: number): Promise<DocumentModel> {
+  return rawDb.transaction('rw', 'documents', async () => {
+    await assertCurrent(doc.id, expectedRev)
+    const saved = { ...doc, rev: expectedRev + 1 }
+    await db.documents.put(saved)
+    return saved
+  }).then((saved) => {
+    announceSave({ id: saved.id, rev: saved.rev })
+    return saved
+  })
+}
+
 // Finalizes in one transaction so the counter and the numbered document can never disagree, even across tabs.
 async function finalizeInTransaction(doc: DocumentModel, now: Date): Promise<DocumentModel> {
   return rawDb.transaction('rw', 'counters', 'documents', async () => {
+    await assertCurrent(doc.id, doc.rev ?? 0)
     let number: string | null = null
     if (isNumberedType(doc.type) && getPlainText(doc.number) === '') {
       const counter = await countersRepo.get(doc.type)
@@ -88,8 +117,11 @@ async function finalizeInTransaction(doc: DocumentModel, now: Date): Promise<Doc
       await db.counters.put(next.counter)
       number = next.number
     }
-    const finalized = finalizeDocument(doc, number, now.toISOString())
+    const finalized = { ...finalizeDocument(doc, number, now.toISOString()), rev: (doc.rev ?? 0) + 1 }
     await db.documents.put(finalized)
+    return finalized
+  }).then((finalized) => {
+    announceSave({ id: finalized.id, rev: finalized.rev })
     return finalized
   })
 }

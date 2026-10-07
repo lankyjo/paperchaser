@@ -1,3 +1,4 @@
+import type { SaveState } from '../edit/useAutoSave'
 import type { PageSize } from '../../document/types'
 import { Button } from '../ui/button'
 import { PageSizeSelect } from './PageSizeSelect'
@@ -29,7 +30,7 @@ export function BuilderHeader({
   zoom: number
   onZoomIn: () => void
   onZoomOut: () => void
-  saveState: 'saved' | 'saving' | 'failed'
+  saveState: SaveState
   onRetrySave: () => void
   pageSize: PageSize
   onPageSizeChange: (pageSize: PageSize) => void

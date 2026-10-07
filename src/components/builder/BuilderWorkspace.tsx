@@ -29,9 +29,9 @@ export function BuilderWorkspace({
 }) {
   const { history, settings, selection, items, sections, outlineProps, sharedPropertiesProps, commitCustomerName } =
     useBuilderDocument(initialModel, initialTemplate, initialPageSize, shared)
-  const { model, commit, undo, redo, saveState, retrySave, replace, canUndo, canRedo, handleKeyDown } = history
-  // Sent documents are read-only until returned to draft.
-  const editable = editableProp && model.status === 'draft'
+  const { model, commit, undo, redo, saveState, retrySave, canUndo, canRedo, handleKeyDown } = history
+  // Sent documents are read-only until returned to draft; a tab with stale edits is read-only until reloaded.
+  const editable = editableProp && model.status === 'draft' && saveState !== 'stale'
   const { zoom, zoomIn, zoomOut } = useCanvasZoom()
   const [previewOpen, setPreviewOpen] = useState(false)
   // Print always uses the desktop canvas so the document renders exactly once.
@@ -56,7 +56,7 @@ export function BuilderWorkspace({
           onPageSizeChange={settings.changePageSize}
           onOpenPreview={() => setPreviewOpen(true)}
         />
-        {editableProp && <LifecycleBar model={model} shared={shared} replace={replace} />}
+        {editableProp && <LifecycleBar model={model} shared={shared} history={history} />}
         {isDesktop ? (
           <DesktopPanes
             {...layout}

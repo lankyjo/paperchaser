@@ -11,13 +11,13 @@ import { useDocumentLifecycle } from './useDocumentLifecycle'
 interface LifecycleBarProps {
   model: DocumentModel
   shared: SharedData | undefined
-  replace: (next: DocumentModel) => void
+  history: { replace: (next: DocumentModel) => void; getRev: () => number }
 }
 
 // Draft: finalize and print. Sent: print again or return to draft. Unsent snapshot: pull the latest project data.
-export function LifecycleBar({ model, shared, replace }: LifecycleBarProps) {
+export function LifecycleBar({ model, shared, history }: LifecycleBarProps) {
   const [confirming, setConfirming] = useState(false)
-  const lifecycle = useDocumentLifecycle(model, replace, shared)
+  const lifecycle = useDocumentLifecycle(model, history, shared)
   const changes = shared && model.status === 'draft' && model.frozen ? pullLatestChanges(model, shared) : []
   const number = getPlainText(model.number)
 

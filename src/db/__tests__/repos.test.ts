@@ -7,7 +7,7 @@ import type { DocumentModel } from '../../document/types'
 import { db } from '../db'
 import { createProject } from '../../project/project'
 import { createClient } from '../../project/client'
-import { assetsRepo, catalogRepo, clientsRepo, countersRepo, companyRepo, documentsRepo, preferencesRepo, projectsRepo } from '../repos'
+import { assetsRepo, catalogRepo, clientsRepo, countersRepo, StaleWriteError, companyRepo, documentsRepo, preferencesRepo, projectsRepo } from '../repos'
 
 // Fixture-shaped synthetic document, never real PII.
 const DOC: DocumentModel = {
@@ -102,6 +102,22 @@ describe('companyRepo (singleton profile)', () => {
 
   it('get returns undefined before any profile is stored', async () => {
     expect(await companyRepo.get()).toBeUndefined()
+  })
+})
+
+describe('revision-checked saves', () => {
+  it('bumps the revision on each save and rejects a save based on an older revision', async () => {
+    await documentsRepo.put(DOC)
+    const first = await documentsRepo.save({ ...DOC, number: 'A' }, 0)
+    expect(first.rev).toBe(1)
+    await expect(documentsRepo.save({ ...DOC, number: 'B' }, 0)).rejects.toBeInstanceOf(StaleWriteError)
+    expect((await documentsRepo.get(DOC.id))?.number).toBe('A')
+  })
+
+  it('finalize refuses a stale copy so another tab cannot overwrite a sent document', async () => {
+    await documentsRepo.put(DOC)
+    await documentsRepo.save({ ...DOC, number: 'X' }, 0)
+    await expect(documentsRepo.finalize({ ...DOC, rev: 0 }, new Date('2026-10-07'))).rejects.toBeInstanceOf(StaleWriteError)
   })
 })
 

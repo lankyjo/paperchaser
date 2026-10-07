@@ -86,6 +86,8 @@ const brandingSchema = z
 
 export const documentSchema = z.object({
   projectId: z.string(),
+  // Bumped on every save; a write based on an older revision is rejected.
+  rev: z.int().nonnegative().optional(),
   // Project-shared fields this document has edited locally, so project changes no longer overwrite them.
   overrides: z.array(z.enum(['customer.name', 'customer.address'])).optional(),
   // z.object() strips unknown keys rather than rejecting them.
