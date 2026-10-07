@@ -37,8 +37,8 @@ export type Bundle = ProjectBundle | WorkspaceBundle
 
 type BundleParse = { ok: true; bundle: Bundle } | { ok: false; reason: string }
 
-// ponytail: naive length cap rejects oversized files before JSON.parse; switch to streaming parsing if multi-megabyte backups matter.
-export const MAX_BUNDLE_LENGTH = 5_000_000
+// ponytail: 100 MB cap (room for image-heavy backups) checked before JSON.parse; stream-parse if backups outgrow it.
+export const MAX_BUNDLE_LENGTH = 100_000_000
 
 // Untrusted import boundary: size, JSON syntax, then version, then the full schema; never throws.
 export function parseBundle(json: string): BundleParse {
