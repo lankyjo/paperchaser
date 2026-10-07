@@ -6,7 +6,7 @@ test('a welcome document is built from blocks that can be edited, hidden, reorde
   await page.getByRole('button', { name: 'New project' }).click()
   await page.goto('/')
   await page.getByRole('link', { name: 'Acme rebrand' }).click()
-  await page.getByRole('button', { name: 'New welcome document' }).click()
+  await page.getByRole('button', { name: 'Start welcome' }).click()
 
   const pageRoot = page.locator('#print-root')
   await expect(pageRoot.getByRole('heading', { name: 'Welcome to the team' })).toBeVisible()

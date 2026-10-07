@@ -1,0 +1,25 @@
+import { DOC_TITLES } from './tokens'
+import type { DocumentModel } from './types'
+import { newInvoice } from './newInvoice'
+import { newWelcome } from './newWelcome'
+
+interface NewDocumentArgs {
+  type: DocumentModel['type']
+  id: string
+  projectId: string
+  today: string
+  newId: (n: number) => string
+}
+
+const MONEY_TYPES = new Set<DocumentModel['type']>(['quote', 'invoice', 'receipt', 'creditNote'])
+
+// Starting draft for any document type: money documents get line items, the others a block outline.
+export function newDocument({ type, id, projectId, today, newId }: NewDocumentArgs): DocumentModel {
+  if (MONEY_TYPES.has(type)) return { ...newInvoice({ id, projectId, today }), type }
+  if (type === 'welcome') return newWelcome({ id, projectId, today, newId })
+  return {
+    ...newInvoice({ id, projectId, today }),
+    type,
+    blocks: [{ id: newId(1), type: 'heading', text: DOC_TITLES[type] }],
+  }
+}

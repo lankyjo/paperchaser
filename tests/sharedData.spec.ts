@@ -12,7 +12,7 @@ test('an invoice reads its client from the project, can override it, and reset b
   await page.getByRole('button', { name: 'Save project' }).click()
   await expect(page.getByLabel('Project fee')).toHaveValue('3332')
 
-  await page.getByRole('link', { name: /invoice/ }).click()
+  await page.getByRole('listitem', { name: 'Invoice' }).getByRole('link').first().click()
   const billTo = page.locator('section', { has: page.getByRole('heading', { name: 'Bill to' }) })
   const customerName = billTo.locator('[contenteditable]').first()
   await expect(customerName).toHaveText('Acme Coffee')

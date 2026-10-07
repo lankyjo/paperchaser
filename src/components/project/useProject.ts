@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { clientsRepo, documentsRepo, projectsRepo } from '../../db/repos'
-import { newWelcome } from '../../document/newWelcome'
+import { newDocument } from '../../document/newDocument'
 import type { DocumentModel } from '../../document/types'
 import { useMountEffect } from '../../hooks/useMountEffect'
 import { createClient, type Client } from '../../project/client'
+import type { StepType } from '../../project/pipeline'
 import type { Project } from '../../project/project'
 
 interface ProjectData {
@@ -41,8 +42,9 @@ export function useProject(projectId: string) {
     await save({ ...project, clientId: client.id })
   }
 
-  const createWelcome = async (): Promise<DocumentModel> => {
-    const doc = newWelcome({
+  const createDocument = async (type: StepType): Promise<DocumentModel> => {
+    const doc = newDocument({
+      type,
       id: crypto.randomUUID(),
       projectId,
       today: new Date().toLocaleDateString('en-CA'),
@@ -52,5 +54,10 @@ export function useProject(projectId: string) {
     return doc
   }
 
-  return { data, save, createClientFor, createWelcome }
+  const toggleDone = async (project: Project, type: StepType) => {
+    const done = project.doneSteps ?? []
+    await save({ ...project, doneSteps: done.includes(type) ? done.filter((t) => t !== type) : [...done, type] })
+  }
+
+  return { data, save, createClientFor, createDocument, toggleDone }
 }
