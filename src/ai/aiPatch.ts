@@ -37,21 +37,42 @@ export function restoreImages(doc: DocumentModel, images: string[]): DocumentMod
 
 const segments = (path: string) => path.split('/').slice(1).map((s) => s.replaceAll('~1', '/').replaceAll('~0', '~'))
 
+const FORBIDDEN = new Set(['__proto__', 'constructor', 'prototype'])
+
+// Steps one level down, refusing prototype keys and anything that is not the node's own property.
+function child(node: unknown, key: string): unknown {
+  if (FORBIDDEN.has(key) || node === null || typeof node !== 'object' || !Object.hasOwn(node, key)) throw new Error(`no such path segment ${key}`)
+  return (node as Record<string, unknown>)[key]
+}
+
+// A JSON-pointer array index: digits within bounds, or "-" (append) for add.
+function arrayIndex(list: unknown[], key: string, op: AiOperation['op']): number {
+  if (key === '-' && op === 'add') return list.length
+  if (!/^\d+$/.test(key)) throw new Error(`bad index ${key}`)
+  const idx = Number(key)
+  if (idx > list.length || (op !== 'add' && idx === list.length)) throw new Error(`index out of range ${key}`)
+  return idx
+}
+
 // Applies one JSON-pointer operation to a plain JSON tree in place.
 function applyOperation(root: Record<string, unknown>, { op, path, valueJson }: AiOperation) {
   const keys = segments(path)
   const last = keys.pop()
-  if (last === undefined) throw new Error('empty path')
-  const parent = keys.reduce<unknown>((node, key) => (node as Record<string, unknown>)[key], root) as Record<string, unknown> | unknown[]
-  if (parent === undefined || parent === null) throw new Error(`no such path ${path}`)
+  if (last === undefined || FORBIDDEN.has(last)) throw new Error('bad path')
+  const parent = keys.reduce<unknown>(child, root)
   const value = op === 'remove' ? undefined : (JSON.parse(valueJson ?? 'null') as unknown)
   if (Array.isArray(parent)) {
-    const idx = last === '-' ? parent.length : Number(last)
+    const idx = arrayIndex(parent, last, op)
     if (op === 'add') parent.splice(idx, 0, value)
     else if (op === 'remove') parent.splice(idx, 1)
     else parent[idx] = value
-  } else if (op === 'remove') delete parent[last]
-  else parent[last] = value
+    return
+  }
+  if (parent === null || typeof parent !== 'object') throw new Error(`no such path ${path}`)
+  const record = parent as Record<string, unknown>
+  if (op !== 'add' && !Object.hasOwn(record, last)) throw new Error(`no such field ${last}`)
+  if (op === 'remove') delete record[last]
+  else record[last] = value
 }
 
 // Applies model-proposed edits to a copy of a draft; protected fields, invalid JSON and schema violations are refused.

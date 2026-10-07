@@ -54,3 +54,22 @@ describe('workspace backup', () => {
     expect(await assetsRepo.get('orphan')).toBeUndefined()
   })
 })
+
+describe('import isolation', () => {
+  it('refuses a project file whose documents belong to another project or reuse another project’s document ids', async () => {
+    const bundle = await exportProject('p1')
+    const foreign = { ...bundle, project: { ...bundle.project, id: 'p2' }, documents: bundle.documents.map((d) => ({ ...d, projectId: 'p1' })) }
+    await expect(importProject(foreign, 'copy')).rejects.toThrow('This project file contains documents from another project.')
+
+    const hijack = { ...bundle, project: { ...bundle.project, id: 'p3' }, documents: bundle.documents.map((d) => ({ ...d, projectId: 'p3', status: 'draft' as const })) }
+    await expect(importProject(hijack, 'copy')).rejects.toThrow('This project file reuses documents that belong to another project.')
+    expect((await documentsRepo.get('i1'))?.status).toBe('sent')
+  })
+
+  it('stores only images whose id matches their content, and never replaces an existing image', async () => {
+    const bundle = await exportProject('p1')
+    const fake = { id: 'abc', dataUrl: 'data:image/png;base64,AAAA', width: 1, height: 1 }
+    await importProject({ ...bundle, project: { ...bundle.project, id: 'p9' }, documents: [], assets: [fake] }, 'copy')
+    expect(await db.table('assets').get('abc')).toBeUndefined()
+  })
+})

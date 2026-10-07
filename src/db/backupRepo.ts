@@ -2,6 +2,7 @@ import { referencedAssetIds } from '../document/assets'
 import { BACKUP_VERSION, copyProjectBundle, countersAfterImport, type ProjectBundle, type WorkspaceBundle } from '../project/backup'
 import type { Client } from '../project/client'
 import { NUMBERED_TYPES, type Counter } from '../document/finalize'
+import { sha256Hex } from '../lib/sha256Hex'
 import { db } from './db'
 import { assetsRepo, clientsRepo, companyRepo, countersRepo, documentsRepo, projectsRepo } from './repos'
 
@@ -30,16 +31,30 @@ async function resolveClient(client: Client | undefined): Promise<string | undef
   return client.id
 }
 
+// A project file may only write its own documents: none may claim another project or reuse a document id owned elsewhere.
+async function assertOwnDocuments(bundle: ProjectBundle) {
+  if (bundle.documents.some((d) => d.projectId !== bundle.project.id)) throw new Error('This project file contains documents from another project.')
+  const existing = await Promise.all(bundle.documents.map((d) => documentsRepo.get(d.id)))
+  if (existing.some((d) => d !== undefined && d.projectId !== bundle.project.id)) throw new Error('This project file reuses documents that belong to another project.')
+}
+
+// Keeps only images whose id is the hash of their content and that are not already stored, so a file can never swap an existing logo or signature.
+async function verifiedNewAssets(assets: ProjectBundle['assets']) {
+  const checked = await Promise.all(assets.map(async (a) => ((await sha256Hex(a.dataUrl)) === a.id && !(await assetsRepo.get(a.id)) ? a : null)))
+  return checked.filter((a) => a !== null)
+}
+
 // Adds a project file; when its id already exists the user chose to replace it, skip it or import a copy.
 export async function importProject(incoming: ProjectBundle, mode: ImportMode): Promise<void> {
   const exists = (await projectsRepo.get(incoming.project.id)) !== undefined
   if (exists && mode === 'skip') return
   const bundle = exists && mode === 'copy' ? copyProjectBundle(incoming, () => crypto.randomUUID()) : incoming
+  await assertOwnDocuments(bundle)
   if (exists && mode === 'replace') await projectsRepo.delete(bundle.project.id)
   const clientId = await resolveClient(bundle.client)
   await projectsRepo.put({ ...bundle.project, clientId: clientId ?? bundle.project.clientId })
   await db.table('documents').bulkPut(bundle.documents)
-  await db.table('assets').bulkPut(bundle.assets)
+  await db.table('assets').bulkPut(await verifiedNewAssets(bundle.assets))
   const local = await Promise.all(NUMBERED_TYPES.map((t) => countersRepo.get(t)))
   await Promise.all(countersAfterImport(local, bundle.documents).map((c) => countersRepo.put(c)))
 }

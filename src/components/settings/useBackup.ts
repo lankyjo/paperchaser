@@ -26,18 +26,23 @@ export function useBackup() {
     setMessage(`Imported "${bundle.project.title || 'Untitled project'}".`)
   }
 
-  const importFile = async (file: File) => {
-    const parsed = parseBundle(await file.text())
-    if (!parsed.ok) return setMessage(parsed.reason)
-    await route(parsed.bundle)
-  }
+  // Imports refuse unsafe files by throwing; the reason is shown instead of failing silently.
+  const reportErrors = (action: () => Promise<void>) => action().catch((err: Error) => setMessage(err.message))
 
-  const resolveProject = async (mode: ImportMode) => {
-    if (pending?.kind !== 'projectClash') return
-    await importProject(pending.bundle, mode)
-    setPending(null)
-    setMessage(mode === 'skip' ? 'Import skipped.' : 'Project imported.')
-  }
+  const importFile = (file: File) =>
+    reportErrors(async () => {
+      const parsed = parseBundle(await file.text())
+      if (!parsed.ok) return setMessage(parsed.reason)
+      await route(parsed.bundle)
+    })
+
+  const resolveProject = (mode: ImportMode) =>
+    reportErrors(async () => {
+      if (pending?.kind !== 'projectClash') return
+      setPending(null)
+      await importProject(pending.bundle, mode)
+      setMessage(mode === 'skip' ? 'Import skipped.' : 'Project imported.')
+    })
 
   const restoreWorkspace = async () => {
     if (pending?.kind !== 'workspace') return

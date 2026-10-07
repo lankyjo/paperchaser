@@ -51,3 +51,14 @@ describe('changedSections', () => {
     expect(result.ok && changedSections(welcome, result.doc)).toEqual(['Heading: Welcome aboard'])
   })
 })
+
+describe('path safety', () => {
+  it('refuses prototype paths and bad array indices without polluting Object.prototype', () => {
+    for (const path of ['/__proto__/supersededBy', '/blocks/0/__proto__/x', '/constructor/prototype/x', '/blocks/-1', '/blocks/999/text', '/blocks/abc']) {
+      const result = applyAiOperations(welcome, [{ op: 'replace', path, valueJson: '"evil"' }])
+      expect(result.ok).toBe(false)
+    }
+    expect(({} as Record<string, unknown>).supersededBy).toBeUndefined()
+    expect(({} as Record<string, unknown>).x).toBeUndefined()
+  })
+})

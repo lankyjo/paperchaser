@@ -73,7 +73,11 @@ export function copyProjectBundle(bundle: ProjectBundle, newId: () => string): P
   return { ...bundle, project: { ...bundle.project, id: projectId }, documents }
 }
 
-const trailingNumber = (number: string) => Number(/(\d+)$/.exec(number)?.[1] ?? 0)
+// Trailing sequence number of a document number; anything longer than 9 digits is ignored so counters stay safe integers.
+const trailingNumber = (number: string) => {
+  const digits = /(\d+)$/.exec(number)?.[1] ?? ''
+  return digits.length > 0 && digits.length <= 9 ? Number(digits) : 0
+}
 
 // Counters move past the highest imported number of their type, so new documents never reuse an imported number.
 export function countersAfterImport(local: Counter[], imported: DocumentModel[]): Counter[] {

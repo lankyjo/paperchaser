@@ -47,6 +47,12 @@ describe('countersAfterImport', () => {
     expect(countersAfterImport(local, [invoice])).toEqual([{ type: 'invoice', prefix: 'INV-', next: 43, yearlyReset: false }])
     expect(countersAfterImport([{ ...local[0], next: 99 }], [invoice])[0].next).toBe(99)
   })
+
+  it('ignores absurd imported numbers so the counter stays a safe integer', () => {
+    const local = [{ type: 'invoice' as const, prefix: 'INV-', next: 5, yearlyReset: false }]
+    const huge = { ...invoice, number: `INV-${'9'.repeat(400)}` }
+    expect(countersAfterImport(local, [huge])[0].next).toBe(5)
+  })
 })
 
 describe('parseBundle size cap', () => {
