@@ -1185,7 +1185,8 @@
               "blank",
               "minimal",
               "noirLedger",
-              "atelier"
+              "atelier",
+              "statement"
             ]
           },
           "pageSize": {

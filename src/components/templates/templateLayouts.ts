@@ -4,6 +4,7 @@ import type { ResolvedTokens } from '../../document/tokens'
 import type { DocumentModel, TemplateId } from '../../document/types'
 import { atelierLayout } from './atelier/atelierLayout'
 import { noirLedgerLayout } from './noir-ledger/noirLedgerLayout'
+import { statementLayout } from './statement/statementLayout'
 
 export interface RegionProps {
   model: DocumentModel
@@ -30,4 +31,5 @@ export interface TemplateLayout {
 export const TEMPLATE_LAYOUTS: Partial<Record<TemplateId, TemplateLayout>> = {
   noirLedger: noirLedgerLayout,
   atelier: atelierLayout,
+  statement: statementLayout,
 }
