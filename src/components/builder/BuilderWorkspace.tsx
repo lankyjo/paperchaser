@@ -2,6 +2,7 @@ import { useState, type KeyboardEvent } from 'react'
 import type { DocumentModel, PageSize, TemplateId } from '../../document/types'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import type { SharedData } from '../../project/sharedData'
+import { LifecycleBar } from '../lifecycle/LifecycleBar'
 import { ProjectDataContext } from './projectDataContext'
 import { MobileFormattingFooter } from '../edit/MobileFormattingFooter'
 import { PrintPreviewDialog } from '../PrintPreviewDialog'
@@ -17,7 +18,7 @@ export function BuilderWorkspace({
   model: initialModel,
   template: initialTemplate,
   pageSize: initialPageSize,
-  editable = true,
+  editable: editableProp = true,
   shared,
 }: {
   model: DocumentModel
@@ -28,7 +29,9 @@ export function BuilderWorkspace({
 }) {
   const { history, settings, selection, items, sections, outlineProps, sharedPropertiesProps, commitCustomerName } =
     useBuilderDocument(initialModel, initialTemplate, initialPageSize, shared)
-  const { model, commit, undo, redo, saveState, retrySave, canUndo, canRedo, handleKeyDown } = history
+  const { model, commit, undo, redo, saveState, retrySave, replace, canUndo, canRedo, handleKeyDown } = history
+  // Sent documents are read-only until returned to draft.
+  const editable = editableProp && model.status === 'draft'
   const { zoom, zoomIn, zoomOut } = useCanvasZoom()
   const [previewOpen, setPreviewOpen] = useState(false)
   // Print always uses the desktop canvas so the document renders exactly once.
@@ -53,6 +56,7 @@ export function BuilderWorkspace({
           onPageSizeChange={settings.changePageSize}
           onOpenPreview={() => setPreviewOpen(true)}
         />
+        {editableProp && <LifecycleBar model={model} shared={shared} replace={replace} />}
         {isDesktop ? (
           <DesktopPanes
             {...layout}

@@ -1,6 +1,6 @@
 import type { Block } from '../document/blocks'
 import { documentBlocks } from '../document/documentBlocks'
-import { computeTotals } from '../document/totals'
+import { printedTotals } from '../document/finalize'
 import type { Branding, DocumentModel, PageSize, TemplateId } from '../document/types'
 import type { RichTextDoc } from '../document/richtext'
 import { resolveTokens, toCssVars } from '../document/resolveTokens'
@@ -25,7 +25,7 @@ interface DocumentPageProps {
 // Every document rendered on screen and in print: frame, header, its blocks in order, footer. Templates only change tokens.
 export function DocumentPage({ model, template, branding, pageSize, editable = false, onCustomerNameCommit, onCommit }: DocumentPageProps) {
   const resolved = resolveTokens(template ?? model.template ?? 'minimal', branding ?? model.branding)
-  const totals = computeTotals(model)
+  const totals = printedTotals(model)
   const HeaderPreset = headerPresets[resolved.header.style]
   const FooterPreset = footerPresets[resolved.footer.style]
   const visibility = model.settings?.blockVisibility ?? {}

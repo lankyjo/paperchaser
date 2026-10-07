@@ -51,3 +51,6 @@ db.version(5).stores({
 
 // Images stored once, keyed by a hash of their content.
 db.version(6).stores({ assets: 'id' })
+
+// One number sequence per numbered document type.
+db.version(7).stores({ counters: 'type' })

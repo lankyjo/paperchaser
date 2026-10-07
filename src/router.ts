@@ -2,6 +2,7 @@ import { createRoute, createRootRoute, createRouter } from '@tanstack/react-rout
 
 import { RootComponent } from './routes/__root'
 import { ClientsPage } from './components/clients/ClientsPage'
+import { SettingsPage } from './components/settings/SettingsPage'
 import { DocumentRoute } from './routes/DocumentRoute'
 import { IndexPage } from './routes/index'
 import { ProjectRoute } from './routes/ProjectRoute'
@@ -34,7 +35,13 @@ const projectRoute = createRoute({
   component: ProjectRoute,
 })
 
-const routeTree = rootRoute.addChildren([indexRoute, documentRoute, clientsRoute, projectRoute])
+const settingsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/settings',
+  component: SettingsPage,
+})
+
+const routeTree = rootRoute.addChildren([indexRoute, documentRoute, clientsRoute, projectRoute, settingsRoute])
 
 export const router = createRouter({ routeTree })
 

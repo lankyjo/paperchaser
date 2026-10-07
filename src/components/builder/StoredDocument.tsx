@@ -38,7 +38,7 @@ export function StoredDocument({ documentId }: { documentId: string }) {
       {isMoneyDocument(loaded.model) ? (
         <BuilderWorkspace model={loaded.model} shared={loaded.shared} />
       ) : (
-        <BlockWorkspace model={loaded.model} />
+        <BlockWorkspace model={loaded.model} shared={loaded.shared} />
       )}
     </>
   )

@@ -21,6 +21,9 @@ export function ProjectsHome() {
         <Link to="/clients" className="ml-auto mr-3 text-sm underline">
           Clients
         </Link>
+        <Link to="/settings" className="mr-3 text-sm underline">
+          Settings
+        </Link>
         <Button variant="outline" onClick={() => void create('')}>
           Quick invoice
         </Button>

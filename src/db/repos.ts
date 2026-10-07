@@ -2,6 +2,8 @@
 import type { Table } from 'dexie'
 
 import { referencedAssetIds } from '../document/assets'
+import { finalizeDocument, isNumberedType, nextNumber, type Counter } from '../document/finalize'
+import { getPlainText } from '../document/richtext'
 import type { Company, DocumentModel } from '../document/types'
 import type { Client } from '../project/client'
 import type { Project } from '../project/project'
@@ -40,6 +42,7 @@ interface Tables {
   preferences: Table<PreferenceRow>
   projects: Table<Project>
   assets: Table<AssetRow>
+  counters: Table<Counter>
 }
 
 // Dexie typings expose table props only on subclasses; a plain instance has them at runtime, so cast once.
@@ -57,6 +60,38 @@ export const documentsRepo = {
   byStatus: (status: DocumentModel['status']) => db.documents.where('status').equals(status).toArray(),
   byProject: (projectId: string) => db.documents.where('projectId').equals(projectId).toArray(),
   list: () => db.documents.toArray(),
+  finalize: (doc: DocumentModel, now: Date) => finalizeInTransaction(doc, now),
+}
+
+const DEFAULT_PREFIXES: Partial<Record<DocumentModel['type'], string>> = {
+  quote: 'Q-',
+  agreement: 'AGR-',
+  invoice: 'INV-',
+  creditNote: 'CN-',
+  receipt: 'RCT-',
+}
+
+const defaultCounter = (type: DocumentModel['type']): Counter => ({ type, prefix: DEFAULT_PREFIXES[type] ?? '', next: 1, yearlyReset: false })
+
+export const countersRepo = {
+  get: async (type: DocumentModel['type']): Promise<Counter> => (await db.counters.get(type)) ?? defaultCounter(type),
+  put: (counter: Counter) => db.counters.put(counter),
+}
+
+// Finalizes in one transaction so the counter and the numbered document can never disagree, even across tabs.
+async function finalizeInTransaction(doc: DocumentModel, now: Date): Promise<DocumentModel> {
+  return rawDb.transaction('rw', 'counters', 'documents', async () => {
+    let number: string | null = null
+    if (isNumberedType(doc.type) && getPlainText(doc.number) === '') {
+      const counter = await countersRepo.get(doc.type)
+      const next = nextNumber(counter, now)
+      await db.counters.put(next.counter)
+      number = next.number
+    }
+    const finalized = finalizeDocument(doc, number, now.toISOString())
+    await db.documents.put(finalized)
+    return finalized
+  })
 }
 
 export const projectsRepo = {

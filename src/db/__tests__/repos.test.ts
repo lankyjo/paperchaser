@@ -7,7 +7,7 @@ import type { DocumentModel } from '../../document/types'
 import { db } from '../db'
 import { createProject } from '../../project/project'
 import { createClient } from '../../project/client'
-import { assetsRepo, catalogRepo, clientsRepo, companyRepo, documentsRepo, preferencesRepo, projectsRepo } from '../repos'
+import { assetsRepo, catalogRepo, clientsRepo, countersRepo, companyRepo, documentsRepo, preferencesRepo, projectsRepo } from '../repos'
 
 // Fixture-shaped synthetic document, never real PII.
 const DOC: DocumentModel = {
@@ -77,7 +77,7 @@ describe('projectsRepo', () => {
 describe('db schema drift guard', () => {
   it('declares the stores with id-keyed primary keys and the indexes queries rely on', async () => {
     const names = db.tables.map((t) => t.name).sort()
-    expect(names).toEqual(['assets', 'catalog', 'clients', 'company', 'documents', 'preferences', 'projects'])
+    expect(names).toEqual(['assets', 'catalog', 'clients', 'company', 'counters', 'documents', 'preferences', 'projects'])
     const byName = new Map(db.tables.map((t) => [t.name, t.schema]))
     expect(byName.get('documents')?.primKey.src).toBe('id')
     expect(byName.get('documents')?.indexes.map((i) => i.name).sort()).toEqual(['projectId', 'status', 'type', 'updatedAt'])
@@ -102,6 +102,30 @@ describe('companyRepo (singleton profile)', () => {
 
   it('get returns undefined before any profile is stored', async () => {
     expect(await companyRepo.get()).toBeUndefined()
+  })
+})
+
+describe('finalizing', () => {
+  const draftInvoice = (id: string) => ({ ...DOC, id, number: '' })
+
+  it('numbers invoices in sequence, even when finalized at the same time', async () => {
+    await Promise.all([documentsRepo.finalize(draftInvoice('a'), new Date('2026-10-07')), documentsRepo.finalize(draftInvoice('b'), new Date('2026-10-07'))])
+    const numbers = [(await documentsRepo.get('a'))?.number, (await documentsRepo.get('b'))?.number].sort()
+    expect(numbers).toEqual(['INV-0001', 'INV-0002'])
+    expect((await countersRepo.get('invoice')).next).toBe(3)
+  })
+
+  it('reuses the reserved number when an unsent document is finalized again', async () => {
+    const first = await documentsRepo.finalize(draftInvoice('a'), new Date('2026-10-07'))
+    const again = await documentsRepo.finalize({ ...first, status: 'draft' }, new Date('2026-10-08'))
+    expect(again.number).toBe('INV-0001')
+    expect((await countersRepo.get('invoice')).next).toBe(2)
+  })
+
+  it('does not number documents that are never numbered', async () => {
+    const welcome = await documentsRepo.finalize({ ...draftInvoice('w'), type: 'welcome' }, new Date('2026-10-07'))
+    expect(welcome.number).toBe('')
+    expect(welcome.status).toBe('sent')
   })
 })
 

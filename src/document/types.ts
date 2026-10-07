@@ -104,6 +104,13 @@ export const documentSchema = z.object({
     'feedback',
     'creditNote',
   ]),
+  // Set when the document is finalized: the printed totals, kept so later app changes never alter a sent document.
+  frozen: z
+    .object({
+      finalizedAt: z.iso.datetime(),
+      totals: z.object({ lineNets: z.array(z.int()), subtotalMinor: z.int(), taxMinor: z.int(), grandTotalMinor: z.int() }),
+    })
+    .optional(),
   // How line prices treat tax; set from the project and frozen once sent.
   taxMode: z.enum(['exclusive', 'inclusive', 'none']).optional(),
   // Ordered content blocks; documents without line items are built entirely from these.

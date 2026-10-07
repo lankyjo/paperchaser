@@ -6,12 +6,15 @@ import { UndoRedoButtons } from '../builder/UndoRedoButtons'
 import { Button } from '../ui/button'
 import { BlockOutline } from './BlockOutline'
 import { DocumentPage } from '../DocumentPage'
+import type { SharedData } from '../../project/sharedData'
 import { useHistory } from '../edit/useHistory'
+import { LifecycleBar } from '../lifecycle/LifecycleBar'
 import { blockActions } from './blockActions'
 
 // Editor for documents built from blocks: outline on the left, editable page on the right.
-export function BlockWorkspace({ model: initial }: { model: DocumentModel }) {
-  const { model, commit, undo, redo, canUndo, canRedo, saveState, retrySave, handleKeyDown } = useHistory(initial)
+export function BlockWorkspace({ model: initial, shared }: { model: DocumentModel; shared?: SharedData }) {
+  const { model, commit, undo, redo, canUndo, canRedo, saveState, retrySave, replace, handleKeyDown } = useHistory(initial)
+  const editable = model.status === 'draft'
   const actions = blockActions(model, commit)
 
   return (
@@ -30,12 +33,13 @@ export function BlockWorkspace({ model: initial }: { model: DocumentModel }) {
           </Button>
         </div>
       </header>
+      <LifecycleBar model={model} shared={shared} replace={replace} />
       <main className="flex flex-1 flex-col gap-4 px-2 pb-10 lg:flex-row print:p-0">
-        <aside className="shrink-0 lg:w-64 print:hidden">
+        {editable && <aside className="shrink-0 lg:w-64 print:hidden">
           <BlockOutline blocks={actions.blocks} canHide={actions.canHide} onMove={actions.moveBlock} onToggleHidden={actions.toggleHidden} onAdd={actions.addBlock} />
-        </aside>
+        </aside>}
         <div className="flex flex-1 justify-center overflow-auto">
-          <DocumentPage model={model} editable onCommit={commit} />
+          <DocumentPage model={model} editable={editable} onCommit={editable ? commit : undefined} />
         </div>
       </main>
     </div>

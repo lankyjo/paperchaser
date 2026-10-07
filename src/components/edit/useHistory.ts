@@ -11,6 +11,7 @@ interface UseHistory {
   redo: () => void
   saveState: ReturnType<typeof useAutoSave>['saveState']
   retrySave: () => void
+  replace: (next: DocumentModel) => void
   canUndo: boolean
   canRedo: boolean
   // Bind to the builder root's onKeyDown for Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z and Ctrl+Y.
@@ -57,6 +58,14 @@ export function useHistory(initial: DocumentModel): UseHistory {
     scheduleSave(next)
   }
 
+  // Swaps in a document changed outside editing (finalize, unsend); clears undo so lifecycle steps can't be undone.
+  const replace = (next: DocumentModel) => {
+    past.current = []
+    future.current = []
+    setModel(next)
+    syncStackSizes()
+  }
+
   const retrySave = () => {
     scheduleSave(modelRef.current)
   }
@@ -79,5 +88,5 @@ export function useHistory(initial: DocumentModel): UseHistory {
   const canUndo = stackSizes.past > 0
   const canRedo = stackSizes.future > 0
 
-  return { model, commit, undo, redo, saveState, retrySave, canUndo, canRedo, handleKeyDown }
+  return { model, commit, undo, redo, saveState, retrySave, replace, canUndo, canRedo, handleKeyDown }
 }

@@ -47,9 +47,9 @@ function withProjectValue(doc: DocumentModel, field: SharedField, shared: Shared
 
 const FIELDS = Object.keys(sharedValue) as SharedField[]
 
-// Drafts show the project's values for every field they haven't overridden; sent documents stay frozen.
+// Drafts show the project's values for every field they haven't overridden; sent or unsent snapshots stay frozen.
 export function applySharedData(doc: DocumentModel, shared: SharedData): DocumentModel {
-  if (doc.status !== 'draft') return doc
+  if (doc.status !== 'draft' || doc.frozen !== undefined) return doc
   const overrides = doc.overrides ?? []
   const settings = {
     ...doc,
@@ -68,4 +68,21 @@ export function trackOverrides(doc: DocumentModel, shared: SharedData): Document
 export function resetOverride(doc: DocumentModel, field: SharedField, shared: SharedData): DocumentModel {
   const reset = withProjectValue(doc, field, shared)
   return { ...reset, overrides: (doc.overrides ?? []).filter((f) => f !== field) }
+}
+
+const FIELD_LABELS: Record<SharedField, string> = { 'customer.name': 'Client name', 'customer.address': 'Client address' }
+
+// What pulling the latest project data into a frozen document would change, field by field.
+export function pullLatestChanges(doc: DocumentModel, shared: SharedData): { field: string; from: string; to: string }[] {
+  const overrides = doc.overrides ?? []
+  return FIELDS.filter((f) => !overrides.includes(f) && sharedValue[f](doc) !== projectValue[f](shared)).map((f) => ({
+    field: FIELD_LABELS[f],
+    from: sharedValue[f](doc),
+    to: projectValue[f](shared),
+  }))
+}
+
+// Drops the snapshot of an unsent document and applies the current project data.
+export function pullLatest(doc: DocumentModel, shared: SharedData): DocumentModel {
+  return applySharedData({ ...doc, frozen: undefined }, shared)
 }

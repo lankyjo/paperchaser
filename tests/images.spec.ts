@@ -52,6 +52,7 @@ test('a drawn signature is trimmed and stored, with a blank client signature lin
   await expect(pageRoot.getByText('Client signature', { exact: true })).toBeVisible()
   await pageRoot.getByRole('button', { name: 'Draw signature' }).click()
   const pad = pageRoot.getByLabel('Signature drawing area')
+  await pad.scrollIntoViewIfNeeded()
   const box = (await pad.boundingBox())!
   await page.mouse.move(box.x + 40, box.y + 60)
   await page.mouse.down()
