@@ -4,11 +4,7 @@ import { XIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
-/**
- * BottomSheet — Base UI Dialog-based sheet (D-21 fallback: react-spring-bottom-sheet
- * lacks React 19 peer support). Composes DialogPrimitive primitives with slide-up
- * animation, drag handle, backdrop dim, safe-area insets, focus trap, scroll lock.
- */
+// Bottom sheet built on the Base UI dialog, since react-spring-bottom-sheet lacks React 19 support.
 interface BottomSheetProps {
   open: boolean
   onOpenChange: (open: boolean) => void

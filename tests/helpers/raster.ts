@@ -3,20 +3,11 @@ import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import { PNG } from 'pngjs'
 import pixelmatch from 'pixelmatch'
 
-/**
- * Scale-normalization + rasterization helpers for the golden-image parity
- * harness (plan 01-02). Everything a diff goes through lives here so the
- * "flakiest part of the harness" (RESEARCH Pitfall 3 — scale normalization
- * between CSS-pixel screenshots and PDF-point rasterizations) has ONE seam.
- *
- * Node-side rasterization uses pdfjs-dist's LEGACY build (the modern build
- * throws DOMMatrix errors under Node) with @napi-rs/canvas — pdfjs-dist 6.x's
- * own declared optional dependency (research A8).
- */
+// Scale normalization, rasterization and pixel diff helpers; pdfjs legacy build is used because the modern one needs DOMMatrix.
 
-/** A4 width at 96dpi: 210mm = 793.7px → 794 (also the normalize target). */
+// A4 width at 96dpi: 210mm = 793.7px, rounded to 794 (also the normalize target).
 export const A4_WIDTH_PX = 794
-/** A4 height at 96dpi: 297mm = 1122.5px → 1123. */
+// A4 height at 96dpi: 297mm = 1122.5px, rounded to 1123.
 export const A4_HEIGHT_PX = 1123
 
 export interface RGB {
@@ -33,9 +24,9 @@ export interface Rect {
 }
 
 export interface DiffResult {
-  /** Fraction of counted differing pixels (AA excluded). */
+  // Fraction of counted differing pixels (anti-aliasing excluded).
   fraction: number
-  /** pixelmatch diff image (red = diff, gray = AA) for artifact upload. */
+  // pixelmatch diff image (red = diff, gray = AA) for artifact upload.
   diff: PNG
 }
 
@@ -59,11 +50,7 @@ function sampleBilinear(img: PNG, sx: number, sy: number, out: Buffer, oi: numbe
   }
 }
 
-/**
- * The single scale-normalization seam (Pitfall 3): resize any image to
- * targetWidth preserving aspect ratio via bilinear sampling. Every projection
- * (preview, print, PDF pages) is normalized to 794px before diffing.
- */
+// Resizes an image to targetWidth with bilinear sampling, preserving aspect ratio.
 export function normalize(img: PNG, targetWidth: number): PNG {
   if (img.width === targetWidth) return img
   const scale = targetWidth / img.width
@@ -79,7 +66,7 @@ export function normalize(img: PNG, targetWidth: number): PNG {
   return out
 }
 
-/** Crop rows [y0, y0+h) of img into a new PNG (clamped to img height). */
+// Crops rows [y0, y0+h) into a new PNG, clamped to the image height.
 export function cropY(img: PNG, y0: number, h: number): PNG {
   const hh = Math.min(h, img.height - y0)
   const out = new PNG({ width: img.width, height: hh })
@@ -87,18 +74,7 @@ export function cropY(img: PNG, y0: number, h: number): PNG {
   return out
 }
 
-/**
- * Rasterize a PDF buffer to per-page PNGs at targetWidth (794 = A4@96dpi).
- * The viewport scale is derived from page points so CSS-pixel screenshots and
- * PDF-point rasterizations share one coordinate space (Pitfall 3).
- *
- * plan 03-05 (A5/A3 structural test): pass `opts.scale` to rasterize at an
- * EXPLICIT scale instead — 96/72 rasterizes at 96dpi CSS pixels, so the
- * output PNG width IS the page width in px (A5 148mm → 560, A3 297mm → 1123)
- * and can be asserted against 794·(w/210) to prove page.pdf({format}) took
- * effect (RESEARCH Open Question 2 RESOLVED). The default stays
- * width-normalization for the A4 diff paths.
- */
+// Rasterizes each PDF page to targetWidth, or at an explicit opts.scale (96/72 makes PNG width equal paper width in CSS px).
 export async function rasterizePdf(
   pdfBuffer: Buffer,
   targetWidth: number,
@@ -119,12 +95,7 @@ export async function rasterizePdf(
   return { pages, numPages: doc.numPages }
 }
 
-/**
- * pixelmatch diff of two images (cropped to common height), returning the
- * fraction of counted differing pixels. includeAA false: anti-aliasing pixels
- * are marked in the diff image but excluded from the count (they are
- * rasterizer noise, not content drift).
- */
+// Fraction of differing pixels over the common height; anti-aliasing pixels are marked but not counted.
 export function diffFraction(a: PNG, b: PNG, threshold: number): DiffResult {
   const h = Math.min(a.height, b.height)
   const ca = cropY(a, 0, h)
@@ -137,13 +108,7 @@ export function diffFraction(a: PNG, b: PNG, threshold: number): DiffResult {
   return { fraction: n / (a.width * h), diff }
 }
 
-/**
- * Blend a hex foreground color at `alpha` over a solid `bg` per channel,
- * rounded (RESEARCH Pattern 4, D-04). The harness derives each template's
- * watermark band target from its RESOLVED accent (blendColor(accent, 0.15,
- * white)) — never a hardcoded blend constant (Pitfall 1: a fixed blend breaks
- * for the 6 templates whose accent ≠ #1d4ed8).
- */
+// Blends a hex foreground at alpha over a solid background per channel, rounded.
 export function blendColor(hex: string, alpha: number, bg: RGB): RGB {
   const c = parseInt(hex.slice(1), 16)
   const fg = { r: (c >> 16) & 255, g: (c >> 8) & 255, b: c & 255 }
@@ -154,12 +119,7 @@ export function blendColor(hex: string, alpha: number, bg: RGB): RGB {
   }
 }
 
-/**
- * Count pixels inside `band` whose channels are within `tol` of `target`.
- * `blueDominant` additionally requires b - r > 8 — this rejects neutral-gray
- * anti-aliasing of near-black table text that would otherwise match a light
- * blue blend range (calibration finding, plan 01-02).
- */
+// Counts band pixels within tol of target; blueDominant also requires b - r > 8 to reject gray text anti-aliasing.
 export function countPixelsInRange(
   img: PNG,
   band: Rect,

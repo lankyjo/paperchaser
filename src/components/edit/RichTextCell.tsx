@@ -4,19 +4,7 @@ import { AstView } from './AstView'
 import { domToAst, getPlainText } from '../../document/richtext'
 import { FloatingToolbar } from './FloatingToolbar'
 
-/**
- * Uncontrolled contentEditable cell — plain text ONLY in the tracer
- * (Phase 04-02). Future plans add execCommand-based formatting.
- *
- * Contract (D-01, D-10, D-11):
- * - Props: { text, onCommit } — text is string | RichTextDoc (the shared field type).
- * - Renders the SAME AstView the view mode renders (one rendering path, D-11).
- * - Uncontrolled while focused — no re-render from model (prevents caret jumps).
- * - Commit on blur AND Enter (D-10).
- * - Escape cancels: parent remounts with key, restoring prior model value.
- * - NEVER uses dangerouslySetInnerHTML (CI-grep enforced).
- * - Paste strips to plain text (T-04-07: no rich HTML injection surface).
- */
+// Uncontrolled contentEditable cell that commits on blur or Enter and cancels on Escape.
 
 interface RichTextCellProps {
   text: string | RichTextDoc
@@ -51,7 +39,7 @@ export function RichTextCell({ text, onCommit, onCancel, placeholder = 'Type her
           const isSame = plainNow === plainPrev && JSON.stringify(doc) === JSON.stringify(astPrev)
           if (!isSame) onCommit(doc)
         } catch {
-          // ponytail: domToAst whitelist never throws on normal paste/execCommand, but execCommand can leave partial DOM that confuses React removeChild. Swallow and keep in-memory model.
+          // execCommand can leave partial DOM that domToAst rejects; keep the previous model rather than crash.
         }
       })
     }
@@ -61,15 +49,12 @@ export function RichTextCell({ text, onCommit, onCancel, placeholder = 'Type her
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       commit()
-      // Blur to exit edit chrome after Enter commit (D-10)
       ref.current?.blur()
     } else if (e.key === 'Escape') {
       e.preventDefault()
-      // Restore original DOM and cancel — don't commit
       cancelling.current = true
+      // Restore the text now so the cancel is visible before the keyed parent remounts the cell.
       if (ref.current) {
-        // Re-render AstView content by resetting text; the keyed parent will remount anyway
-        // but we restore immediately for visual cancellation before blur
         ref.current.textContent = getPlainText(text)
       }
       ref.current?.blur()
@@ -77,14 +62,12 @@ export function RichTextCell({ text, onCommit, onCancel, placeholder = 'Type her
     }
   }
 
-  // T-04-07: paste interceptor — strip to plain text to prevent
-  // rich HTML injection through the contentEditable surface.
+  // Paste as plain text only so no foreign HTML enters the contentEditable.
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault()
     const plain = e.clipboardData.getData('text/plain')
     if (plain) {
-      // Use execCommand('insertText') to insert plain text at the caret
-      // (deprecated but universally supported and preserves undo buffer).
+      // execCommand keeps the browser undo stack intact.
       document.execCommand('insertText', false, plain)
     }
   }

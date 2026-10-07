@@ -51,14 +51,7 @@ function DialogContent({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          // plan 03-05: transform-free centering (inset-0 m-auto + h-fit) —
-          // the standard -translate-x/y centering transform makes Chromium's
-          // compositor mispaint nested overflow:hidden blocks (the
-          // print-preview page stack renders rows of the table blank/offset;
-          // measured 0.033 vs 0.014 diff fraction). The enter/exit zoom+fade
-          // animations are dropped for the same reason (a transient popup
-          // transform re-triggers the artifact and can freeze the dialog at
-          // opacity 0); the dialog is functional, not decorative.
+          // Centered without transforms: a transform makes Chromium mispaint the nested overflow:hidden preview pages.
           "fixed inset-0 m-auto z-50 grid h-fit w-full max-w-[calc(100%-2rem)] gap-4 rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none",
           className
         )}

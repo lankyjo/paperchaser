@@ -1,17 +1,6 @@
 import type { DocumentModel, RichTextDoc } from './types'
 
-/**
- * Synthetic fixture data only — never real customer PII (RESEARCH Security Domain,
- * threat T-01-02). Every name/address below is fictional.
- *
- * D-05: content translated to English IN PLACE — fixture ids, shape, and
- * LOGO_DATA_URL unchanged (routes FIXTURE_KEYS and the harness LOGO_COLOR
- * depend on them); only content strings differ from the original German set.
- *
- * D-06/D-29: text fields are single-paragraph/single-text ASTs (the
- * migration wrap shape). The single-paragraph case MUST render pixel-identical
- * to the plain-string form (Pitfall 3 — losslessness proof).
- */
+// Synthetic fixtures only, never real PII; text fields use the single-paragraph AST, which must render identically to plain strings.
 
 /** Wrap a plain string in a single-paragraph/single-text AST. */
 function ast(s: string): RichTextDoc {
@@ -123,12 +112,7 @@ export const FIXTURE_MAP: Record<string, DocumentModel> = {
     ],
     status: 'paid',
   },
-  /**
-   * D-11: the empty-store demo document — English Minimal, 3 line items,
-   * fictional names/addresses only (T-01-02 synthetic-data rule).
-   * Internal `model.id` is EXACTLY 'demo-invoice' — seedDemoIfEmpty's
-   * get/put idempotence keys on this id (a mismatch would re-seed on every load).
-   */
+  // Empty-store demo document; id must stay 'demo-invoice' because seedDemoIfEmpty keys idempotence on it.
   'invoice-demo': {
     id: 'demo-invoice',
     type: 'invoice',
@@ -141,7 +125,7 @@ export const FIXTURE_MAP: Record<string, DocumentModel> = {
       name: ast('Northwind Studio'),
       address: ['12 Harbor Lane', 'Portland, OR 97201', 'United States'].map(ast),
       email: ast('hello@northwind-studio.test'),
-      logo: null, // edge-14: no logo → header renders without the img element
+      logo: null, // no logo, so the header renders without the img element
     },
     customer: {
       name: ast('Acme Coffee Roasters'),

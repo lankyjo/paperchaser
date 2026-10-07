@@ -1,9 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-// Schema string MUST match src/db/db.ts version(2) — update both together.
-// (The Vitest repo tests in src/db/__tests__/repos.test.ts are the authoritative
-// schema check; this duplicated string exists because the zero-UI app bundle
-// does not import db.ts, so the spec drives real IndexedDB via injected Dexie.)
+// Must match src/db/db.ts version(2); duplicated because the app bundle does not expose db.ts to the page.
 const SCHEMA = {
   company: 'id',
   customers: 'id, name',
@@ -12,7 +9,7 @@ const SCHEMA = {
   preferences: 'key',
 }
 
-/** Document-shaped fixture (synthetic — never real PII) matching documentSchema. */
+// Synthetic document-shaped fixture matching documentSchema (never real PII).
 const DOC = {
   id: 'persist-1',
   type: 'invoice',
@@ -25,7 +22,7 @@ const DOC = {
   lineItems: [{ id: 'l1', title: 'Beratung', description: '', quantity: 1, unitPriceMinor: 10000, taxRateMinor: 1900 }],
 }
 
-/** v2-shaped document with plain-string text fields for the upgrade test. */
+// v2-shaped document with plain-string text fields for the upgrade test.
 const V2_DOC = {
   id: 'upgrade-test-1',
   type: 'invoice',
@@ -41,10 +38,7 @@ const V2_DOC = {
   shippingFees: [{ label: 'Old shipping', amountMinor: 500, taxRateMinor: 1900 }],
 }
 
-// Single test, single page — NEVER a fresh browser context between write and
-// read: a fresh context wipes IndexedDB by design and the test would prove
-// nothing (Pitfall 6). Same-context page.reload() retains IndexedDB — the
-// browser platform guarantee being tested.
+// Same page throughout: a fresh browser context wipes IndexedDB, while same-context reload keeps it.
 test('document written via Dexie survives a full page reload', async ({ page }) => {
   await page.goto('/')
   await page.addScriptTag({ path: 'node_modules/dexie/dist/dexie.js' }) // UMD build -> window.Dexie
@@ -58,8 +52,7 @@ test('document written via Dexie survives a full page reload', async ({ page }) 
   )
   await page.reload() // SAME context — IndexedDB survives the reload
 
-  // reload() dropped the injected script tag — re-inject the UMD build so
-  // window.Dexie exists for the read side (same context, same DB instance).
+  // reload() dropped the injected script, so re-inject Dexie for the read side.
   await page.addScriptTag({ path: 'node_modules/dexie/dist/dexie.js' })
   const stored = await page.evaluate(
     async ({ SCHEMA, id }) => {
@@ -91,8 +84,7 @@ test('version(3) upgrade rewrites stored v2 rows to v3 AST shape (D-29)', async 
     { SCHEMA, V2_DOC, DB_NAME },
   )
 
-  // Step 2: Re-open the same DB at version(3) with an upgrade callback
-  // that mirrors migrateV2ToV3 (the real migration in src/document/migrate.ts).
+  // Re-open at version(3) with an upgrade that mirrors migrateV2ToV3 from src/document/migrate.ts.
   const upgraded = await page.evaluate(
     async ({ SCHEMA, DB_NAME, id }) => {
       const db = new window.Dexie(DB_NAME)

@@ -1,23 +1,14 @@
-/**
- * Pure derived-state engine for the document model: totals and watermark.
- *
- * Nothing in this file may depend on React, the DOM, or Dexie — Node-testable
- * by construction (02-RESEARCH.md Architecture Responsibility Map).
- *
- * This is the SINGLE totals engine (LINE-03). Components consume it, they
- * never reimplement totals math (ARCHITECTURE.md Anti-Pattern 1; the inline
- * copy at DocumentPage.tsx:27 was deleted in plan 02-02).
- */
+// The single totals and watermark engine; components consume it and never reimplement totals math.
 
 import { roundMinor } from './money'
 
-// D-06: percent (in % minor units, 1900 = 19%) or flat minor units
+// Percent (minor units of percent, 1900 = 19%) or flat minor units.
 export interface Discount {
   kind: 'percent' | 'amount'
   value: number
 }
 
-// D-07/D-08; taxRateMinor 0 = untaxed
+// taxRateMinor 0 means untaxed.
 export interface ShippingFee {
   label: string | import('./richtext').RichTextDoc
   amountMinor: number
@@ -25,13 +16,12 @@ export interface ShippingFee {
 }
 
 export interface Totals {
-  lineNets: number[] // per-line rounded nets (reconciliation: printed line == engine line)
-  subtotalMinor: number // D-01: Σ rounded line nets
-  discountMinor: number // document-level discount (D-05); line discounts are inside lineNets
+  lineNets: number[] // per-line rounded nets, so the printed line equals the engine line
+  subtotalMinor: number // sum of rounded line nets
+  discountMinor: number // document-level discount; line discounts are already inside lineNets
   discountedSubtotalMinor: number
-  shippingFeesMinor: number // Σ shipping/fee amounts (before tax) — uniform treatment (D-07);
-  // per-entry labels live in the model for the Phase 3 renderer to split
-  taxByRate: Array<{ rateMinor: number; taxMinor: number }> // D-04: grouped by rate
+  shippingFeesMinor: number // sum of shipping/fee amounts before tax
+  taxByRate: Array<{ rateMinor: number; taxMinor: number }> // grouped by rate
   taxMinor: number
   grandTotalMinor: number
 }
@@ -42,7 +32,7 @@ export function computeTotals(doc: {
   shippingFees?: ShippingFee[]
 }): Totals {
   const lineNets = doc.lineItems.map((item) => {
-    const gross = item.quantity * item.unitPriceMinor // only float source — round per line (D-01)
+    const gross = item.quantity * item.unitPriceMinor // only float source, so round per line
     const lineDiscount = item.discount
       ? item.discount.kind === 'percent'
         ? (gross * item.discount.value) / 10000
@@ -58,16 +48,14 @@ export function computeTotals(doc: {
     : 0
   const discountedSubtotalMinor = subtotalMinor - discountMinor
 
-  const taxByRate = new Map<number, number>() // D-04: grouped by rate
+  const taxByRate = new Map<number, number>() // grouped by rate
   const addTax = (net: number, rateMinor: number) => {
     if (rateMinor === 0) return
     const t = roundMinor((net * rateMinor) / 10000, 0) // tax on the rounded net, never the raw float
     taxByRate.set(rateMinor, (taxByRate.get(rateMinor) ?? 0) + t)
   }
   doc.lineItems.forEach((item, i) => addTax(lineNets[i], item.taxRateMinor))
-  // D-07: shipping/fees are line-like entries — the engine sums them uniformly
-  // (amount + optional tax folded into taxByRate). Per-entry labels stay in the
-  // model; splitting "Shipping" vs "Fees" display rows is a Phase 3 render concern.
+  // Shipping/fees are summed like lines, with their tax folded into taxByRate.
   const shippingFees = doc.shippingFees ?? []
   const shippingFeesMinor = shippingFees.reduce((a, sf) => a + sf.amountMinor, 0)
   shippingFees.forEach((sf) => addTax(sf.amountMinor, sf.taxRateMinor))
@@ -86,5 +74,5 @@ export function computeTotals(doc: {
 }
 
 export function deriveWatermark(status: 'draft' | 'sent' | 'paid'): 'draft' | null {
-  return status === 'draft' ? 'draft' : null // D-11: watermark derives from status
+  return status === 'draft' ? 'draft' : null
 }

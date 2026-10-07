@@ -3,22 +3,7 @@ import { DOC_TITLES, FONT_STACKS } from '../../document/tokens'
 import type { DocumentModel } from '../../document/types'
 import { getPlainText } from '../../document/richtext'
 
-/**
- * HeaderStandard — the split layout header preset (BRND-05): company block
- * left (logo + name + address + email), title + meta right-aligned.
- * Default for Minimal / Corporate / Freelancer (Creative's standard-offset is
- * this layout with the token-driven 18mm left offset applied at the page
- * level, so it selects this component too).
- *
- * Style-only contract: every color and font comes from the resolved tokens
- * (or the --tpl-* CSS vars those tokens emit on #print-root). No hardcoded
- * hexes or font names, no per-template branching in the component
- * (Anti-Pattern 1). All text renders as React text nodes (T-03-04:
- * escaped by default).
- *
- * The title derives from the document type (DOC_TITLES, D-05 English copy)
- * and renders in the heading font with uppercase treatment.
- */
+// Header preset: company block left, title and meta right; also used for the offset layout.
 export function HeaderStandard({ tokens, model }: { tokens: ResolvedTokens; model: DocumentModel }) {
   return (
     <header

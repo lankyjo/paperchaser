@@ -3,21 +3,7 @@ import { DOC_TITLES, FONT_STACKS } from '../../document/tokens'
 import type { DocumentModel } from '../../document/types'
 import { getPlainText } from '../../document/richtext'
 
-/**
- * HeaderBanner — the full-width primary-color band header preset (BRND-05):
- * white content, company name left, title right. Default for Modern / Agency.
- *
- * The band background is the resolved primary token (branding override or
- * template default — D-02); with no primary (Blank-style tokens) it falls
- * back to ink. Band padding, white text, and the 90%-opacity meta line are the
- * fixed banner treatment from UI-SPEC §Branding Controls — the white text is
- * the CSS keyword (a design constant, not a template identity value), never a
- * hex literal.
- *
- * Style-only: no hardcoded hexes/fonts beyond the fixed white-on-band
- * contract, no per-template branching in the component, all content renders
- * as React text nodes (T-03-04).
- */
+// Header preset: full-width primary-color band with company name left and title right.
 export function HeaderBanner({ tokens, model }: { tokens: ResolvedTokens; model: DocumentModel }) {
   const band = tokens.palette.primary ?? tokens.palette.ink
   return (

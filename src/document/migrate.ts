@@ -1,21 +1,11 @@
-/**
- * Pure, renderer-agnostic v2→v3 document migration (D-29).
- *
- * Wraps every legacy string text field into a single-paragraph/single-text AST.
- * Mutates in place (Dexie modify contract). Idempotent — already-AST fields
- * pass through unchanged.
- *
- * Nothing in this file may depend on React, the DOM, or Dexie.
- */
-
 import type { RichTextDoc } from './richtext'
 
-/** Wrap a plain string into the single-paragraph AST shape. */
+// Wraps a plain string in the single-paragraph AST shape.
 function wrapString(value: string): RichTextDoc {
   return [{ type: 'paragraph', content: [{ type: 'text', text: value }] }]
 }
 
-/** The canonical list of text-field paths in the v2 document shape. */
+// Text-field paths in the v2 document shape.
 const TEXT_PATHS: Array<Array<string | number>> = [
   ['company', 'name'],
   ['company', 'email'],
@@ -29,10 +19,7 @@ const TEXT_ARRAY_PATHS: Array<Array<string | number>> = [
 
 const LINE_ITEM_TEXT_FIELDS = ['title', 'description'] as const
 
-/**
- * Mutate `doc` in place: wrap every string text field into a single-paragraph AST.
- * Already-AST fields (from a partial migration) pass through unchanged.
- */
+// Wraps every string text field of a v2 document into a single-paragraph AST, in place; already-AST fields pass through.
 export function migrateV2ToV3(doc: Record<string, unknown>): void {
   // Scalar text fields: company.name, company.email, customer.name, document.number
   for (const path of TEXT_PATHS) {

@@ -11,8 +11,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      // 'prompt' — the auto-reload strategy is forbidden for a form app
-      // (PITFALLS.md:320): it reloads tabs mid-edit and loses form data.
+      // 'prompt', never auto-reload: auto-reload refreshes tabs mid-edit and loses form data.
       registerType: 'prompt',
       includeAssets: ['favicon.svg'],
       manifest: {
@@ -34,13 +33,9 @@ export default defineConfig({
     },
   },
   test: {
-    // Unit tests are colocated under src/**/__tests__/*.test.ts (02-RESEARCH.md
-    // colocation pattern). Exclude the Playwright specs in tests/ — vitest's
-    // default **/*.spec.ts glob would try to run them and fail.
+    // Unit tests live in src/**/__tests__; Playwright specs in tests/ are excluded.
     include: ['src/**/*.test.ts', 'scripts/**/*.test.ts'],
-    // Vitest 4 exits 1 on an empty suite unless passWithNoTests — the plan's
-    // acceptance criteria require `pnpm exec vitest run` to exit 0 before any
-    // unit test files exist (02-01-PLAN.md task 2).
+    // Vitest exits 1 on an empty suite without this flag.
     passWithNoTests: true,
   },
 })

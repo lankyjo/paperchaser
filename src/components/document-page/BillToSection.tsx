@@ -1,0 +1,56 @@
+import type { DocumentModel } from '../../document/types'
+import type { RichTextDoc } from '../../document/richtext'
+import { getPlainText } from '../../document/richtext'
+import { RichTextCell } from '../edit/RichTextCell'
+
+// Customer name and address block, as editable cells or plain text.
+export function BillToSection({
+  model,
+  editable,
+  onCustomerNameCommit,
+  onCommit,
+}: {
+  model: DocumentModel
+  editable: boolean
+  onCustomerNameCommit?: (name: RichTextDoc) => void
+  onCommit?: (next: DocumentModel) => void
+}) {
+  const commitName = (next: RichTextDoc) => {
+    if (onCustomerNameCommit) onCustomerNameCommit(next)
+    else onCommit?.({ ...model, customer: { ...model.customer, name: next } })
+  }
+  const commitAddressLine = (idx: number, next: RichTextDoc) => {
+    const addr = [...model.customer.address]
+    addr[idx] = next
+    onCommit?.({ ...model, customer: { ...model.customer, address: addr } })
+  }
+
+  return (
+    <section style={{ marginBottom: 'var(--tpl-section-gap)' }}>
+      <h3 style={{ margin: '0 0 4px' }}>Bill to</h3>
+      {editable ? (
+        <>
+          <RichTextCell
+            key={`customer-name-${JSON.stringify(model.customer.name)}`}
+            text={model.customer.name}
+            onCommit={commitName}
+          />
+          {model.customer.address.map((line, idx) => (
+            <RichTextCell
+              key={`customer-addr-${idx}-${JSON.stringify(line)}`}
+              text={line}
+              onCommit={(next) => commitAddressLine(idx, next)}
+            />
+          ))}
+        </>
+      ) : (
+        <>
+          <div>{getPlainText(model.customer.name)}</div>
+          {model.customer.address.map((line) => (
+            <div key={getPlainText(line)}>{getPlainText(line)}</div>
+          ))}
+        </>
+      )}
+    </section>
+  )
+}

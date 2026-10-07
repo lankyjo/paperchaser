@@ -1,15 +1,16 @@
 import type { ComponentType, CSSProperties } from 'react'
 
-import { computeTotals, deriveWatermark } from '../document/totals'
+import { computeTotals } from '../document/totals'
 import { PAGE_SIZES } from '../document/tokens'
 import type { ResolvedTokens } from '../document/tokens'
 import type { FooterStyle, HeaderStyle } from '../document/tokens'
 import type { Branding, DocumentModel, PageSize, TemplateId } from '../document/types'
 import type { RichTextDoc } from '../document/richtext'
 import { resolveTokens, toCssVars } from '../document/resolveTokens'
-import { getPlainText } from '../document/richtext'
-import { NumericCell } from './edit/NumericCell'
-import { RichTextCell } from './edit/RichTextCell'
+import { BillToSection } from './document-page/BillToSection'
+import { LineItemsTable } from './document-page/LineItemsTable'
+import { resolveWatermarkText } from './document-page/resolveWatermarkText'
+import { TotalsSection } from './document-page/TotalsSection'
 import { FooterDetailed } from './print/FooterDetailed'
 import { FooterMinimal } from './print/FooterMinimal'
 import { FooterStandard } from './print/FooterStandard'
@@ -17,37 +18,9 @@ import { HeaderBanner } from './print/HeaderBanner'
 import { HeaderCompact } from './print/HeaderCompact'
 import { HeaderStandard } from './print/HeaderStandard'
 
-/**
- * THE single component rendered on screen AND in print (parity by construction,
- * RESEARCH Pattern 1). The print path applies @media print + @page rules from
- * src/styles/print.css to this exact DOM; there is no second layout engine.
- *
- * All text renders as React text nodes — React escapes by default. The
- * raw-HTML injection attribute is banned project-wide (grep-enforced in CI).
- *
- * D-12/D-13: prop-driven and template-agnostic. Resolved tokens surface as
- * --tpl-* CSS custom properties on #print-root (cast through CSSProperties —
- * React's type lacks the `--*` index signature); the stylesheet reads the
- * variables and the print projection inherits them from the same element.
- * NO branch on the document's template exists anywhere in this component
- * (RESEARCH Anti-Pattern 1): a missing token field is the smell to fix, not
- * an if.
- */
+// The one document rendered on screen and in print; templates differ only through --tpl-* token variables, never branches.
 
-const EUR = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' })
-
-function formatMinor(minor: number): string {
-  return EUR.format(minor / 100)
-}
-
-// Geometry contract (harness-measured, plan 01-02): 210mm × min-297mm A4 block
-// with 15mm padding — content sits exactly 15mm from the page edge in preview,
-// print, and PDF. BRND-07: background stays #ffffff in both projections.
-// PDF-02 (plan 03-05): the geometry is now page-size-dependent — A5 (148×210)
-// and A3 (297×420) per the PAGE_SIZES registry (one source of truth for the mm
-// dimensions; DocumentPage consumes the same record the bench Select reads).
-// Padding stays 15mm for ALL sizes (PDF-05: the page block carries the margin
-// contract; @page margin stays 0 — no double offset).
+// Page block at the page size's mm dimensions with a fixed 15mm padding; @page margin stays 0 so the margin is not doubled.
 function pageStyleFor(pageSize: PageSize): CSSProperties {
   const g = PAGE_SIZES[pageSize]
   return {
@@ -65,23 +38,12 @@ function pageStyleFor(pageSize: PageSize): CSSProperties {
   }
 }
 
-const row: CSSProperties = { borderBottom: '1px solid var(--tpl-row-rule)' }
-
-/** Preset props — the resolved token set and the model both presets render. */
 interface PresetProps {
   tokens: ResolvedTokens
   model: DocumentModel
 }
 
-/**
- * BRND-05: the 3×3 preset matrix, keyed by the RESOLVED STYLE token
- * (resolved.header.style / resolved.footer.style) — never by the document's
- * template id (Anti-Pattern 1: a switch on the template is the smell; a
- * switch on the resolved style is the contract). The 4th HeaderStyle member,
- * 'standard-offset' (Creative's default), is the Standard layout with the
- * token-driven 18mm left offset applied at the page level, so it selects the
- * same component.
- */
+// Presets are chosen by the resolved header/footer style; standard-offset reuses HeaderStandard with a page-level offset.
 const headerPresets: Record<HeaderStyle, ComponentType<PresetProps>> = {
   standard: HeaderStandard,
   banner: HeaderBanner,
@@ -112,54 +74,14 @@ export function DocumentPage({
   onCustomerNameCommit?: (name: RichTextDoc) => void
   onCommit?: (next: DocumentModel) => void
 }) {
-  // D-08/D-09: a missing template resolves to Minimal here; the resolver and
-  // registry stay the single seam for template defaults.
   const resolved = resolveTokens(template ?? 'minimal', branding)
   const vars = toCssVars(resolved)
   const totals = computeTotals(model)
-
-  // BRND-05: preset selection by the resolved style token (never template id).
   const HeaderPreset = headerPresets[resolved.header.style]
   const FooterPreset = footerPresets[resolved.footer.style]
-
-  // D-30: block visibility — absent settings → show all (default visible).
+  // Blocks are visible unless explicitly hidden.
   const bv = model.settings?.blockVisibility ?? {}
-
-  // Helpers for rich-text commits — each creates a new model with the field replaced.
-  // Legacy onCustomerNameCommit kept for 04-02 compatibility; onCommit is the generic path for 04-03+.
-  const handleCustomerNameCommit = (next: RichTextDoc) => {
-    if (onCustomerNameCommit) onCustomerNameCommit(next)
-    else onCommit?.({ ...model, customer: { ...model.customer, name: next } })
-  }
-  const handleCustomerAddressCommit = (idx: number, next: RichTextDoc) => {
-    const addr = [...model.customer.address]
-    addr[idx] = next
-    onCommit?.({ ...model, customer: { ...model.customer, address: addr } })
-  }
-  const handleLineTitleCommit = (id: string, next: RichTextDoc) =>
-    onCommit?.({ ...model, lineItems: model.lineItems.map((li) => (li.id === id ? { ...li, title: next } : li)) })
-  const handleLineDescCommit = (id: string, next: RichTextDoc) =>
-    onCommit?.({ ...model, lineItems: model.lineItems.map((li) => (li.id === id ? { ...li, description: next } : li)) })
-  const handleQuantityCommit = (id: string, quantity: number) =>
-    onCommit?.({ ...model, lineItems: model.lineItems.map((li) => (li.id === id ? { ...li, quantity } : li)) })
-  const handleUnitPriceCommit = (id: string, valueMinor: number) =>
-    onCommit?.({ ...model, lineItems: model.lineItems.map((li) => (li.id === id ? { ...li, unitPriceMinor: valueMinor } : li)) })
-
-  // BRND-06 (edges 11/12/13): three-way watermark resolve. The branding
-  // override wins when set ('draft' → DRAFT, 'paid' → PAID regardless of
-  // status); 'auto' or unset derives from status via deriveWatermark — the
-  // single Phase-2 engine, never reimplemented. NOTE (documented divergence,
-  // UI-SPEC line 205): deriveWatermark is DRAFT-only (totals.ts:90-92 returns
-  // null for 'paid'/'sent'), so 'auto' on a paid document renders NO watermark
-  // and "PAID" appears only via the explicit override.
-  const watermarkText =
-    branding?.watermark === 'draft'
-      ? 'DRAFT'
-      : branding?.watermark === 'paid'
-        ? 'PAID'
-        : deriveWatermark(model.status) === 'draft'
-          ? 'DRAFT'
-          : null
+  const watermarkText = resolveWatermarkText(branding, model.status)
 
   return (
     <div
@@ -168,8 +90,7 @@ export function DocumentPage({
       style={{ ...pageStyleFor(pageSize ?? 'a4'), ...(vars as CSSProperties) }}
     >
       {watermarkText !== null && (
-        // D-04: watermark color follows the resolved brand accent (inline style
-        // is the single mechanism; print.css keeps #1d4ed8 as stylesheet fallback).
+        // Inline accent color; print.css only holds a fallback color.
         <div className="watermark" aria-hidden="true" style={{ color: resolved.accent }}>
           {watermarkText}
         </div>
@@ -178,117 +99,15 @@ export function DocumentPage({
       {bv.header !== false && <HeaderPreset tokens={resolved} model={model} />}
 
       {bv.billTo !== false && (
-        <section style={{ marginBottom: 'var(--tpl-section-gap)' }}>
-          <h3 style={{ margin: '0 0 4px' }}>Bill to</h3>
-          {editable ? (
-            <>
-              <RichTextCell
-                key={`customer-name-${JSON.stringify(model.customer.name)}`}
-                text={model.customer.name}
-                onCommit={handleCustomerNameCommit}
-              />
-              {model.customer.address.map((line, idx) => (
-                <RichTextCell
-                  key={`customer-addr-${idx}-${JSON.stringify(line)}`}
-                  text={line}
-                  onCommit={(next) => handleCustomerAddressCommit(idx, next)}
-                />
-              ))}
-            </>
-          ) : (
-            <>
-              <div>{getPlainText(model.customer.name)}</div>
-              {model.customer.address.map((line) => (
-                <div key={getPlainText(line)}>{getPlainText(line)}</div>
-              ))}
-            </>
-          )}
-        </section>
+        <BillToSection model={model} editable={editable} onCustomerNameCommit={onCustomerNameCommit} onCommit={onCommit} />
       )}
 
       {bv.items !== false && (
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 'var(--tpl-section-gap)' }}>
-          <thead>
-            <tr style={row}>
-              <th style={{ textAlign: 'left', padding: '6px 0' }}>Item</th>
-              <th style={{ textAlign: 'left', padding: '6px 0' }}>Description</th>
-              <th style={{ textAlign: 'right', padding: '6px 0' }}>Qty</th>
-              <th style={{ textAlign: 'right', padding: '6px 0' }}>Unit price</th>
-              <th style={{ textAlign: 'right', padding: '6px 0' }}>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {model.lineItems.map((item, index) => {
-              return (
-                <tr key={item.id} style={row}>
-                  <td style={{ padding: '6px 0', verticalAlign: 'top' }}>
-                    {editable && onCommit ? (
-                      <RichTextCell
-                        key={`title-${item.id}-${JSON.stringify(item.title)}`}
-                        text={item.title}
-                        onCommit={(next) => handleLineTitleCommit(item.id, next)}
-                      />
-                    ) : (
-                      getPlainText(item.title)
-                    )}
-                    {item.image ? (
-                      <img
-                        src={item.image}
-                        alt=""
-                        style={{ marginTop: 4, maxHeight: 60, maxWidth: 80, objectFit: 'contain', display: 'block' }}
-                      />
-                    ) : null}
-                  </td>
-                  <td style={{ padding: '6px 0', verticalAlign: 'top' }}>
-                    {editable && onCommit ? (
-                      <RichTextCell
-                        key={`desc-${item.id}-${JSON.stringify(item.description)}`}
-                        text={item.description}
-                        onCommit={(next) => handleLineDescCommit(item.id, next)}
-                      />
-                    ) : (
-                      getPlainText(item.description)
-                    )}
-                  </td>
-                  <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
-                    {editable && onCommit ? (
-                      <NumericCell quantity={item.quantity} currency={model.currency} onCommit={(q) => handleQuantityCommit(item.id, q)} />
-                    ) : (
-                      item.quantity
-                    )}
-                  </td>
-                  <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
-                    {editable && onCommit ? (
-                      <NumericCell valueMinor={item.unitPriceMinor} currency={model.currency} onCommit={(v) => handleUnitPriceCommit(item.id, v)} />
-                    ) : (
-                      formatMinor(item.unitPriceMinor)
-                    )}
-                  </td>
-                  <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
-                    {formatMinor(totals.lineNets[index])}
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+        <LineItemsTable model={model} lineNets={totals.lineNets} onCommit={editable ? onCommit : undefined} />
       )}
 
       {bv.totals !== false && (
-        <section style={{ maxWidth: '90mm', marginLeft: 'auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span>Subtotal</span>
-            <span>{formatMinor(totals.subtotalMinor)}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span>Tax</span>
-            <span>{formatMinor(totals.taxMinor)}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, marginTop: '4px' }}>
-            <span>Grand total</span>
-            <span>{formatMinor(totals.grandTotalMinor)}</span>
-          </div>
-        </section>
+        <TotalsSection subtotalMinor={totals.subtotalMinor} taxMinor={totals.taxMinor} grandTotalMinor={totals.grandTotalMinor} />
       )}
 
       {bv.footer !== false && <FooterPreset tokens={resolved} model={model} />}

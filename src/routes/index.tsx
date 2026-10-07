@@ -7,18 +7,7 @@ const FIXTURE_KEYS = new Set(Object.keys(FIXTURE_MAP))
 const TEMPLATE_KEYS = new Set(Object.keys(TEMPLATE_REGISTRY))
 const SIZE_KEYS = new Set(Object.keys(PAGE_SIZES))
 
-/**
- * Bench entry route. Every query param is whitelist-validated before use —
- * raw query strings are never reflected into the DOM and never JSON-parsed
- * (threat T-01-01, extended to V5):
- * - ?fixture= (T-01-01): whitelisted FIXTURE_MAP keys render that fixture
- *   through the bench for the parity harness; any other value (or no param)
- *   falls through to the empty-store demo path (D-11).
- * - ?template= (V5): checked against TEMPLATE_REGISTRY keys; unknown → undefined
- *   → resolver default 'minimal' (D-09). Never an error page.
- * - ?size= (V5): checked against PAGE_SIZES keys; unknown → undefined → 'a4'
- *   (PDF-01). Never an error page.
- */
+// Query params are whitelist-checked and never reflected or JSON-parsed; unknown values fall back to defaults.
 export function IndexPage() {
   const params = new URLSearchParams(window.location.search)
 

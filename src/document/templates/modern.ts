@@ -1,17 +1,11 @@
 import type { TemplateTokens } from '../tokens'
 
-/**
- * Modern template tokens — values VERBATIM from the 03-UI-SPEC identity table
- * (the single source of truth). Data only, no logic.
- *
- * Clean sans, 4mm primary top band, flat table with primary-colored header
- * (UI-SPEC §Template Identity 3).
- */
+// Modern template tokens: clean sans, 4mm primary top band, flat table with primary-colored header.
 export const modernTokens: TemplateTokens = {
   palette: {
     ink: '#111827',
     primary: '#1d4ed8', // default primary
-    accent: null, // D-04 chain resolves to primary
+    accent: null, // accent falls back to primary
     border: '#e2e8f0',
     fill: '#f8fafc',
     muted: '#6b7280', // gray blurb

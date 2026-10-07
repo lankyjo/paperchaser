@@ -10,7 +10,7 @@ describe('resolveTokens — Minimal defaults + D-04 accent fallback (03-01)', ()
   it("resolveTokens('minimal', undefined) resolves the watermark accent to '#1d4ed8' (D-04 chain: accent ?? primary ?? fallback)", () => {
     const resolved = resolveTokens('minimal')
     expect(resolved.accent).toBe('#1d4ed8')
-    // Minimal identity values (UI-SPEC single source of truth)
+    // Minimal identity values
     expect(resolved.palette.ink).toBe('#111827')
     expect(resolved.spacing.sectionGap).toBe('12mm')
   })
@@ -19,7 +19,7 @@ describe('resolveTokens — Minimal defaults + D-04 accent fallback (03-01)', ()
     const resolved = resolveTokens('minimal', { primaryColor: '#ff0000', accentColor: '#00ff00' })
     expect(resolved.palette.primary).toBe('#ff0000')
     expect(resolved.palette.accent).toBe('#00ff00')
-    expect(resolved.accent).toBe('#00ff00') // D-04: branding accent wins over the fallback
+    expect(resolved.accent).toBe('#00ff00') // branding accent wins over the fallback
     expect(resolved.palette.ink).toBe('#111827') // untouched
     expect(resolved.palette.border).toBe('#e5e7eb') // untouched
     expect(resolved.fonts.bodyFontId).toBe('geist') // untouched
@@ -67,9 +67,7 @@ describe('documentSchema — D-09 back-compat for optional template/branding/pag
 
 describe('TEMPLATE_REGISTRY — TEMP-01 completeness (03-02: 7 templates)', () => {
   it('contains exactly the 7 template ids, matching the z.enum union in types.ts (edge-24, TEMP-01)', () => {
-    // The registry keys and the schema union are ONE id list consumed in three
-    // places (registry, zod enum, route whitelist) — a mismatch silently drops
-    // a template from the whitelist, so set equality is pinned here.
+    // One id list feeds registry, zod enum and route whitelist; a mismatch silently drops a template.
     const templateEnum = (documentSchema.shape.template as { unwrap(): { options: readonly string[] } }).unwrap()
     expect(Object.keys(TEMPLATE_REGISTRY).sort()).toEqual([...templateEnum.options].sort())
   })
@@ -102,7 +100,7 @@ describe('D-10 — template-switch re-resolution semantics (03-02, edges 08/09)'
     expect(corporate.palette.ink).toBe('#1f2937')
     expect(corporate.fonts.headingFontId).toBe('source-serif-4')
     expect(corporate.spacing.sectionGap).toBe('10mm')
-    expect(corporate.accent).toBe('#1e3a5f') // D-04 chain: corporate primary navy
+    expect(corporate.accent).toBe('#1e3a5f') // accent falls back to corporate primary navy
   })
 
   it('edge-09: switch with set branding keeps the set overrides; unset fields re-derive from the new template', () => {

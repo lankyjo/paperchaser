@@ -1,6 +1,4 @@
-// fake-indexeddb/auto MUST be imported before dexie (the documented
-// pairing per the fake-indexeddb README) — it installs the in-memory
-// IndexedDB globals Dexie captures at module load.
+// Must be imported before dexie: it installs the in-memory IndexedDB globals Dexie captures at load.
 import 'fake-indexeddb/auto'
 
 import { beforeEach, describe, expect, it } from 'vitest'
@@ -9,7 +7,7 @@ import type { DocumentModel } from '../../document/types'
 import { db } from '../db'
 import { catalogRepo, companyRepo, customersRepo, DEMO_DOCUMENT_ID, documentsRepo, preferencesRepo } from '../repos'
 
-/** Fixture-shaped document (synthetic data — RESEARCH Security Domain, never real PII). */
+// Fixture-shaped synthetic document, never real PII.
 const DOC: DocumentModel = {
   id: 'doc-1',
   type: 'invoice',
@@ -80,8 +78,7 @@ describe('documentsRepo', () => {
 
 describe('db schema (STOR-02 drift guard)', () => {
   it('version(2) declares exactly the five stores with id-keyed primary keys and future-query indexes', async () => {
-    // Authoritative schema check: real db.ts via fake-indexeddb (tests/persistence.spec.ts
-    // carries the duplicated string with a MUST-match comment).
+    // Authoritative schema check against the real db.ts; tests/persistence.spec.ts duplicates the string.
     const names = db.tables.map((t) => t.name).sort()
     expect(names).toEqual(['catalog', 'company', 'customers', 'documents', 'preferences'])
     const byName = new Map(db.tables.map((t) => [t.name, t.schema]))

@@ -17,9 +17,7 @@ describe('roundMinor — half-away-from-zero ties (A1, Pitfall 2)', () => {
 
 describe('computeTotals — per-line rounding (D-01/D-03, Pitfall 1)', () => {
   it('subtotal is the SUM OF ROUNDED line nets, not the rounded raw sum', () => {
-    // Each line: qty 0.5 × 211¢ = 105.5¢ gross → rounds to 106¢ per line (JPY 0dp).
-    // Sum of rounded nets: 212. Rounded raw sum: round(105.5 + 105.5) = 211.
-    // Per-line rounding wins (D-01) — the .5-boundary companion case.
+    // Each 0.5 x 211 = 105.5 rounds to 106, so the subtotal is 212, not round(211) = 211.
     const totals = computeTotals({
       lineItems: [
         { quantity: 0.5, unitPriceMinor: 211, taxRateMinor: 1900 },
@@ -76,10 +74,7 @@ describe('computeTotals — per-currency decimals (D-12)', () => {
 
 describe('computeTotals — tax on the ROUNDED net, never the raw float (D-03)', () => {
   it('a fractional net rounds first; tax is computed on the rounded net', () => {
-    // Net: qty 0.5 × 211¢ = 105.5¢ → rounds to 106¢ (JPY 0dp).
-    // Tax on the rounded net: 106 × 1943/10000 = 20.5958 → 21.
-    // Tax on the raw float net: 105.5 × 1943/10000 = 20.49865 → 20.
-    // Pinning D-03: the engine uses the rounded net, so tax = 21.
+    // Net 105.5 rounds to 106; tax on 106 is 20.5958 -> 21, whereas tax on 105.5 would round to 20.
     const totals = computeTotals({
       lineItems: [{ quantity: 0.5, unitPriceMinor: 211, taxRateMinor: 1943 }],
     })
@@ -151,9 +146,7 @@ describe('documentSchema — restructured model accepts the Phase 1 fixture shap
 
 describe('computeTotals — per-line discounts (D-05/D-06)', () => {
   it('a per-line percent discount reduces the net BEFORE rounding', () => {
-    // JPY 0dp: qty 0.5 × 211 = 105.5 gross, 25% line discount → 79.125 → 79.
-    // If the gross were rounded before discounting (106 − 26.375 = 79.625) it
-    // would round to 80 — the fixture pins discount-then-round (D-05/D-06).
+    // 0.5 x 211 = 105.5, minus 25% = 79.125 -> 79; rounding before discounting would give 80.
     const totals = computeTotals({
       lineItems: [{ quantity: 0.5, unitPriceMinor: 211, taxRateMinor: 1900, discount: { kind: 'percent', value: 2500 } }],
     })
@@ -172,8 +165,7 @@ describe('computeTotals — per-line discounts (D-05/D-06)', () => {
 
 describe('computeTotals — document-level discount applied to the discounted subtotal (D-05)', () => {
   it('a percent document discount applies AFTER line discounts and rounds', () => {
-    // Line: qty 2 × 1000 = 2000 with 10% line discount → net 1800.
-    // Document discount 10% applies to the LINE-DISCOUNTED subtotal: 180.
+    // 2 x 1000 with 10% line discount nets 1800; the 10% document discount applies to that: 180.
     const totals = computeTotals({
       lineItems: [{ quantity: 2, unitPriceMinor: 1000, taxRateMinor: 1900, discount: { kind: 'percent', value: 1000 } }],
       discount: { kind: 'percent', value: 1000 },
@@ -228,7 +220,7 @@ describe('computeTotals — shipping/fees are line-like, tax grouped by rate (D-
     expect(totals.shippingFeesMinor).toBe(600)
     expect(totals.taxByRate).toEqual([{ rateMinor: 1900, taxMinor: 304 }]) // 190 + 76 + 38
     expect(totals.taxByRate).toHaveLength(1)
-    // full grandTotal reconciliation (test 5 contract): discountedSubtotal + tax + shippingFees
+    // full grandTotal reconciliation: discountedSubtotal + tax + shippingFees
     expect(totals.grandTotalMinor).toBe(totals.discountedSubtotalMinor + totals.taxMinor + totals.shippingFeesMinor)
   })
 })

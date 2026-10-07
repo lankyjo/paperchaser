@@ -3,16 +3,7 @@ import { DOC_TITLES, FONT_STACKS } from '../../document/tokens'
 import type { DocumentModel } from '../../document/types'
 import { getPlainText } from '../../document/richtext'
 
-/**
- * HeaderCompact — the single-line header preset (BRND-05): logo + company
- * name left, title + number + date right, hairline rule below. Default for
- * Blank.
- *
- * Style-only: colors/fonts come from the resolved tokens; the hairline rule
- * uses the template border token. No hardcoded hexes/fonts, no per-template
- * branching in the component, all content renders as React text nodes
- * (T-03-04).
- */
+// Header preset: single line with logo and name left, title, number and date right.
 export function HeaderCompact({ tokens, model }: { tokens: ResolvedTokens; model: DocumentModel }) {
   return (
     <header style={{ marginBottom: 'var(--tpl-section-gap)' }}>

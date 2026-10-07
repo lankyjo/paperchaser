@@ -1,10 +1,4 @@
-/**
- * Pure, renderer-agnostic document model.
- *
- * JSON-serializable by construction: every value here can round-trip through
- * JSON.stringify/parse untouched. This is the seed of the Phase 2 domain model —
- * nothing in this file may depend on React, the DOM, or Dexie.
- */
+// Pure, JSON-serializable document model; no React, DOM or Dexie.
 
 import * as z from 'zod'
 
@@ -12,35 +6,26 @@ import { CURRENCY_DECIMALS } from './money'
 import { richTextDocSchema } from './richtext'
 import type { RichTextDoc } from './richtext'
 
-// Re-export for fixtures.ts and other consumers
+// Re-exported for fixtures.ts and other consumers.
 export type { RichTextDoc }
 
-/** D-06/D-07: text fields accept plain string (legacy) or rich-text AST node array. */
+// Text fields accept a plain string (legacy) or a rich-text node array.
 const textFieldSchema = z.union([z.string(), richTextDocSchema])
 
-/**
- * D-06: discount instances are percent (value in minor units of percent,
- * 1900 = 19%) or flat amount (value in minor units).
- */
+// Discount is a percent (minor units of percent, 1900 = 19%) or a flat amount in minor units.
 const discountSchema = z.object({
   kind: z.enum(['percent', 'amount']),
   value: z.number().nonnegative(),
 })
 
-/**
- * D-07/D-08: line-like shipping/fee entries. taxRateMinor is REQUIRED with
- * 0 = untaxed (Pitfall 3 — keeps JSON round-trip structural, not value-luck).
- */
+// Shipping/fee entry; taxRateMinor is required, with 0 meaning untaxed.
 const shippingFeeSchema = z.object({
   label: textFieldSchema,
   amountMinor: z.int().nonnegative(),
   taxRateMinor: z.int().nonnegative(),
 })
 
-/**
- * T-04-04-LINE-IMAGE: line-item image is self-contained (data: URL) only —
- * reuses the logoSchema pattern. External http(s) URLs are rejected.
- */
+// Line-item image must be a self-contained data: URL so rendering never fetches remote content.
 const lineItemImageSchema = z
   .string()
   .refine((value) => value.startsWith('data:'), {
@@ -52,20 +37,17 @@ const lineItemSchema = z.object({
   title: textFieldSchema,
   description: textFieldSchema,
   quantity: z.number().nonnegative(),
-  /** Unit price in integer minor units (cents). Never floats — PITFALLS.md:232. */
+  // Unit price in integer minor units (cents), never floats.
   unitPriceMinor: z.int().nonnegative(),
-  /** Tax rate in integer minor units of percent (e.g. 1900 = 19.00%). */
+  // Tax rate in integer minor units of percent (e.g. 1900 = 19.00%).
   taxRateMinor: z.int().nonnegative(),
-  /** D-06: per-line discount; absent = no discount. */
+  // Per-line discount; absent means none.
   discount: discountSchema.optional(),
-  /** LINE-01: optional self-contained image on the line item. */
+  // Optional self-contained image on the line item.
   image: lineItemImageSchema.optional(),
 })
 
-/**
- * T-02-02-LOGO: logo is self-contained (data: URL) or null — never an external
- * http(s) URL, which would fetch remote content on render (tracking/exfiltration).
- */
+// Logo is a data: URL or null, never an http(s) URL that would fetch remote content (tracking/exfiltration) on render.
 const logoSchema = z
   .string()
   .nullable()
@@ -85,11 +67,7 @@ const customerSchema = z.object({
   address: z.array(textFieldSchema),
 })
 
-/**
- * D-09: render SELECTORS, all OPTIONAL — a missing field resolves at render time
- * (template → 'minimal', pageSize → 'a4', branding → template defaults), so
- * Phase-2-era stored documents render immediately with no Dexie migration.
- */
+// Render selectors are optional and resolve at render time, so older stored documents render without migration.
 const templateIdSchema = z.enum(['blank', 'minimal', 'modern', 'corporate', 'freelancer', 'agency', 'creative'])
 const pageSizeSchema = z.enum(['a4', 'a5', 'a3'])
 const brandingSchema = z
@@ -105,31 +83,31 @@ const brandingSchema = z
   .partial()
 
 export const documentSchema = z.object({
-  // z.object() default STRIPS unknown keys = D-14 (strict-object reject is NOT used)
+  // z.object() strips unknown keys rather than rejecting them.
   id: z.string(),
-  /** D-09: one model, one engine — shared across invoice/quote/receipt. */
+  // One model shared across invoice, quote and receipt.
   type: z.enum(['invoice', 'quote', 'receipt']),
-  /** D-12: EUR/JPY today; adding a currency is a registry + schema change. */
+  // Adding a currency means adding it to CURRENCY_DECIMALS.
   currency: z.enum(Object.keys(CURRENCY_DECIMALS) as [string, ...string[]]),
-  /** Zod 4 top-level format — enforces YYYY-MM-DD. */
+  // Enforces YYYY-MM-DD.
   issueDate: z.iso.date(),
   number: textFieldSchema,
-  /** D-11: explicit status; watermark derives from it, never stored. */
+  // Explicit status; the watermark derives from it and is never stored.
   status: z.enum(['draft', 'sent', 'paid']),
   company: companySchema,
   customer: customerSchema,
   lineItems: z.array(lineItemSchema),
-  /** D-05: single document-level discount instance (A6); absent = none. */
+  // Single document-level discount; absent means none.
   discount: discountSchema.optional(),
-  /** D-08: multiple shipping/fee entries allowed; absent = none. */
+  // Any number of shipping/fee entries; absent means none.
   shippingFees: z.array(shippingFeeSchema).optional(),
-  /** D-09: style-only render selector; absent → 'minimal' at resolve time. */
+  // Style-only render selector; absent resolves to 'minimal'.
   template: templateIdSchema.optional(),
-  /** D-09: paper size selector; absent → 'a4' (PDF-01). */
+  // Paper size; absent resolves to 'a4'.
   pageSize: pageSizeSchema.optional(),
-  /** D-09: per-document branding overrides; absent → template defaults (D-02). */
+  // Per-document branding overrides; absent uses template defaults.
   branding: brandingSchema.optional(),
-  /** D-30: block visibility settings per-document — persisted across reloads. */
+  // Per-document block visibility, persisted across reloads.
   settings: z
     .object({
       blockVisibility: z
@@ -146,15 +124,12 @@ export const documentSchema = z.object({
     .optional(),
 })
 
-/** Keeps the Phase 1 exported name (D-15 re-export pattern — fixtures.ts and DocumentPage.tsx import it). */
 export type DocumentModel = z.infer<typeof documentSchema>
 
-// Re-export the nested shapes so fixtures.ts imports keep compiling:
 export type LineItem = z.infer<typeof lineItemSchema>
 export type Company = z.infer<typeof companySchema>
 export type Customer = z.infer<typeof customerSchema>
 
-// D-09: render-selector types (consumed by tokens.ts, resolveTokens.ts, DocumentPage).
 export type TemplateId = z.infer<typeof templateIdSchema>
 export type PageSize = z.infer<typeof pageSizeSchema>
 export type Branding = z.infer<typeof brandingSchema>

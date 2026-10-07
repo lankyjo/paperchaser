@@ -2,21 +2,7 @@ import { useRef, useState, type KeyboardEvent } from 'react'
 import type { DocumentModel } from '../../document/types'
 import { documentsRepo } from '../../db/repos'
 
-/**
- * Model-snapshot history + debounced auto-save (D-12..D-18).
- *
- * Zero useEffect — history is ref-held stacks + ref-held debounce timer;
- * keyboard shortcuts bind to the builder root's onKeyDown (no window listeners).
- *
- * Contract:
- * - past/future: useRef<DocumentModel[]>([]) — bounded 50 (D-14).
- * - saveState: useState<'saved' | 'saving' | 'failed'>('saved').
- * - commit(next): push current model to past, clear future, setModel, scheduleSave.
- * - scheduleSave: clearTimeout + setTimeout(800ms) → documentsRepo.put → setState.
- * - On failure: saveState='failed', model never discarded (D-17).
- * - retrySave: re-runs documentsRepo.put on current model.
- * - Keyboard shortcuts: Ctrl/Cmd+Z → undo; Ctrl/Cmd+Shift+Z / Ctrl+Y → redo.
- */
+// Undo/redo history of model snapshots with debounced auto-save.
 
 type SaveState = 'saved' | 'saving' | 'failed'
 
@@ -29,7 +15,7 @@ interface UseHistory {
   retrySave: () => void
   canUndo: boolean
   canRedo: boolean
-  /** Call from builder-root onKeyDown for Ctrl+Z / Ctrl+Shift+Z. */
+  // Bind to the builder root's onKeyDown for Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z and Ctrl+Y.
   handleKeyDown: (e: KeyboardEvent) => void
 }
 
@@ -40,15 +26,17 @@ export function useHistory(initial: DocumentModel): UseHistory {
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const modelRef = useRef<DocumentModel>(initial)
   const [saveState, setSaveState] = useState<SaveState>('saved')
-  const [version, setVersion] = useState(0)
+  const [stackSizes, setStackSizes] = useState({ past: 0, future: 0 })
 
   // Keep modelRef in sync so the debounced closure always sees the latest.
   // eslint-disable-next-line react-hooks/refs -- sync ref during render without effect (house rule: no useEffect)
   modelRef.current = model
 
+  const syncStackSizes = () => setStackSizes({ past: past.current.length, future: future.current.length })
+
   const scheduleSave = (next: DocumentModel) => {
     clearTimeout(timer.current)
-    setSaveState('saved') // reset from failed on new edit (D-17)
+    setSaveState('saved') // a new edit clears a previous failure; the model is never discarded
     timer.current = setTimeout(async () => {
       setSaveState('saving')
       try {
@@ -64,7 +52,7 @@ export function useHistory(initial: DocumentModel): UseHistory {
     past.current = [...past.current.slice(-49), modelRef.current]
     future.current = []
     setModel(next)
-    setVersion((v) => v + 1)
+    syncStackSizes()
     scheduleSave(next)
   }
 
@@ -73,7 +61,7 @@ export function useHistory(initial: DocumentModel): UseHistory {
     if (!prev) return
     future.current.push(modelRef.current)
     setModel(prev)
-    setVersion((v) => v + 1)
+    syncStackSizes()
     scheduleSave(prev)
   }
 
@@ -82,7 +70,7 @@ export function useHistory(initial: DocumentModel): UseHistory {
     if (!next) return
     past.current.push(modelRef.current)
     setModel(next)
-    setVersion((v) => v + 1)
+    syncStackSizes()
     scheduleSave(next)
   }
 
@@ -105,10 +93,8 @@ export function useHistory(initial: DocumentModel): UseHistory {
     }
   }
 
-  // Derive undo/redo availability from refs + version tick (refs alone don't trigger renders)
-  void version
-  const canUndo = past.current.length > 0
-  const canRedo = future.current.length > 0
+  const canUndo = stackSizes.past > 0
+  const canRedo = stackSizes.future > 0
 
   return { model, commit, undo, redo, saveState, retrySave, canUndo, canRedo, handleKeyDown }
 }

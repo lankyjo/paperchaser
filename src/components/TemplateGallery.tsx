@@ -5,19 +5,7 @@ import { TEMPLATE_REGISTRY } from '../document/tokens'
 import type { TemplateId } from '../document/tokens'
 import { cn } from '@/lib/utils'
 
-/**
- * TemplateGallery — the fixed 7-card template picker (UI-SPEC §Template
- * Gallery surface). Each card = template name + 3 swatch dots (ink / primary /
- * accent from its resolved tokens); the selected card gets an accent ring +
- * check icon. Grid wraps to 2 columns inside the 320px rail; cards never
- * scroll the rail (the rail scrolls as a whole).
- *
- * Fixed curated set of 7 (TEMP-01) — no empty / error / partial states
- * (UI-SPEC dismissed rows). Changes apply instantly: the parent re-renders
- * DocumentPage with the new template and the SAME branding object (D-10), so
- * explicitly-set branding survives the switch and unset branding re-derives
- * from the new template's defaults.
- */
+// Template picker cards showing each template's name and ink/primary/accent swatches.
 const TEMPLATE_CARDS: Array<{ id: TemplateId; name: string }> = Object.keys(TEMPLATE_REGISTRY).map((id) => ({
   id: id as TemplateId,
   name: id.charAt(0).toUpperCase() + id.slice(1),

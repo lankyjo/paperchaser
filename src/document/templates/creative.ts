@@ -1,25 +1,19 @@
 import type { TemplateTokens } from '../tokens'
 
-/**
- * Creative template tokens — values VERBATIM from the 03-UI-SPEC identity
- * table (the single source of truth). Data only, no logic.
- *
- * Asymmetric display serif, 8mm violet left band, 18mm left padding offset,
- * mono uppercase labels (UI-SPEC §Template Identity 7).
- */
+// Creative template tokens: display serif, 8mm violet left band with 18mm left padding, mono uppercase labels.
 export const creativeTokens: TemplateTokens = {
   palette: {
     ink: '#18181b',
     primary: '#7c3aed', // violet default
-    accent: null, // D-04 chain resolves to violet
+    accent: null, // accent falls back to violet
     border: '#e4e4e7', // row rules
     fill: '#f5f3ff',
-    muted: '#a1a1aa', // warm gray (UI-SPEC)
+    muted: '#a1a1aa', // warm gray
   },
   fonts: {
     headingFontId: 'source-serif-4', // display serif
     bodyFontId: 'geist',
-    titleSize: '26px', // serif italic treatment (italic wired in plan 03)
+    titleSize: '26px', // serif italic treatment
     titleWeight: 600,
     labelFontId: 'geist-mono', // mono uppercase labels 9px
     labelLetterspacing: '0em',

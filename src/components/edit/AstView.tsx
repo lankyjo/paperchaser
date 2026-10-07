@@ -1,18 +1,8 @@
 import type { RichTextDoc, RichTextNode } from '../../document/richtext'
 
-/**
- * Template-agnostic AST node renderer (D-06/D-08).
- *
- * Shared by DocumentPage (view mode) and RichTextCell (edit mode inner render) —
- * one rendering path, parity by construction (D-11).
- *
- * Single-paragraph/single-text ASTs render pixel-identical to plain strings
- * (Pitfall 3 — paragraph margin: 0, no default browser spacing).
- *
- * No template branch anywhere in this file (Anti-Pattern 1).
- */
+// Renders a rich-text AST; shared by view mode and the editable cell so both look identical.
 
-/** Mark names → HTML tag overrides (null = no wrapper needed). */
+// Mark name to wrapping HTML tag; null means no wrapper.
 type MarkTag = string | null
 const MARK_TAGS: Record<string, MarkTag> = {
   bold: 'strong',
@@ -23,8 +13,7 @@ const MARK_TAGS: Record<string, MarkTag> = {
 
 export function AstView({ value }: { value: string | RichTextDoc }) {
   if (typeof value === 'string') return <>{value}</>
-  // Golden-preserving shortcut: single-paragraph/single-text AST renders as
-  // a plain text node — pixel-identical to the legacy string rendering (Pitfall 3).
+  // A single unmarked text paragraph renders as a bare text node, identical to a plain string.
   if (
     value.length === 1 &&
     value[0].type === 'paragraph' &&

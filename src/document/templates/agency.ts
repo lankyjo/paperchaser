@@ -1,18 +1,11 @@
 import type { TemplateTokens } from '../tokens'
 
-/**
- * Agency template tokens — values VERBATIM from the 03-UI-SPEC identity table
- * (the single source of truth). Data only, no logic.
- *
- * Bold, mono labels, color-block header: Geist Mono 500 uppercase 9px labels
- * letterspacing 0.12em, 8px accent top band, tight sections
- * (UI-SPEC §Template Identity 6).
- */
+// Agency template tokens: bold, mono uppercase labels, banner header, 8px accent top band, tight sections.
 export const agencyTokens: TemplateTokens = {
   palette: {
     ink: '#0a0a0a',
     primary: '#2563eb', // default primary
-    accent: null, // D-04 chain resolves to primary
+    accent: null, // accent falls back to primary
     border: '#f3f4f6',
     fill: '#ffffff',
     muted: '#6b7280', // mono small print gray

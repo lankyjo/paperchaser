@@ -1,18 +1,11 @@
 import type { TemplateTokens } from '../tokens'
 
-/**
- * Blank template tokens — values VERBATIM from the 03-UI-SPEC identity table
- * (the single source of truth). Data only, no logic.
- *
- * Zero decoration, the raw baseline: system sans, table grid only, no
- * header/footer rules. Header defaults to Compact, footer to Minimal
- * (UI-SPEC §Template Identity 1).
- */
+// Blank template tokens: zero decoration, system sans, table grid only, compact header and minimal footer.
 export const blankTokens: TemplateTokens = {
   palette: {
     ink: '#000000',
     primary: null, // zero decoration — no brand color
-    accent: null, // "no accent" (UI-SPEC)
+    accent: null, // "no accent"
     border: '#d1d5db',
     fill: '#ffffff',
     muted: '#6b7280', // neutral gray — footer text stays minimal

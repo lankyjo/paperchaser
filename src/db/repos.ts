@@ -1,32 +1,28 @@
-/**
- * Repos — the ONLY Dexie touchpoints (Pattern 4, ARCHITECTURE.md). Nothing
- * outside this file reads/writes db tables; Phase 4 (auto-save) and Phase 6
- * (backup/restore, dashboard stats) build on these seams.
- */
+// Repos are the only Dexie touchpoints; nothing outside this file reads or writes db tables.
 import type { Table } from 'dexie'
 
 import { FIXTURE_MAP } from '../document/fixtures'
 import type { Company, Customer, DocumentModel } from '../document/types'
 import { db as rawDb } from './db'
 
-/** Company profile row in the `company` table — singleton key added by companyRepo. */
+// Company profile row; companyRepo adds the singleton key.
 export interface CompanyRow extends Company {
   id: string
 }
 
-/** Customer row — id-keyed (not ++id) for import/export ID stability. */
+// Customer row, id-keyed (not ++id) for stable IDs across import/export.
 export interface CustomerRow extends Customer {
   id: string
 }
 
-/** Catalog item — minimal product shape; Phase 5 extends it. */
+// Catalog item: minimal product shape.
 export interface CatalogItemRow {
   id: string
   name: string
   priceMinor: number
 }
 
-/** KV preference row — `key` is the primary key (STOR-02). */
+// Key-value preference row; `key` is the primary key.
 export interface PreferenceRow {
   key: string
   value: unknown
@@ -40,27 +36,22 @@ interface Tables {
   preferences: Table<PreferenceRow>
 }
 
-// The shipped Dexie typings expose table props only on subclassed instances; a
-// plain instance has them at runtime. Cast once here to type the five tables.
+// Dexie typings expose table props only on subclasses; a plain instance has them at runtime, so cast once.
 const db = rawDb as unknown as Tables
 
-/** Singleton company profile key — one record per workspace (STOR-02). */
+// Singleton company profile key: one record per workspace.
 const COMPANY_ID = 'company'
 
-/** D-11: the seeded empty-store demo document id — seedDemoIfEmpty keys on it. */
+// Id of the seeded empty-store demo document.
 export const DEMO_DOCUMENT_ID = 'demo-invoice'
 
 export const documentsRepo = {
   put: (doc: DocumentModel) => db.documents.put(doc),
   get: (id: string) => db.documents.get(id),
   delete: (id: string) => db.documents.delete(id),
-  /** Index-backed where query — Phase 6 dashboard stats by status. */
+  // Index-backed query by status.
   byStatus: (status: DocumentModel['status']) => db.documents.where('status').equals(status).toArray(),
-  /**
-   * D-11: seed the English Minimal demo document once when the store is empty.
-   * Idempotent — the get/put pair keys on DEMO_DOCUMENT_ID, so repeated calls
-   * (e.g. StrictMode double-mount, every bench load) never duplicate.
-   */
+  // Seeds the demo document once when the store is empty; idempotent via DEMO_DOCUMENT_ID, so StrictMode double-mounts never duplicate.
   seedDemoIfEmpty: async (): Promise<void> => {
     const existing = await db.documents.get(DEMO_DOCUMENT_ID)
     if (existing === undefined) {
@@ -70,7 +61,7 @@ export const documentsRepo = {
 }
 
 export const companyRepo = {
-  /** Singleton: put replaces the one profile record. */
+  // Singleton: put replaces the one profile record.
   put: async (company: Company) => {
     await db.company.put({ ...company, id: COMPANY_ID })
   },
@@ -84,7 +75,7 @@ export const customersRepo = {
   put: (customer: CustomerRow) => db.customers.put(customer),
   get: (id: string) => db.customers.get(id),
   delete: (id: string) => db.customers.delete(id),
-  /** Name-indexed exact match — Phase 5 customer search seam. */
+  // Name-indexed exact match for customer search.
   byName: (name: string) => db.customers.where('name').equals(name).toArray(),
 }
 
@@ -92,7 +83,7 @@ export const catalogRepo = {
   put: (item: CatalogItemRow) => db.catalog.put(item),
   get: (id: string) => db.catalog.get(id),
   delete: (id: string) => db.catalog.delete(id),
-  /** Name-indexed exact match — Phase 5 product search seam. */
+  // Name-indexed exact match for product search.
   byName: (name: string) => db.catalog.where('name').equals(name).toArray(),
 }
 

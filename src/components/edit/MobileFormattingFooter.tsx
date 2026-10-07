@@ -1,46 +1,10 @@
-import { useState } from 'react'
 import { Bold, Italic, Underline, List, Link as LinkIcon, Link2Off, X } from 'lucide-react'
-import { useMountEffect } from '../../lib/useMountEffect'
+import { toggleSelectionLink } from './toggleSelectionLink'
+import { useFocusedCellFormats } from './useFocusedCellFormats'
 
-/**
- * Mobile formatting footer — G-04-16 optional mobile footer for discoverability.
- * Shown on <1024px when any contentEditable cell is focused. Sticky bottom, safe-area,
- * 44×44 touch targets, print:hidden, lg:hidden so desktop uses floating toolbar only.
- */
+// Sticky formatting bar shown below 1024px while a contentEditable cell has focus; desktop uses the floating toolbar.
 export function MobileFormattingFooter() {
-  const [visible, setVisible] = useState(false)
-  const [active, setActive] = useState({ bold: false, italic: false, underline: false, list: false, link: false })
-
-  useMountEffect(() => {
-    const check = () => {
-      const ae = document.activeElement as HTMLElement | null
-      const isCell = ae !== null && ae.getAttribute('contenteditable') === 'true'
-      setVisible(isCell)
-      if (isCell) {
-        setActive({
-          bold: document.queryCommandState('bold'),
-          italic: document.queryCommandState('italic'),
-          underline: document.queryCommandState('underline'),
-          list: document.queryCommandState('insertUnorderedList'),
-          link: isSelectionInLink(),
-        })
-      }
-    }
-
-    document.addEventListener('focusin', check)
-    document.addEventListener('focusout', () => setTimeout(check, 0))
-    document.addEventListener('selectionchange', check)
-    document.addEventListener('keyup', check)
-    document.addEventListener('mouseup', check)
-    check()
-    return () => {
-      document.removeEventListener('focusin', check)
-      document.removeEventListener('focusout', check as EventListener)
-      document.removeEventListener('selectionchange', check)
-      document.removeEventListener('keyup', check)
-      document.removeEventListener('mouseup', check)
-    }
-  })
+  const { visible, active } = useFocusedCellFormats()
 
   if (!visible) return null
 
@@ -49,26 +13,11 @@ export function MobileFormattingFooter() {
 
   const exec = (cmd: string, value?: string) => {
     document.execCommand(cmd, false, value)
-    // Keep focus
     const ae = document.activeElement as HTMLElement | null
     ae?.focus()
   }
 
-  const handleLink = () => {
-    const sel = window.getSelection()
-    if (!sel || sel.isCollapsed) return
-    if (active.link) {
-      exec('unlink')
-      return
-    }
-    const href = window.prompt('Enter URL (http, https, or mailto):', 'https://')
-    if (href === null || href.trim() === '') return
-    if (!/^(https?|mailto):/i.test(href.trim())) {
-      window.alert('Link must start with http://, https://, or mailto:')
-      return
-    }
-    exec('createLink', href.trim())
-  }
+  const handleLink = () => toggleSelectionLink(active.link, exec)
 
   const dismiss = () => {
     const ae = document.activeElement as HTMLElement | null
@@ -106,12 +55,4 @@ export function MobileFormattingFooter() {
       </button>
     </div>
   )
-}
-
-function isSelectionInLink(): boolean {
-  const sel = window.getSelection()
-  const node = sel?.anchorNode
-  if (!node) return false
-  const el = node.nodeType === Node.ELEMENT_NODE ? (node as HTMLElement) : node.parentElement
-  return el?.closest('a') !== null
 }

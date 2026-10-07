@@ -1,20 +1,14 @@
 import type { TemplateTokens } from '../tokens'
 
-/**
- * Corporate template tokens — values VERBATIM from the 03-UI-SPEC identity
- * table (the single source of truth). Data only, no logic.
- *
- * Formal serif headings, navy, closed table grid, double rules
- * (UI-SPEC §Template Identity 4).
- */
+// Corporate template tokens: formal serif headings, navy, closed table grid, double rules.
 export const corporateTokens: TemplateTokens = {
   palette: {
     ink: '#1f2937',
     primary: '#1e3a5f', // default navy
-    accent: null, // D-04 chain resolves to navy
+    accent: null, // accent falls back to navy
     border: '#d1d5db',
     fill: '#ffffff',
-    muted: '#4b5563', // gray (UI-SPEC)
+    muted: '#4b5563', // gray
   },
   fonts: {
     headingFontId: 'source-serif-4', // serif headings 600
