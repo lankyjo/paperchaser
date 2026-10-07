@@ -2,6 +2,8 @@ import type { Block } from './blocks'
 import { DOC_TYPES } from './docTypes'
 import { documentBlocks } from './documentBlocks'
 import { printedTotals } from './finalize'
+import { formatDocDate } from './formatDocDate'
+import { getPlainText } from './richtext'
 import { resolveTokens } from './resolveTokens'
 import type { Branding, DocumentModel, PageSize, TemplateId } from './types'
 import { watermarkFor } from './watermark'
@@ -46,9 +48,26 @@ export const PAGE_PADDING_PX = (15 * 96) / 25.4
 export function resolvePage(doc: DocumentModel, template?: TemplateId, branding?: Partial<Branding>) {
   const brand = branding ?? doc.branding
   return {
+    templateId: template ?? doc.template ?? 'minimal',
     tokens: resolveTokens(template ?? doc.template ?? 'minimal', brand, doc.frozen?.templateVersion),
     totals: printedTotals(doc),
     watermark: watermarkFor(doc, brand),
     items: pageItemsFor(doc),
+  }
+}
+
+const DATE_LABELS = { validUntil: 'Valid until', dueDate: 'Due' }
+
+// Plain-text facts every header shows: title, sender, number and formatted dates.
+export function documentFacts(doc: DocumentModel) {
+  const dateField = DOC_TYPES[doc.type].dateField
+  const date = dateField ? doc[dateField] : undefined
+  return {
+    title: DOC_TYPES[doc.type].title,
+    company: getPlainText(doc.company.name),
+    companyLines: [...doc.company.address.map(getPlainText), getPlainText(doc.company.email)].filter((line) => line !== ''),
+    number: getPlainText(doc.number),
+    issued: formatDocDate(doc.issueDate, doc.locale),
+    date: dateField && date ? { label: DATE_LABELS[dateField], value: formatDocDate(date, doc.locale) } : null,
   }
 }

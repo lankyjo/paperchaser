@@ -1,3 +1,5 @@
+import { DOC_TYPE_IDS, DOC_TYPES } from './docTypes'
+import { newDocument } from './newDocument'
 import type { DocumentModel, RichTextDoc } from './types'
 
 // Synthetic fixtures only, never real PII; text fields use the single-paragraph AST, which must render identically to plain strings.
@@ -168,4 +170,12 @@ FIXTURE_MAP['invoice-oversized'] = {
   ...FIXTURE_MAP['invoice-simple'],
   id: 'oversized-invoice',
   lineItems: FIXTURE_MAP['invoice-simple'].lineItems.map((li) => ({ ...li, description: ast('Long running description. '.repeat(1200)) })),
+}
+
+// One starter document of every type (doc-<type>), for checking each template across document types.
+for (const type of DOC_TYPE_IDS) {
+  const demo = FIXTURE_MAP['invoice-demo']
+  let n = 0
+  const doc = newDocument({ type, id: `fixture-${type}`, projectId: 'fixture-project', today: demo.issueDate, newId: () => `${type}-${++n}` })
+  FIXTURE_MAP[`doc-${type}`] = { ...doc, company: demo.company, customer: demo.customer, number: demo.number, lineItems: DOC_TYPES[type].money ? demo.lineItems : [] }
 }

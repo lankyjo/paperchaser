@@ -17,18 +17,18 @@ export function TotalsSection({ subtotalMinor, taxMinor, grandTotalMinor, taxMod
   const taxLabel = TAX_LABELS[taxMode]
   const money = (minor: number) => formatMoney(minor, currency, locale)
   return (
-    <section style={{ maxWidth: '90mm', marginLeft: 'auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+    <section className="doc-totals">
+      <div className="doc-totals-row">
         <span>Subtotal</span>
         <span>{money(subtotalMinor)}</span>
       </div>
       {taxLabel !== null && (
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div className="doc-totals-row">
           <span>{taxLabel}</span>
           <span>{money(taxMinor)}</span>
         </div>
       )}
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, marginTop: '4px' }}>
+      <div className="doc-totals-row doc-totals-grand">
         <span>Grand total</span>
         <span>{money(grandTotalMinor)}</span>
       </div>

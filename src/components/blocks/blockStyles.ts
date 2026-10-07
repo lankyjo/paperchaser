@@ -4,5 +4,5 @@ export const labelStyle = {
   fontSize: '9px',
   letterSpacing: 'var(--tpl-label-letterspacing)',
   textTransform: 'uppercase',
-  color: 'var(--tpl-primary)',
+  color: 'var(--tpl-label-color)',
 } as const

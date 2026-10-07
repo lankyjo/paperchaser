@@ -1183,7 +1183,8 @@
             "type": "string",
             "enum": [
               "blank",
-              "minimal"
+              "minimal",
+              "noirLedger"
             ]
           },
           "pageSize": {
@@ -1209,7 +1210,8 @@
                 "enum": [
                   "geist",
                   "geist-mono",
-                  "source-serif-4"
+                  "source-serif-4",
+                  "instrument-serif"
                 ]
               },
               "bodyFont": {
@@ -1217,7 +1219,8 @@
                 "enum": [
                   "geist",
                   "geist-mono",
-                  "source-serif-4"
+                  "source-serif-4",
+                  "instrument-serif"
                 ]
               },
               "headerStyle": {

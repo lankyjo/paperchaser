@@ -1,8 +1,5 @@
-import type { CSSProperties } from 'react'
 import type { DocumentModel } from '../../document/types'
 import { LineItemRow } from './LineItemRow'
-
-const row: CSSProperties = { borderBottom: '1px solid var(--tpl-row-rule)' }
 
 // Line-item table; editable rows commit a new model with the patched item.
 export function LineItemsTable({
@@ -21,17 +18,17 @@ export function LineItemsTable({
     onCommit?.({ ...model, lineItems: model.lineItems.map((li) => (li.id === id ? { ...li, ...patch } : li)) })
 
   return (
-    <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 'var(--tpl-section-gap)' }}>
+    <table className="doc-items">
       <thead>
-        <tr style={row}>
-          <th style={{ textAlign: 'left', padding: '6px 0' }}>Item</th>
-          <th style={{ textAlign: 'left', padding: '6px 0' }}>Description</th>
-          <th style={{ textAlign: 'right', padding: '6px 0' }}>Qty</th>
-          <th style={{ textAlign: 'right', padding: '6px 0' }}>Unit price</th>
-          <th style={{ textAlign: 'right', padding: '6px 0' }}>Amount</th>
+        <tr>
+          <th>Item</th>
+          <th>Description</th>
+          <th className="num">Qty</th>
+          <th className="num">Unit price</th>
+          <th className="num">Amount</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody style={{ counterReset: `line-item ${from}` }}>
         {model.lineItems.slice(from, range?.[1]).map((item, i) => (
           <LineItemRow
             key={item.id}
@@ -39,7 +36,6 @@ export function LineItemsTable({
             currency={model.currency}
             locale={model.locale}
             netMinor={lineNets[from + i]}
-            rowStyle={row}
             onPatch={onCommit ? (patch) => patchItem(item.id, patch) : undefined}
           />
         ))}

@@ -76,14 +76,14 @@ const customerSchema = z.object({
 })
 
 // Render selectors are optional and resolve at render time, so older stored documents render without migration.
-const templateIdSchema = z.enum(['blank', 'minimal'])
+const templateIdSchema = z.enum(['blank', 'minimal', 'noirLedger'])
 const pageSizeSchema = z.enum(['a4', 'letter', 'a5', 'a3'])
 const brandingSchema = z
   .object({
     primaryColor: z.string(),
     accentColor: z.string(),
-    headingFont: z.enum(['geist', 'geist-mono', 'source-serif-4']),
-    bodyFont: z.enum(['geist', 'geist-mono', 'source-serif-4']),
+    headingFont: z.enum(['geist', 'geist-mono', 'source-serif-4', 'instrument-serif']),
+    bodyFont: z.enum(['geist', 'geist-mono', 'source-serif-4', 'instrument-serif']),
     headerStyle: z.enum(['standard', 'banner', 'compact']),
     footerStyle: z.enum(['minimal', 'standard', 'detailed']),
     watermark: z.enum(['auto', 'draft', 'paid']),

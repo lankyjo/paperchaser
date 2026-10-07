@@ -16,17 +16,18 @@ interface DocumentPageProps {
 
 // The whole document as one growing page, used for editing and for measuring page breaks.
 export function DocumentPage({ id, model, template, branding, pageSize, editable = false, onCommit }: DocumentPageProps) {
-  const { tokens, totals, watermark, items } = resolvePage(model, template, branding)
+  const { templateId, tokens, totals, watermark, items } = resolvePage(model, template, branding)
   return (
     <PageFrame
       id={id}
+      templateId={templateId}
       pageSize={pageSize ?? pageSizeFor(model)}
       cssVars={toCssVars(tokens)}
       watermark={watermark === null ? null : { text: watermark, color: tokens.accent }}
     >
       {items.map((item) => (
         <div key={item.id} data-page-item={item.id} data-splittable={isSplittable(item) || undefined} data-keep-with-next={item.block?.type === 'heading' || undefined}>
-          <DocumentItem item={item} model={model} tokens={tokens} totals={totals} editable={editable} onCommit={onCommit} />
+          <DocumentItem item={item} model={model} templateId={templateId} tokens={tokens} totals={totals} editable={editable} onCommit={onCommit} />
         </div>
       ))}
       <div data-page-end />

@@ -1,0 +1,64 @@
+/* Base look of the shared document sections; template stylesheets override these under .tpl-<id>. */
+
+.doc-items {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--tpl-section-gap);
+}
+
+.doc-items tr {
+  border-bottom: 1px solid var(--tpl-row-rule);
+}
+
+.doc-items th,
+.doc-items td {
+  padding: 6px 0;
+  text-align: left;
+  vertical-align: top;
+}
+
+.doc-items .num {
+  text-align: right;
+}
+
+.doc-items-image {
+  margin-top: 4px;
+  max-height: 60px;
+  max-width: 80px;
+  object-fit: contain;
+  display: block;
+}
+
+.doc-totals {
+  max-width: 90mm;
+  margin-left: auto;
+}
+
+.doc-totals-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.doc-totals-grand {
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.doc-parties {
+  margin-bottom: var(--tpl-section-gap);
+}
+
+.doc-parties-title {
+  margin: 0 0 4px;
+}
+
+.doc-date {
+  margin: 0 0 var(--tpl-section-gap);
+}
+
+.doc-heading {
+  font-family: var(--tpl-font-heading);
+  color: var(--tpl-ink);
+  font-size: 20px;
+  margin: 0 0 8px;
+}

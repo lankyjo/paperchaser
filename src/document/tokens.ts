@@ -2,12 +2,13 @@
 
 import { blankTokens } from './templates/blank'
 import { minimalTokens } from './templates/minimal'
+import { noirLedgerTokens } from './templates/noirLedger'
 import { DOC_TYPE_IDS, DOC_TYPES } from './docTypes'
 import type { Branding, DocumentModel, PageSize, TemplateId } from './types'
 
 export type { Branding, PageSize, TemplateId }
 
-type FontId = 'geist' | 'geist-mono' | 'source-serif-4' | 'system'
+type FontId = 'geist' | 'geist-mono' | 'source-serif-4' | 'instrument-serif' | 'system'
 export type HeaderStyle = 'standard' | 'banner' | 'compact'
 export type FooterStyle = 'minimal' | 'standard' | 'detailed'
 
@@ -16,6 +17,7 @@ export const FONT_STACKS: Record<FontId, string> = {
   geist: "'Geist Variable', sans-serif",
   'geist-mono': "'Geist Mono Variable', monospace",
   'source-serif-4': "'Source Serif 4 Variable', serif",
+  'instrument-serif': "'Instrument Serif', Georgia, serif",
   // Blank template uses the system sans stack, never bundled.
   system: "'Helvetica Neue', Arial, sans-serif",
 }
@@ -61,6 +63,8 @@ export interface TemplateTokens {
     labelFontId: FontId
     // Letter-spacing for label-style text.
     labelLetterspacing: string
+    // Label text color; absent uses the primary color, else ink.
+    labelColor?: string
   }
   borders: {
     // Table row rule color (hairline for Minimal).
@@ -71,6 +75,8 @@ export interface TemplateTokens {
     pagePadding: string
     // Panel corner radius; '0px' = square.
     radius: string
+    // Left page padding when a template reserves a side column; absent uses pagePadding.
+    pagePaddingLeft?: string
   }
   header: {
     style: HeaderStyle
@@ -99,6 +105,14 @@ export interface ResolvedTokens extends TemplateTokens {
 export const TEMPLATE_VERSIONS: Record<TemplateId, TemplateTokens[]> = {
   blank: [blankTokens],
   minimal: [minimalTokens],
+  noirLedger: [noirLedgerTokens],
+}
+
+// Display name of each template.
+export const TEMPLATE_NAMES: Record<TemplateId, string> = {
+  blank: 'Blank',
+  minimal: 'Minimal',
+  noirLedger: 'Noir Ledger',
 }
 
 // The current version of each template; must cover exactly the ids in types.ts (pinned by a unit test).

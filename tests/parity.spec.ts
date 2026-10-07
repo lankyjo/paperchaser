@@ -5,13 +5,15 @@ import { fileURLToPath } from 'node:url'
 import { PNG } from 'pngjs'
 
 import { resolveTokens } from '../src/document/resolveTokens'
+import { TEMPLATE_REGISTRY } from '../src/document/tokens'
+import type { TemplateId } from '../src/document/types'
 
 import { A4_WIDTH_PX, blendColor, countPixelsInRange, cropY, diffFraction, normalize, rasterizePdf, type RGB } from './helpers/raster'
 
 // Golden-image parity: the preview pages, the printed pages and the rasterized PDF of the torture fixture must agree page for page.
 
 const FIXTURE = 'invoice-torture'
-const TEMPLATES = ['blank', 'minimal'] as const
+const TEMPLATES = Object.keys(TEMPLATE_REGISTRY) as TemplateId[]
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const FIXTURES_DIR = path.join(HERE, 'fixtures')
 const ARTIFACTS_DIR = path.join(HERE, 'artifacts')
@@ -104,9 +106,10 @@ test('every printed page carries the watermark; page 1 the logo; later pages rep
   for (const template of TEMPLATES) {
     await openFixture(page, `${FIXTURE}&template=${template}`)
     const { pages } = await printedPdf(page)
-    const blend = blendColor(resolveTokens(template).accent, WATERMARK_ALPHA, { r: 255, g: 255, b: 255 })
+    const fill = parseInt(resolveTokens(template).palette.fill.slice(1), 16)
+    const blend = blendColor(resolveTokens(template).accent, WATERMARK_ALPHA, { r: (fill >> 16) & 255, g: (fill >> 8) & 255, b: fill & 255 })
     pages.forEach((p, i) => {
-      const count = countPixelsInRange(p, { y: 0, h: p.height }, blend, WATERMARK_TOL, { blueDominant: true })
+      const count = countPixelsInRange(p, { y: 0, h: p.height }, blend, WATERMARK_TOL, { blueDominant: blend.b - blend.r > 8 })
       expect(count, `${template} page ${i + 1} watermark pixels`).toBeGreaterThanOrEqual(WATERMARK_FLOOR)
     })
     const logo = countPixelsInRange(pages[0], { y: 0, h: 200 }, LOGO_COLOR, LOGO_TOL)

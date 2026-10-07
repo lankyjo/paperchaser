@@ -1,4 +1,3 @@
-import type { CSSProperties } from 'react'
 import type { DocumentModel } from '../../document/types'
 import { getPlainText } from '../../document/richtext'
 import { NumericCell } from '../edit/NumericCell'
@@ -14,19 +13,17 @@ export function LineItemRow({
   currency,
   locale,
   netMinor,
-  rowStyle,
   onPatch,
 }: {
   item: LineItem
   currency: DocumentModel['currency']
   locale: string | undefined
   netMinor: number
-  rowStyle: CSSProperties
   onPatch?: (patch: Partial<LineItem>) => void
 }) {
   return (
-    <tr style={rowStyle} data-unit>
-      <td style={{ padding: '6px 0', verticalAlign: 'top' }}>
+    <tr data-unit>
+      <td className="doc-items-title">
         {onPatch ? (
           <RichTextCell
             key={`title-${item.id}-${JSON.stringify(item.title)}`}
@@ -40,11 +37,11 @@ export function LineItemRow({
           <LocalImage
             src={item.image}
             alt=""
-            style={{ marginTop: 4, maxHeight: 60, maxWidth: 80, objectFit: 'contain', display: 'block' }}
+            className="doc-items-image"
           />
         ) : null}
       </td>
-      <td style={{ padding: '6px 0', verticalAlign: 'top' }}>
+      <td className="doc-items-description">
         {onPatch ? (
           <RichTextCell
             key={`desc-${item.id}-${JSON.stringify(item.description)}`}
@@ -55,21 +52,21 @@ export function LineItemRow({
           getPlainText(item.description)
         )}
       </td>
-      <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
+      <td className="num doc-items-quantity">
         {onPatch ? (
           <NumericCell quantity={item.quantity} currency={currency} locale={locale} onCommit={(quantity) => onPatch({ quantity })} />
         ) : (
           item.quantity
         )}
       </td>
-      <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
+      <td className="num doc-items-price">
         {onPatch ? (
           <NumericCell valueMinor={item.unitPriceMinor} currency={currency} locale={locale} onCommit={(unitPriceMinor) => onPatch({ unitPriceMinor })} />
         ) : (
           formatMoney(item.unitPriceMinor, currency, locale)
         )}
       </td>
-      <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
+      <td className="num doc-items-amount">
         {formatMoney(netMinor, currency, locale)}
       </td>
     </tr>

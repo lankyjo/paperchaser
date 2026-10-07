@@ -1,13 +1,12 @@
 import type { Block } from '../../document/blocks'
-import { DOC_TYPES } from '../../document/docTypes'
 import { documentBlocks } from '../../document/documentBlocks'
-import type { PageItem } from '../../document/pageLayout'
+import { documentFacts, type PageItem } from '../../document/pageLayout'
 import type { ResolvedTokens } from '../../document/tokens'
-import type { DocumentModel } from '../../document/types'
+import type { DocumentModel, TemplateId } from '../../document/types'
 import type { printedTotals } from '../../document/finalize'
 import { BlockView } from '../blocks/BlockView'
+import { TEMPLATE_LAYOUTS } from '../templates/templateLayouts'
 import { BillToSection } from './BillToSection'
-import { DateLine } from './DateLine'
 import { LineItemsTable } from './LineItemsTable'
 import { footerPresets, headerPresets } from './pagePresets'
 import { TotalsSection } from './TotalsSection'
@@ -15,6 +14,7 @@ import { TotalsSection } from './TotalsSection'
 interface DocumentItemProps {
   item: PageItem
   model: DocumentModel
+  templateId: TemplateId
   tokens: ResolvedTokens
   totals: ReturnType<typeof printedTotals>
   range?: [number, number]
@@ -22,20 +22,21 @@ interface DocumentItemProps {
   onCommit?: (next: DocumentModel) => void
 }
 
-const DATE_LABELS = { validUntil: 'Valid until', dueDate: 'Due' }
-
 // One printed item (header, date line, a block or footer), optionally limited to a range of its units.
-export function DocumentItem({ item, model, tokens, totals, range, editable, onCommit }: DocumentItemProps) {
+export function DocumentItem({ item, model, templateId, tokens, totals, range, editable, onCommit }: DocumentItemProps) {
+  const layout = TEMPLATE_LAYOUTS[templateId]
   if (item.id === 'header') {
-    const Header = headerPresets[tokens.header.style]
-    return <Header tokens={tokens} model={model} />
+    const Header = layout?.Header ?? headerPresets[tokens.header.style]
+    return <Header tokens={tokens} model={model} totals={totals} />
   }
   if (item.id === 'footer') {
-    const Footer = footerPresets[tokens.footer.style]
-    return <Footer tokens={tokens} model={model} />
+    const Footer = layout?.Footer ?? footerPresets[tokens.footer.style]
+    return <Footer tokens={tokens} model={model} totals={totals} />
   }
-  const dateField = DOC_TYPES[model.type].dateField
-  if (item.block === undefined) return dateField && model[dateField] ? <DateLine label={DATE_LABELS[dateField]} date={model[dateField]} locale={model.locale} /> : null
+  if (item.block === undefined) {
+    const date = documentFacts(model).date
+    return date && !layout?.datesInHeader ? <p className="doc-date">{date.label} {date.value}</p> : null
+  }
   const block = item.block
   switch (block.type) {
     case 'parties':

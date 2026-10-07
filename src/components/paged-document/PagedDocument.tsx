@@ -5,6 +5,7 @@ import type { Branding, DocumentModel, PageSize, TemplateId } from '../../docume
 import { DocumentItem } from '../document-page/DocumentItem'
 import { PageFrame } from '../document-page/PageFrame'
 import { DocumentPage } from '../DocumentPage'
+import { TEMPLATE_LAYOUTS } from '../templates/templateLayouts'
 import { usePagination } from './usePagination'
 
 interface PagedDocumentProps {
@@ -20,14 +21,16 @@ interface PagedDocumentProps {
 export function PagedDocument({ model, template, branding, pageSize, variant }: PagedDocumentProps) {
   const size = pageSize ?? pageSizeFor(model)
   const { measureRef, pagination } = usePagination(size)
-  const { tokens, totals, watermark, items } = resolvePage(model, template, branding)
+  const { templateId, tokens, totals, watermark, items } = resolvePage(model, template, branding)
+  const PageMark = TEMPLATE_LAYOUTS[templateId]?.PageMark
   const byId = new Map(items.map((item) => [item.id, item]))
-  const pages = (pagination?.pages ?? []).map((page, i) => (
-    <PageFrame key={i} pageSize={size} fixedHeight cssVars={toCssVars(tokens)} watermark={watermark === null ? null : { text: watermark, color: tokens.accent }}>
+  const pages = (pagination?.pages ?? []).map((page, i, all) => (
+    <PageFrame key={i} templateId={templateId} pageSize={size} fixedHeight cssVars={toCssVars(tokens)} watermark={watermark === null ? null : { text: watermark, color: tokens.accent }}>
       {page.map((placement) => {
         const item = byId.get(placement.id)
-        return item && <DocumentItem key={placement.id} item={item} model={model} tokens={tokens} totals={totals} range={placement.range} editable={false} />
+        return item && <DocumentItem key={placement.id} item={item} model={model} templateId={templateId} tokens={tokens} totals={totals} range={placement.range} editable={false} />
       })}
+      {PageMark && <PageMark model={model} page={i + 1} pages={all.length} />}
     </PageFrame>
   ))
 

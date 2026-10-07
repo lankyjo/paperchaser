@@ -1,15 +1,12 @@
 import { Check } from 'lucide-react'
 
 import { resolveTokens } from '../document/resolveTokens'
-import { TEMPLATE_REGISTRY } from '../document/tokens'
+import { TEMPLATE_NAMES } from '../document/tokens'
 import type { TemplateId } from '../document/tokens'
 import { cn } from '@/lib/utils'
 
 // Template picker cards showing each template's name and ink/primary/accent swatches.
-const TEMPLATE_CARDS: Array<{ id: TemplateId; name: string }> = Object.keys(TEMPLATE_REGISTRY).map((id) => ({
-  id: id as TemplateId,
-  name: id.charAt(0).toUpperCase() + id.slice(1),
-}))
+const TEMPLATE_CARDS = (Object.entries(TEMPLATE_NAMES) as Array<[TemplateId, string]>).map(([id, name]) => ({ id, name }))
 
 export function TemplateGallery({
   selected,

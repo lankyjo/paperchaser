@@ -22,8 +22,8 @@ export function BillToSection({
   }
 
   return (
-    <section style={{ marginBottom: 'var(--tpl-section-gap)' }}>
-      <h3 style={{ margin: '0 0 4px' }}>Bill to</h3>
+    <section className="doc-parties">
+      <h3 className="doc-parties-title">Bill to</h3>
       {editable ? (
         <>
           <RichTextCell

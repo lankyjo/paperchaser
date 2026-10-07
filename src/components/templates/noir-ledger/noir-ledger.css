@@ -1,0 +1,198 @@
+/* Noir Ledger: charcoal page, gold hairlines, letterspaced small-caps labels. */
+
+.tpl-noirLedger {
+  font-size: 11px;
+}
+
+.noir-gold {
+  color: var(--tpl-accent);
+}
+
+.noir-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12mm;
+}
+
+.noir-logo {
+  width: 36px;
+  height: 36px;
+  margin-bottom: 8px;
+  object-fit: contain;
+}
+
+.noir-brand {
+  font-family: var(--tpl-font-heading);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.noir-title {
+  text-align: right;
+}
+
+.noir-title h1 {
+  margin: 0;
+  font-family: var(--tpl-font-heading);
+  font-size: var(--tpl-title-size);
+  font-weight: var(--tpl-title-weight);
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.noir-number {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-style: italic;
+  font-size: 20px;
+  color: var(--tpl-accent);
+  margin-top: 10px;
+}
+
+.noir-rule {
+  height: 1px;
+  background: var(--tpl-accent);
+  opacity: 0.55;
+  margin: 28px 0 20px;
+}
+
+.noir-fields,
+.tpl-noirLedger .doc-parties {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  margin: 0 0 var(--tpl-section-gap);
+}
+
+.noir-fields dt,
+.noir-fields dd {
+  margin: 0;
+  padding: 9px 0 8px;
+  border-bottom: 1px solid var(--tpl-border);
+}
+
+.noir-fields dt,
+.tpl-noirLedger .doc-items th,
+.noir-page-mark {
+  font-size: 8.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--tpl-muted);
+  font-weight: 500;
+}
+
+.noir-fields dd {
+  font-size: 11.5px;
+}
+
+/* Section titles: gold small caps trailed by a fading hairline. */
+.tpl-noirLedger .doc-heading,
+.tpl-noirLedger .doc-parties-title {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 14px;
+  font-family: var(--tpl-font-label);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--tpl-accent);
+}
+
+.tpl-noirLedger .doc-heading::after,
+.tpl-noirLedger .doc-parties-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--tpl-accent) 35%, transparent), transparent);
+}
+
+.tpl-noirLedger .doc-parties > div {
+  grid-column: 1 / -1;
+  font-size: 11.5px;
+}
+
+.tpl-noirLedger .doc-items tr {
+  border-bottom-color: var(--tpl-row-rule);
+}
+
+.tpl-noirLedger .doc-items thead tr {
+  border-bottom-color: color-mix(in srgb, var(--tpl-accent) 30%, var(--tpl-fill));
+}
+
+.tpl-noirLedger .doc-items th {
+  padding: 0 10px 10px 0;
+}
+
+.tpl-noirLedger .doc-items td {
+  padding: 14px 10px 14px 0;
+}
+
+.tpl-noirLedger .doc-items th:last-child,
+.tpl-noirLedger .doc-items td:last-child {
+  padding-right: 0;
+}
+
+.tpl-noirLedger .doc-items-title {
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.tpl-noirLedger .doc-items-description {
+  color: var(--tpl-muted);
+}
+
+.tpl-noirLedger .doc-totals {
+  width: 80mm;
+  color: color-mix(in srgb, var(--tpl-ink) 75%, var(--tpl-fill));
+}
+
+.tpl-noirLedger .doc-totals-row {
+  padding: 6px 0;
+}
+
+/* Grand total in a gold-bordered box, label above a large amount. */
+.tpl-noirLedger .doc-totals-grand {
+  flex-direction: column;
+  margin-top: 12px;
+  padding: 16px 20px;
+  border: 1px solid var(--tpl-accent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--tpl-accent) 8%, transparent), color-mix(in srgb, var(--tpl-accent) 2%, transparent));
+  font-weight: 400;
+}
+
+.tpl-noirLedger .doc-totals-grand span:first-child {
+  font-size: 8.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--tpl-muted);
+}
+
+.tpl-noirLedger .doc-totals-grand span:last-child {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--tpl-accent);
+  margin-top: 6px;
+}
+
+.noir-page-mark {
+  position: absolute;
+  left: 15mm;
+  right: 15mm;
+  bottom: 8mm;
+  display: flex;
+  justify-content: space-between;
+  gap: 8mm;
+  font-size: 8px;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--tpl-muted) 75%, var(--tpl-fill));
+}
+
+.noir-page-mark span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
