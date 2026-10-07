@@ -14,7 +14,7 @@ import { PagedDocument } from '../paged-document/PagedDocument'
 import { PrintPreviewDialog } from '../PrintPreviewDialog'
 import { BuilderHeader } from './BuilderHeader'
 import { cn } from '@/lib/utils'
-import { ExplainerBanner } from '../explainer/ExplainerBanner'
+import { MobileSheets } from '../mobile/MobileSheets'
 import { DesktopWorkspace } from '../workspace/DesktopWorkspace'
 import { WorkspaceContext } from '../workspace/workspaceContext'
 import { MobileItemSheet } from './MobileItemSheet'
@@ -91,7 +91,7 @@ export function BuilderWorkspace({
             </WorkspaceContext.Provider>
           ) : (
             <>
-              {showExplainer && <ExplainerBanner type={model.type} />}
+              <MobileSheets model={model} propertiesProps={sharedPropertiesProps} showExplainer={showExplainer} />
               <MobileStack {...layout} editable={editable} sections={sections} saveFailed={saveState === 'failed'} onCommit={commit} />
             </>
           )}

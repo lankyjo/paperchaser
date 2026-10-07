@@ -1,48 +1,46 @@
 import * as React from 'react'
-import { Dialog as DialogPrimitive } from '@base-ui/react/dialog'
+import { Drawer } from 'vaul'
 import { XIcon } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
-// Bottom sheet built on the Base UI dialog, since react-spring-bottom-sheet lacks React 19 support.
 interface BottomSheetProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  title?: string
+  title: string
   children: React.ReactNode
 }
 
+// Half and full height; dragging the handle moves between them or dismisses the sheet.
+const SNAP_POINTS = [0.5, 1]
+
+// Draggable bottom sheet (vaul) with a title and close button; focus stays inside while it is open.
 export function BottomSheet({ open, onOpenChange, title, children }: BottomSheetProps) {
+  const [snap, setSnap] = React.useState<number | string | null>(SNAP_POINTS[0])
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
-      <DialogPrimitive.Portal>
-        <DialogPrimitive.Backdrop
-          data-slot="bottomsheet-backdrop"
-          className="fixed inset-0 z-50 bg-black/50 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0"
-        />
-        <DialogPrimitive.Popup
+    <Drawer.Root open={open} onOpenChange={onOpenChange} snapPoints={SNAP_POINTS} activeSnapPoint={snap} setActiveSnapPoint={setSnap}>
+      <Drawer.Portal>
+        <Drawer.Overlay className="fixed inset-0 z-50 bg-black/40" />
+        <Drawer.Content
           data-slot="bottomsheet-content"
-          className={cn(
-            'fixed inset-x-0 bottom-0 z-50 flex max-h-[92vh] flex-col rounded-t-xl bg-popover text-popover-foreground shadow-xl',
-            'data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom duration-300',
-            'pb-[env(safe-area-inset-bottom)]',
-          )}
+          className="fixed inset-x-0 bottom-0 z-50 flex h-full max-h-[96dvh] flex-col rounded-t-xl bg-popover pb-[env(safe-area-inset-bottom)] text-popover-foreground shadow-xl outline-none"
         >
           <div className="flex shrink-0 flex-col items-center gap-2 border-b p-3">
-            <div className="h-[5px] w-9 rounded-full bg-muted-foreground/30" aria-hidden="true" />
+            <Drawer.Handle className="!h-[5px] !w-9 !bg-muted-foreground/30" />
             <div className="flex w-full items-center justify-between gap-2">
-              {title ? <DialogPrimitive.Title className="text-sm font-semibold">{title}</DialogPrimitive.Title> : <span />}
-              <DialogPrimitive.Close
-                render={<Button variant="ghost" size="icon-sm" className="size-8" />}
-                aria-label="Close"
-              >
-                <XIcon className="size-4" />
-              </DialogPrimitive.Close>
+              <Drawer.Title className="text-sm font-semibold">{title}</Drawer.Title>
+              <Drawer.Close asChild>
+                <Button variant="ghost" size="icon-sm" className="size-8" aria-label="Close">
+                  <XIcon className="size-4" />
+                </Button>
+              </Drawer.Close>
             </div>
+            <Drawer.Description className="sr-only">{title}</Drawer.Description>
           </div>
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4">{children}</div>
-        </DialogPrimitive.Popup>
-      </DialogPrimitive.Portal>
-    </DialogPrimitive.Root>
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4" data-vaul-no-drag>
+            {children}
+          </div>
+        </Drawer.Content>
+      </Drawer.Portal>
+    </Drawer.Root>
   )
 }

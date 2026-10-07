@@ -46,7 +46,7 @@ export function SortableOutlineItem({
   }
   return (
     <div ref={setNodeRef} style={style} className={cn('group rounded', isSelected && 'bg-primary/10')}>
-      <div className={cn('flex items-center gap-1 rounded px-1 py-0.5 text-[13px] cursor-pointer select-none', isSelected && 'font-semibold')} onClick={onSelect}>
+      <div aria-current={isSelected || undefined} className={cn('flex items-center gap-1 rounded px-1 py-0.5 text-[13px] cursor-pointer select-none', isSelected && 'font-semibold')} onClick={onSelect}>
         <button
           type="button"
           aria-label="Drag to reorder"
