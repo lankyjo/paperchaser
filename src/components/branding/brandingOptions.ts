@@ -3,6 +3,7 @@ export const FONT_OPTIONS = [
   { value: 'geist', label: 'Geist' },
   { value: 'geist-mono', label: 'Geist Mono' },
   { value: 'source-serif-4', label: 'Source Serif 4' },
+  { value: 'instrument-serif', label: 'Instrument Serif' },
 ] as const
 
 export const HEADER_OPTIONS = [

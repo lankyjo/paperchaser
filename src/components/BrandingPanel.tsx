@@ -7,6 +7,7 @@ import { ResetBrandingControl } from './branding/ResetBrandingControl'
 import { SelectControl } from './branding/SelectControl'
 import { useBrandingDisplay } from './branding/useBrandingDisplay'
 import { WatermarkControl } from './branding/WatermarkControl'
+import { TEMPLATE_LAYOUTS } from './templates/templateLayouts'
 
 // Per-document branding controls; every change applies instantly by patching the document's branding object.
 export function BrandingPanel({
@@ -23,6 +24,8 @@ export function BrandingPanel({
   const branding = model.branding ?? {}
   const display = useBrandingDisplay(branding, template)
   const setBranding = (patch: Partial<Branding>) => onBrandingChange?.({ ...branding, ...patch })
+  // Templates with their own header and footer ignore the header and footer presets.
+  const usesPresets = TEMPLATE_LAYOUTS[template]?.Header === undefined
 
   return (
     <Card size="sm">
@@ -57,18 +60,22 @@ export function BrandingPanel({
           options={FONT_OPTIONS}
           onPick={(value) => setBranding({ bodyFont: value as Branding['bodyFont'] })}
         />
-        <SelectControl
-          label="Header style"
-          value={display.headerStyle}
-          options={HEADER_OPTIONS}
-          onPick={(value) => setBranding({ headerStyle: value as Branding['headerStyle'] })}
-        />
-        <SelectControl
-          label="Footer style"
-          value={display.footerStyle}
-          options={FOOTER_OPTIONS}
-          onPick={(value) => setBranding({ footerStyle: value as Branding['footerStyle'] })}
-        />
+        {usesPresets && (
+          <>
+            <SelectControl
+              label="Header style"
+              value={display.headerStyle}
+              options={HEADER_OPTIONS}
+              onPick={(value) => setBranding({ headerStyle: value as Branding['headerStyle'] })}
+            />
+            <SelectControl
+              label="Footer style"
+              value={display.footerStyle}
+              options={FOOTER_OPTIONS}
+              onPick={(value) => setBranding({ footerStyle: value as Branding['footerStyle'] })}
+            />
+          </>
+        )}
 
         <WatermarkControl watermark={display.watermark} onPick={(watermark) => setBranding({ watermark })} />
 

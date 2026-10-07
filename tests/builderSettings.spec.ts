@@ -6,17 +6,29 @@ test('undo restores the template and page size the builder shows', async ({ page
   const gallery = page.getByRole('radiogroup', { name: 'Template gallery' })
   const initial = await gallery.getByRole('radio', { checked: true }).textContent()
 
-  await gallery.getByRole('radio', { name: 'Modern' }).click()
-  await expect(gallery.getByRole('radio', { name: 'Modern' })).toHaveAttribute('aria-checked', 'true')
+  await gallery.getByRole('radio', { name: 'Swiss' }).click()
+  await expect(gallery.getByRole('radio', { name: 'Swiss' })).toHaveAttribute('aria-checked', 'true')
   await page.getByRole('button', { name: 'Undo' }).click()
   await expect(gallery.getByRole('radio', { checked: true })).toHaveText(initial ?? '')
 
   const headerSize = page.getByRole('combobox', { name: 'Page size' }).first()
+  const initialSize = await headerSize.textContent()
   await headerSize.click()
   await page.getByRole('option', { name: 'A5' }).click()
   await expect(headerSize).toHaveText(/^a5/i)
   await page.getByRole('button', { name: 'Undo' }).click()
-  await expect(headerSize).toHaveText(/^a4/i)
+  await expect(headerSize).toHaveText(initialSize ?? '')
+})
+
+test('header and footer presets show only for templates without their own header', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Quick invoice' }).click()
+  const gallery = page.getByRole('radiogroup', { name: 'Template gallery' })
+  await gallery.getByRole('radio', { name: 'Minimal' }).click()
+  await expect(page.getByText('Header style')).toBeVisible()
+  await gallery.getByRole('radio', { name: 'Noir Ledger' }).click()
+  await expect(page.getByText('Header style')).toHaveCount(0)
+  await expect(page.getByText('Accent color')).toBeVisible()
 })
 
 test('the selected item shows its price in the project currency', async ({ page }) => {

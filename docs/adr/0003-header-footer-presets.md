@@ -3,13 +3,13 @@
 **Status:** Accepted
 **Date:** 2026-10-07
 
-The header/footer presets (standard, banner, compact) were made for the old single layout. The new templates own their header and footer regions, so a preset only applies where the template has a plain header to restyle.
+The header/footer presets (standard, banner, compact) were made for the old single layout. The new templates own their header and footer regions, so a preset only applies where the template has a plain header to restyle. Swiss was first listed as apply, but its oversized title and metadata strip are its own header, so it hides the presets too.
 
 | Template | Standard | Banner | Compact |
 |---|---|---|---|
 | Blank | apply | apply | apply |
 | Minimal | apply | apply | apply |
-| Swiss | apply | apply | apply |
+| Swiss | hide | hide | hide |
 | Noir Ledger | hide | hide | hide |
 | Atelier | hide | hide | hide |
 | Statement | hide | hide | hide |
