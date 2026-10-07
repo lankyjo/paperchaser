@@ -146,3 +146,16 @@ From VALIDATION.md Manual-Only Verifications:
 
 This is the deciding gate for the fallback: failure of any of the three items
 flips the decision to @react-pdf/renderer 4.5.1.
+
+## Amendment (2026-10-07): react-pdf fallback dropped
+
+The redesign makes the fallback unrealistic: 7 templates × 11 document types built
+from typed blocks would need a second, hand-synced layout engine for every
+combination, and sharing a PDF file from the app was dropped in favour of the
+print dialog. The print dialog is now the **only** PDF path.
+
+The Safari check above no longer decides between two engines; it decides whether
+iOS delivery works at all. It is tracked as ticket 04 (Safari macOS/iOS print
+comparison plus printing from the installed iOS home-screen app on a real device).
+If Safari fails, the response is CSS fixes or documented workarounds, not a
+second engine.
