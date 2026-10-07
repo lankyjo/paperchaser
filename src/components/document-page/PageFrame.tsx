@@ -25,6 +25,8 @@ function pageStyleFor(pageSize: PageSize, fixedHeight: boolean): CSSProperties {
 interface PageFrameProps {
   id?: string
   templateId: TemplateId
+  // Template version, so a restyle can keep older sent documents looking the same via .tpl-vN rules.
+  version: number
   pageSize: PageSize
   // A printed page is exactly one sheet tall; the editor page grows with its content.
   fixedHeight?: boolean
@@ -34,9 +36,9 @@ interface PageFrameProps {
 }
 
 // A page shared by every document kind: size, template variables and watermark.
-export function PageFrame({ id, templateId, pageSize, fixedHeight = false, cssVars, watermark, children }: PageFrameProps) {
+export function PageFrame({ id, templateId, version, pageSize, fixedHeight = false, cssVars, watermark, children }: PageFrameProps) {
   return (
-    <div id={id} className={`document-page page-${pageSize} tpl-${templateId}`} style={{ ...pageStyleFor(pageSize, fixedHeight), ...(cssVars as CSSProperties) }}>
+    <div id={id} className={`document-page page-${pageSize} tpl-${templateId} tpl-v${version}`} style={{ ...pageStyleFor(pageSize, fixedHeight), ...(cssVars as CSSProperties) }}>
       {watermark !== null && (
         // Inline accent color; print.css only holds a fallback color.
         <div className="watermark" aria-hidden="true" style={{ color: watermark.color }}>

@@ -7,6 +7,7 @@ import { formatDocDate } from './formatDocDate'
 import { getPlainText } from './richtext'
 import { DOC_LABELS } from '../strings/documentLabels'
 import { resolveTokens, toCssVars } from './resolveTokens'
+import { TEMPLATE_VERSIONS } from './tokens'
 import type { Branding, DocumentModel, PageSize, TemplateId } from './types'
 import { watermarkFor } from './watermark'
 
@@ -61,8 +62,12 @@ export function resolvePage(doc: DocumentModel, template?: TemplateId, branding?
     tokens,
     totals: printedTotals(doc),
     items: pageItemsFor(doc),
-    // What every page frame needs: the template's CSS variables and the watermark in the accent color.
-    frame: { cssVars: toCssVars(tokens), watermark: watermark === null ? null : { text: watermark, color: tokens.accent } },
+    // What every page frame needs: CSS variables, the watermark in the accent color, and the template version for version-scoped styles.
+    frame: {
+      cssVars: toCssVars(tokens),
+      watermark: watermark === null ? null : { text: watermark, color: tokens.accent },
+      version: doc.frozen?.templateVersion ?? TEMPLATE_VERSIONS[templateId].length,
+    },
   }
 }
 

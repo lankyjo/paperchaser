@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { FIXTURE_MAP } from '../fixtures'
-import { documentFacts, pageItemsFor, pageSizeFor } from '../pageLayout'
+import { documentFacts, pageItemsFor, pageSizeFor, resolvePage } from '../pageLayout'
+import { TEMPLATE_VERSIONS } from '../tokens'
 import type { DocumentModel } from '../types'
 
 const invoice = FIXTURE_MAP['invoice-torture']
@@ -48,5 +49,13 @@ describe('documentFacts', () => {
   it('leaves payment details off documents nobody pays', () => {
     expect(documentFacts({ ...invoice, type: 'welcome', company }).payment).toEqual([])
     expect(documentFacts({ ...invoice, company: { ...invoice.company, payment: undefined } }).payment).toEqual([])
+  })
+})
+
+describe('resolvePage', () => {
+  it('stamps pages with the template version a sent document recorded, else the current one', () => {
+    const sent: DocumentModel = { ...invoice, template: 'noirLedger', frozen: { finalizedAt: '2026-10-07T10:00:00.000Z', totals: { lineNets: [], subtotalMinor: 0, taxMinor: 0, grandTotalMinor: 0 }, templateVersion: 1 } }
+    expect(resolvePage(sent).frame.version).toBe(1)
+    expect(resolvePage({ ...invoice, template: 'noirLedger' }).frame.version).toBe(TEMPLATE_VERSIONS.noirLedger.length)
   })
 })
