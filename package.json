@@ -9,7 +9,7 @@
     "lint": "oxlint",
     "typecheck": "tsc -b",
     "preview": "vite preview",
-    "test": "playwright test tests/parity.spec.ts",
+    "test": "playwright test",
     "test:unit": "vitest run",
     "test:update": "UPDATE_BASELINES=1 playwright test tests/parity.spec.ts -g baseline",
     "check:comments": "node scripts/findCommentViolations.ts",

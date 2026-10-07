@@ -12,6 +12,7 @@ Non-negotiable. `pnpm check:conventions` enforces what a tool can check; the rev
 ## 2. Structure
 
 - `src/document/` — pure domain: schemas, totals, money, rich text. No React, DOM globals or Dexie.
+- `src/project/` — pure project domain (projects, clients, pipeline rules). Same rules as `src/document/`.
 - `src/db/` — persistence (Dexie) only. No React components.
 - `src/components/` — React components, grouped by feature folder; `ui/` holds shared primitives.
 - `src/hooks/` — shared custom hooks; a hook used by one feature lives in that feature's folder.

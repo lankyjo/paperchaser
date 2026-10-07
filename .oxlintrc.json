@@ -33,7 +33,8 @@
   "overrides": [
     {
       "files": [
-        "src/document/**"
+        "src/document/**",
+        "src/project/**"
       ],
       "rules": {
         "no-restricted-imports": [
@@ -49,7 +50,7 @@
                   "**/db/**",
                   "**/routes/**"
                 ],
-                "message": "src/document is pure domain code: no React, Dexie or UI imports."
+                "message": "Domain code (src/document, src/project) is pure: no React, Dexie or UI imports."
               }
             ]
           }

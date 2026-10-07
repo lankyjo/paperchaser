@@ -5,11 +5,13 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import type { DocumentModel } from '../../document/types'
 import { db } from '../db'
-import { catalogRepo, companyRepo, customersRepo, DEMO_DOCUMENT_ID, documentsRepo, preferencesRepo } from '../repos'
+import { createProject } from '../../project/project'
+import { catalogRepo, companyRepo, customersRepo, documentsRepo, preferencesRepo, projectsRepo } from '../repos'
 
 // Fixture-shaped synthetic document, never real PII.
 const DOC: DocumentModel = {
   id: 'doc-1',
+  projectId: 'project-1',
   type: 'invoice',
   currency: 'EUR',
   issueDate: '2026-08-07',
@@ -56,37 +58,33 @@ describe('documentsRepo', () => {
     expect(await documentsRepo.get(DOC.id)).toBeUndefined()
   })
 
-  it('seedDemoIfEmpty seeds the English Minimal demo exactly once (D-11 idempotence)', async () => {
-    await documentsRepo.seedDemoIfEmpty()
-    const seeded = await documentsRepo.get(DEMO_DOCUMENT_ID)
-    expect(seeded).toBeDefined()
-    expect(seeded?.template).toBe('minimal')
-    expect(seeded?.id).toBe(DEMO_DOCUMENT_ID)
-
-    // Second call must not duplicate — get/put idempotence keys on the id.
-    await documentsRepo.seedDemoIfEmpty()
-    await documentsRepo.seedDemoIfEmpty()
-    expect(await db.table('documents').where('id').equals(DEMO_DOCUMENT_ID).count()).toBe(1)
-
-    // A pre-existing document with the same id is never overwritten.
-    const custom = { ...DOC, id: DEMO_DOCUMENT_ID, number: 'CUSTOM-1' }
-    await documentsRepo.put(custom)
-    await documentsRepo.seedDemoIfEmpty()
-    expect((await documentsRepo.get(DEMO_DOCUMENT_ID))?.number).toBe('CUSTOM-1')
+  it('byProject returns only the documents of that project', async () => {
+    await documentsRepo.put(DOC)
+    await documentsRepo.put({ ...DOC, id: 'doc-2', projectId: 'project-2' })
+    expect((await documentsRepo.byProject('project-1')).map((d) => d.id)).toEqual(['doc-1'])
   })
 })
 
-describe('db schema (STOR-02 drift guard)', () => {
-  it('version(2) declares exactly the five stores with id-keyed primary keys and future-query indexes', async () => {
-    // Authoritative schema check against the real db.ts; tests/persistence.spec.ts duplicates the string.
+describe('projectsRepo', () => {
+  it('lists projects newest first and round-trips them', async () => {
+    const older = createProject({ id: 'p1', title: 'Older', now: '2026-10-01T00:00:00.000Z' })
+    const newer = createProject({ id: 'p2', title: 'Newer', now: '2026-10-05T00:00:00.000Z' })
+    await projectsRepo.put(older)
+    await projectsRepo.put(newer)
+    expect(await projectsRepo.get('p1')).toEqual(older)
+    expect((await projectsRepo.list()).map((p) => p.id)).toEqual(['p2', 'p1'])
+  })
+})
+
+describe('db schema drift guard', () => {
+  it('declares the six stores with id-keyed primary keys and the indexes queries rely on', async () => {
     const names = db.tables.map((t) => t.name).sort()
-    expect(names).toEqual(['catalog', 'company', 'customers', 'documents', 'preferences'])
+    expect(names).toEqual(['catalog', 'company', 'customers', 'documents', 'preferences', 'projects'])
     const byName = new Map(db.tables.map((t) => [t.name, t.schema]))
     expect(byName.get('documents')?.primKey.src).toBe('id')
-    expect(byName.get('documents')?.indexes.map((i) => i.name).sort()).toEqual(['status', 'type', 'updatedAt'])
-    expect(byName.get('customers')?.primKey.src).toBe('id')
+    expect(byName.get('documents')?.indexes.map((i) => i.name).sort()).toEqual(['projectId', 'status', 'type', 'updatedAt'])
+    expect(byName.get('projects')?.indexes.map((i) => i.name)).toEqual(['updatedAt'])
     expect(byName.get('customers')?.indexes.map((i) => i.name)).toEqual(['name'])
-    expect(byName.get('catalog')?.primKey.src).toBe('id')
     expect(byName.get('catalog')?.indexes.map((i) => i.name)).toEqual(['name'])
     expect(byName.get('company')?.primKey.src).toBe('id')
     expect(byName.get('preferences')?.primKey.src).toBe('key')

@@ -1,4 +1,5 @@
-import { BuilderShell } from '../components/BuilderShell'
+import { BuilderWorkspace } from '../components/builder/BuilderWorkspace'
+import { ProjectsHome } from '../components/projects/ProjectsHome'
 import { FIXTURE_MAP } from '../document/fixtures'
 import { PAGE_SIZES, TEMPLATE_REGISTRY } from '../document/tokens'
 import type { PageSize, TemplateId } from '../document/types'
@@ -22,7 +23,7 @@ export function IndexPage() {
   const pageSize: PageSize | undefined =
     rawSize !== null && SIZE_KEYS.has(rawSize) ? (rawSize as PageSize) : undefined
 
-  return (
-    <BuilderShell model={key !== null ? FIXTURE_MAP[key] : undefined} template={template} pageSize={pageSize} />
-  )
+  // Fixtures render read-only for the parity harness; otherwise the projects home opens.
+  if (key === null) return <ProjectsHome />
+  return <BuilderWorkspace model={FIXTURE_MAP[key]} template={template} pageSize={pageSize} editable={false} />
 }

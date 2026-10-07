@@ -121,6 +121,7 @@ describe('boundary hardening — precision, size guard, breadth, nested strip, l
   it('round-trips a JPY receipt with per-line + document discounts and shipping/fees losslessly', () => {
     const doc: DocumentModel = {
       id: 'jpy-receipt',
+      projectId: 'project-1',
       type: 'receipt',
       currency: 'JPY',
       issueDate: '2026-08-07',

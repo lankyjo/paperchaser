@@ -83,6 +83,7 @@ const brandingSchema = z
   .partial()
 
 export const documentSchema = z.object({
+  projectId: z.string(),
   // z.object() strips unknown keys rather than rejecting them.
   id: z.string(),
   // One model shared across invoice, quote and receipt.

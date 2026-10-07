@@ -30,3 +30,15 @@ db.version(3)
       migrateV2ToV3(doc)
     })
   })
+
+// Projects group documents; the redesign starts from an empty workspace, so old documents are wiped.
+db.version(4)
+  .stores({
+    company: 'id',
+    customers: 'id, name',
+    catalog: 'id, name',
+    documents: 'id, projectId, type, status, updatedAt',
+    preferences: 'key',
+    projects: 'id, updatedAt',
+  })
+  .upgrade((trans) => trans.table('documents').clear())

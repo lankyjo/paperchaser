@@ -1,8 +1,8 @@
 // Repos are the only Dexie touchpoints; nothing outside this file reads or writes db tables.
 import type { Table } from 'dexie'
 
-import { FIXTURE_MAP } from '../document/fixtures'
 import type { Company, Customer, DocumentModel } from '../document/types'
+import type { Project } from '../project/project'
 import { db as rawDb } from './db'
 
 // Company profile row; companyRepo adds the singleton key.
@@ -34,6 +34,7 @@ interface Tables {
   catalog: Table<CatalogItemRow>
   documents: Table<DocumentModel>
   preferences: Table<PreferenceRow>
+  projects: Table<Project>
 }
 
 // Dexie typings expose table props only on subclasses; a plain instance has them at runtime, so cast once.
@@ -42,8 +43,6 @@ const db = rawDb as unknown as Tables
 // Singleton company profile key: one record per workspace.
 const COMPANY_ID = 'company'
 
-// Id of the seeded empty-store demo document.
-export const DEMO_DOCUMENT_ID = 'demo-invoice'
 
 export const documentsRepo = {
   put: (doc: DocumentModel) => db.documents.put(doc),
@@ -51,13 +50,13 @@ export const documentsRepo = {
   delete: (id: string) => db.documents.delete(id),
   // Index-backed query by status.
   byStatus: (status: DocumentModel['status']) => db.documents.where('status').equals(status).toArray(),
-  // Seeds the demo document once when the store is empty; idempotent via DEMO_DOCUMENT_ID, so StrictMode double-mounts never duplicate.
-  seedDemoIfEmpty: async (): Promise<void> => {
-    const existing = await db.documents.get(DEMO_DOCUMENT_ID)
-    if (existing === undefined) {
-      await db.documents.put(FIXTURE_MAP['invoice-demo'])
-    }
-  },
+  byProject: (projectId: string) => db.documents.where('projectId').equals(projectId).toArray(),
+}
+
+export const projectsRepo = {
+  put: (project: Project) => db.projects.put(project),
+  get: (id: string) => db.projects.get(id),
+  list: () => db.projects.orderBy('updatedAt').reverse().toArray(),
 }
 
 export const companyRepo = {

@@ -35,6 +35,7 @@ const TORTURE_LINE_ITEMS = Array.from({ length: 18 }, (_, i) => ({
 export const FIXTURE_MAP: Record<string, DocumentModel> = {
   'invoice-torture': {
     id: 'torture-invoice',
+    projectId: 'fixture-project',
     type: 'invoice',
     currency: 'EUR',
     issueDate: '2026-08-07',
@@ -54,6 +55,7 @@ export const FIXTURE_MAP: Record<string, DocumentModel> = {
   },
   'invoice-simple': {
     id: 'simple-invoice',
+    projectId: 'fixture-project',
     type: 'invoice',
     currency: 'EUR',
     issueDate: '2026-08-07',
@@ -112,9 +114,10 @@ export const FIXTURE_MAP: Record<string, DocumentModel> = {
     ],
     status: 'paid',
   },
-  // Empty-store demo document; id must stay 'demo-invoice' because seedDemoIfEmpty keys idempotence on it.
+  // Demo invoice used by the renderer benchmarks and parity fixtures.
   'invoice-demo': {
     id: 'demo-invoice',
+    projectId: 'fixture-project',
     type: 'invoice',
     currency: 'EUR',
     issueDate: '2026-08-08',

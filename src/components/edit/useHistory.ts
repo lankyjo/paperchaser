@@ -1,17 +1,15 @@
 import { useRef, useState, type KeyboardEvent } from 'react'
 import type { DocumentModel } from '../../document/types'
-import { documentsRepo } from '../../db/repos'
+import { useAutoSave } from './useAutoSave'
 
 // Undo/redo history of model snapshots with debounced auto-save.
-
-type SaveState = 'saved' | 'saving' | 'failed'
 
 interface UseHistory {
   model: DocumentModel
   commit: (next: DocumentModel) => void
   undo: () => void
   redo: () => void
-  saveState: SaveState
+  saveState: ReturnType<typeof useAutoSave>['saveState']
   retrySave: () => void
   canUndo: boolean
   canRedo: boolean
@@ -23,9 +21,8 @@ export function useHistory(initial: DocumentModel): UseHistory {
   const past = useRef<DocumentModel[]>([])
   const future = useRef<DocumentModel[]>([])
   const [model, setModel] = useState<DocumentModel>(initial)
-  const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const modelRef = useRef<DocumentModel>(initial)
-  const [saveState, setSaveState] = useState<SaveState>('saved')
+  const { saveState, scheduleSave } = useAutoSave()
   const [stackSizes, setStackSizes] = useState({ past: 0, future: 0 })
 
   // Keep modelRef in sync so the debounced closure always sees the latest.
@@ -33,20 +30,6 @@ export function useHistory(initial: DocumentModel): UseHistory {
   modelRef.current = model
 
   const syncStackSizes = () => setStackSizes({ past: past.current.length, future: future.current.length })
-
-  const scheduleSave = (next: DocumentModel) => {
-    clearTimeout(timer.current)
-    setSaveState('saved') // a new edit clears a previous failure; the model is never discarded
-    timer.current = setTimeout(async () => {
-      setSaveState('saving')
-      try {
-        await documentsRepo.put(next)
-        setSaveState('saved')
-      } catch {
-        setSaveState('failed')
-      }
-    }, 800)
-  }
 
   const commit = (next: DocumentModel) => {
     past.current = [...past.current.slice(-49), modelRef.current]
