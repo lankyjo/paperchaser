@@ -61,6 +61,7 @@ const companySchema = z.object({
   address: z.array(textFieldSchema),
   email: textFieldSchema,
   logo: logoSchema,
+  taxId: z.string().optional(),
 })
 
 const customerSchema = z.object({

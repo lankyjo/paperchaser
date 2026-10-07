@@ -31,7 +31,11 @@ export function newWelcome({
         content: [
           {
             type: 'paragraph',
-            content: [{ type: 'text', text: "We're excited to work with you. Here's everything you need to get started." }],
+            content: [
+              { type: 'text', text: "We're excited to work with you, " },
+              { type: 'placeholder', text: 'Client name' },
+              { type: 'text', text: ". Here's everything you need to get started." },
+            ],
           },
         ],
       },

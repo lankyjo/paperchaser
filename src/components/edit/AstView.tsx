@@ -46,6 +46,12 @@ function renderNode(node: RichTextNode, key: number | string): React.ReactNode {
           {(node.content ?? []).map((child, i) => renderNode(child, i))}
         </li>
       )
+    case 'placeholder':
+      return (
+        <span key={key} className="placeholder-node" contentEditable={false} data-placeholder-node={node.text}>
+          [{node.text}]
+        </span>
+      )
     case 'text': {
       const marks = node.marks ?? []
       if (marks.length === 0) return node.text

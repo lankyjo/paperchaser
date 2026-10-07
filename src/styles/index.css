@@ -167,3 +167,16 @@ body {
     }
   }
 }
+/* Unfilled sample-content placeholders: highlighted on screen, plain bracketed text in print */
+@layer utilities {
+  .placeholder-node {
+    background: color-mix(in oklch, var(--primary) 14%, transparent);
+    border-radius: 3px;
+    padding: 0 2px;
+  }
+  @media print {
+    .placeholder-node {
+      background: none;
+    }
+  }
+}

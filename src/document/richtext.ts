@@ -19,7 +19,7 @@ export const richTextMarkSchema = z.object({
 
 // Pre-declared node shape so the recursive union avoids an implicit any.
 interface RichTextNodeShape {
-  type: 'text' | 'paragraph' | 'listItem' | 'list'
+  type: 'text' | 'paragraph' | 'listItem' | 'list' | 'placeholder'
   text?: string
   content?: RichTextNodeShape[]
   marks?: RichTextMark[]
@@ -28,6 +28,8 @@ interface RichTextNodeShape {
 // Known node types only; z.object() strips unknown keys.
 export const richTextNodeSchema: z.ZodType<RichTextNodeShape> = z.discriminatedUnion('type', [
   z.object({ type: z.literal('text'), text: z.string(), marks: z.array(richTextMarkSchema).optional() }),
+  // A fill-in hint from sample content, distinct from text the user typed in brackets.
+  z.object({ type: z.literal('placeholder'), text: z.string() }),
   z.object({ type: z.literal('paragraph'), content: z.array(z.lazy(() => richTextNodeSchema)) }),
   z.object({ type: z.literal('listItem'), content: z.array(z.lazy(() => richTextNodeSchema)) }),
   z.object({ type: z.literal('list'), content: z.array(z.lazy(() => richTextNodeSchema)) }),
@@ -48,7 +50,15 @@ export function getPlainText(value: string | RichTextDoc): string {
 
 function flattenNode(node: RichTextNode): string {
   if (node.type === 'text') return node.text as string
+  if (node.type === 'placeholder') return `[${node.text}]`
   return (node.content ?? []).map(flattenNode).join('')
+}
+
+// Number of placeholder nodes in a text field; plain strings never contain any.
+export function countPlaceholderNodes(value: string | RichTextDoc): number {
+  if (typeof value === 'string') return 0
+  const count = (node: RichTextNode): number => (node.type === 'placeholder' ? 1 : (node.content ?? []).reduce((n, c) => n + count(c), 0))
+  return value.reduce((n, node) => n + count(node), 0)
 }
 
 // Serializes contentEditable DOM into the canonical AST; tags outside the whitelist are unwrapped to their text, never passed through.
@@ -138,6 +148,7 @@ function walkInline(node: Node, marks: RichTextMark[]): RichTextNode[] {
   const el = node as HTMLElement
   const tag = el.tagName.toLowerCase()
   if (tag === 'br') return [{ type: 'text', text: '\n', ...markProps() }]
+  if (el.dataset.placeholderNode !== undefined) return [{ type: 'placeholder', text: el.dataset.placeholderNode }]
   return walkChildren(el, marksForTag(el, tag, marks))
 }
 
