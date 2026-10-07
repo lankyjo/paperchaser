@@ -4,6 +4,7 @@ import { newDocument } from '../../document/newDocument'
 import type { DocumentModel } from '../../document/types'
 import { useMountEffect } from '../../hooks/useMountEffect'
 import { createClient, type Client } from '../../project/client'
+import { useProjectHistory } from './useProjectHistory'
 import type { StepType } from '../../project/pipeline'
 import type { Project } from '../../project/project'
 
@@ -31,10 +32,13 @@ export function useProject(projectId: string) {
     void reload()
   })
 
-  const save = async (project: Project) => {
+  const write = async (project: Project) => {
     await projectsRepo.put({ ...project, updatedAt: new Date().toISOString() })
     await reload()
   }
+  const history = useProjectHistory(write)
+  // Every project edit is undoable from the project page; the current project is the undo point.
+  const save = (project: Project) => (data?.project ? history.save(data.project, project) : write(project))
 
   const createClientFor = async (project: Project, name: string) => {
     const client = createClient({ id: crypto.randomUUID(), name })
@@ -61,5 +65,8 @@ export function useProject(projectId: string) {
 
   const remove = () => projectsRepo.delete(projectId)
 
-  return { data, save, createClientFor, createDocument, toggleDone, remove }
+  const undo = () => data?.project && history.undo(data.project)
+  const redo = () => data?.project && history.redo(data.project)
+
+  return { data, save, createClientFor, createDocument, toggleDone, remove, undo, redo, canUndo: history.canUndo, canRedo: history.canRedo, historySteps: history.steps }
 }

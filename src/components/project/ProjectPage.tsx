@@ -3,6 +3,7 @@ import { creditedTotal } from '../../document/credits'
 import { invoiceBalance } from '../../document/payments'
 import { canDeleteProject } from '../../project/lifecycle'
 import { isTaxModeLocked } from '../../project/sharedData'
+import { UndoRedoButtons } from '../builder/UndoRedoButtons'
 import { ClientPicker } from './ClientPicker'
 import { ProjectDetailsForm } from './ProjectDetailsForm'
 import { ProjectStatusSection } from './ProjectStatusSection'
@@ -11,7 +12,7 @@ import { useProject } from './useProject'
 
 // A project's status, pipeline steps, client and shared details; archived projects are read-only.
 export function ProjectPage({ projectId }: { projectId: string }) {
-  const { data, save, createClientFor, createDocument, toggleDone, remove } = useProject(projectId)
+  const { data, save, createClientFor, createDocument, toggleDone, remove, undo, redo, canUndo, canRedo, historySteps } = useProject(projectId)
   const navigate = useNavigate()
   if (data === null) return null
   const { project, documents, clients } = data
@@ -20,9 +21,12 @@ export function ProjectPage({ projectId }: { projectId: string }) {
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4">
-      <Link to="/" className="text-sm underline">
-        Projects
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link to="/" className="text-sm underline">
+          Projects
+        </Link>
+        <UndoRedoButtons className="flex items-center gap-1" canUndo={canUndo} canRedo={canRedo} onUndo={() => void undo()} onRedo={() => void redo()} />
+      </div>
       <h1 className="text-xl font-semibold">{title}</h1>
       {project.archived && <p role="status" className="text-sm text-muted-foreground">Archived — unarchive to make changes.</p>}
       <ProjectStatusSection
@@ -53,7 +57,7 @@ export function ProjectPage({ projectId }: { projectId: string }) {
         </section>
         <section className="rounded-lg border bg-card p-4">
           <h2 className="mb-3 font-medium">Project details</h2>
-          <ProjectDetailsForm key={project.id} project={project} taxModeLocked={isTaxModeLocked(documents)} onSave={(next) => void save(next)} />
+          <ProjectDetailsForm key={`${project.id}-${historySteps}`} project={project} taxModeLocked={isTaxModeLocked(documents)} onSave={(next) => void save(next)} />
         </section>
       </fieldset>
     </main>
