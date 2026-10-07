@@ -53,3 +53,15 @@ test('the selected item shows its price in the project currency', async ({ page 
   await page.locator('aside').getByText('Logo design').first().click()
   await expect(page.locator('aside').getByText('Unit price', { exact: true }).locator('..')).toContainText('¥120,000')
 })
+
+test('Noir Ledger can switch to a light background for printing', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Quick invoice' }).click()
+  const gallery = page.getByRole('radiogroup', { name: 'Template gallery' })
+  const background = () => page.locator('#document-root').evaluate((el) => getComputedStyle(el).backgroundColor)
+  await expect(page.getByLabel('Light background (saves ink)')).toHaveCount(0)
+  await gallery.getByRole('radio', { name: 'Noir Ledger' }).click()
+  await expect.poll(background).toBe('rgb(21, 21, 21)')
+  await page.getByLabel('Light background (saves ink)').check()
+  await expect.poll(background).toBe('rgb(255, 255, 255)')
+})

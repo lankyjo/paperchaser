@@ -2,7 +2,7 @@
 
 import { blankTokens } from './templates/blank'
 import { minimalTokens } from './templates/minimal'
-import { noirLedgerTokens } from './templates/noirLedger'
+import { noirLedgerTokens, noirLedgerTokensV1 } from './templates/noirLedger'
 import { atelierTokens, atelierTokensV1 } from './templates/atelier'
 import { statementTokens, statementTokensV1 } from './templates/statement'
 import { swissTokens } from './templates/swiss'
@@ -102,6 +102,8 @@ export interface TemplateTokens {
     // Grand-total top rule color (Minimal hairline #e5e7eb).
     rule: string
   }
+  // Colors for the light print option of a dark template; absent means the template has none.
+  light?: { palette: TemplateTokens['palette']; labelColor: string; rowRule: string }
 }
 
 // Template defaults with branding overrides merged in, plus the resolved watermark accent.
@@ -114,7 +116,7 @@ export interface ResolvedTokens extends TemplateTokens {
 export const TEMPLATE_VERSIONS: Record<TemplateId, TemplateTokens[]> = {
   blank: [blankTokens],
   minimal: [minimalTokens],
-  noirLedger: [noirLedgerTokens],
+  noirLedger: [noirLedgerTokensV1, noirLedgerTokens],
   atelier: [atelierTokensV1, atelierTokens],
   statement: [statementTokensV1, statementTokens],
   swiss: [swissTokens],

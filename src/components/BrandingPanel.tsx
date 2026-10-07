@@ -8,6 +8,7 @@ import { SelectControl } from './branding/SelectControl'
 import { useBrandingDisplay } from './branding/useBrandingDisplay'
 import { WatermarkControl } from './branding/WatermarkControl'
 import { TEMPLATE_LAYOUTS } from './templates/templateLayouts'
+import { TEMPLATE_REGISTRY } from '../document/tokens'
 
 // Per-document branding controls; every change applies instantly by patching the document's branding object.
 export function BrandingPanel({
@@ -75,6 +76,13 @@ export function BrandingPanel({
               onPick={(value) => setBranding({ footerStyle: value as Branding['footerStyle'] })}
             />
           </>
+        )}
+
+        {TEMPLATE_REGISTRY[template].light && (
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={branding.lightPrint === true} onChange={(e) => setBranding({ lightPrint: e.target.checked })} />
+            Light background (saves ink)
+          </label>
         )}
 
         <WatermarkControl watermark={display.watermark} onPick={(watermark) => setBranding({ watermark })} />

@@ -1269,6 +1269,9 @@
                   "draft",
                   "paid"
                 ]
+              },
+              "lightPrint": {
+                "type": "boolean"
               }
             },
             "additionalProperties": false

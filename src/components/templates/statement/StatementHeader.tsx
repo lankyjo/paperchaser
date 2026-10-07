@@ -11,7 +11,7 @@ export function StatementHeader({ model }: RegionProps) {
     <header className="statement-header">
       <aside className="statement-side">
         <div className="statement-brand">
-          <CompanyLogo model={model} />
+          <CompanyLogo model={model} onDark />
           <span>{facts.company}</span>
         </div>
         {facts.amount !== null && (

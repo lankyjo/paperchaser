@@ -79,7 +79,7 @@ describe('TEMPLATE_REGISTRY', () => {
 })
 
 // Fingerprint of every published template version; append, never edit.
-const PUBLISHED = { blank: ['36e5a0fbec7f'], minimal: ['3df0477aca6d'], noirLedger: ['e9f3dda798cf'], atelier: ['c45bfd2eb2fc', '81260f0d0475'], statement: ['e01c4f9bd462', '2a5d48af9327'], swiss: ['1c2be9730eb3'], correspondence: ['f65fa4400cdb'] }
+const PUBLISHED = { blank: ['36e5a0fbec7f'], minimal: ['3df0477aca6d'], noirLedger: ['e9f3dda798cf', '275d62522eac'], atelier: ['c45bfd2eb2fc', '81260f0d0475'], statement: ['e01c4f9bd462', '2a5d48af9327'], swiss: ['1c2be9730eb3'], correspondence: ['f65fa4400cdb'] }
 
 describe('template versions', () => {
   it('renders a frozen document with the template version it was sent with', () => {
@@ -97,6 +97,15 @@ describe('template versions', () => {
     const fingerprint = (v: unknown) => createHash('sha256').update(JSON.stringify(v)).digest('hex').slice(0, 12)
     const fingerprints = Object.fromEntries(Object.entries(TEMPLATE_VERSIONS).map(([id, versions]) => [id, versions.map(fingerprint)]))
     expect(fingerprints).toEqual(PUBLISHED)
+  })
+})
+
+describe('light print', () => {
+  it('turns a dark template light when branding asks for it, and leaves others alone', () => {
+    const light = resolveTokens('noirLedger', { lightPrint: true })
+    expect(light.palette.fill).toBe('#ffffff')
+    expect(resolveTokens('noirLedger').palette.fill).toBe('#151515')
+    expect(resolveTokens('minimal', { lightPrint: true }).palette).toEqual(resolveTokens('minimal').palette)
   })
 })
 

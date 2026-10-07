@@ -91,6 +91,8 @@ const brandingSchema = z
     headerStyle: z.enum(['standard', 'banner', 'compact']),
     footerStyle: z.enum(['minimal', 'standard', 'detailed']),
     watermark: z.enum(['auto', 'draft', 'paid']),
+    // Light print for dark templates, to save ink.
+    lightPrint: z.boolean(),
   })
   .partial()
 

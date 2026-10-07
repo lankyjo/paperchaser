@@ -8,7 +8,10 @@ const DEFAULT_ACCENT = '#1d4ed8'
 
 // Merges only explicitly set branding keys over the template (at a recorded version, else current), so switching template re-derives unset fields.
 export function resolveTokens(template: TemplateId, branding?: Partial<Branding>, version?: number): ResolvedTokens {
-  const base = (version !== undefined && TEMPLATE_VERSIONS[template][version - 1]) || TEMPLATE_REGISTRY[template]
+  const versioned = (version !== undefined && TEMPLATE_VERSIONS[template][version - 1]) || TEMPLATE_REGISTRY[template]
+  const light = branding?.lightPrint ? versioned.light : undefined
+  // The light print option swaps a dark template's colors for its light set.
+  const base = light ? { ...versioned, palette: light.palette, fonts: { ...versioned.fonts, labelColor: light.labelColor }, borders: { ...versioned.borders, rowRule: light.rowRule } } : versioned
   return {
     ...base,
     palette: {

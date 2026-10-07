@@ -1,7 +1,7 @@
 import type { TemplateTokens } from '../tokens'
 
 // Noir Ledger: charcoal page, gold hairlines and small-caps labels.
-export const noirLedgerTokens: TemplateTokens = {
+export const noirLedgerTokensV1: TemplateTokens = {
   palette: {
     ink: '#e9e6df',
     primary: '#c9a961',
@@ -39,5 +39,15 @@ export const noirLedgerTokens: TemplateTokens = {
   },
   totals: {
     rule: '#c9a961',
+  },
+}
+
+// Version 2: adds a light print version that saves ink, with a darker gold that stays readable on white.
+export const noirLedgerTokens: TemplateTokens = {
+  ...noirLedgerTokensV1,
+  light: {
+    palette: { ink: '#1c1b18', primary: '#7d6430', accent: '#7d6430', border: '#e2ded4', fill: '#ffffff', muted: '#5f5a4f' },
+    labelColor: '#5f5a4f',
+    rowRule: '#ebe8e1',
   },
 }

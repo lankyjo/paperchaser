@@ -10,7 +10,7 @@ export function NoirLedgerHeader({ model }: RegionProps) {
     <header className="noir-header">
       <div className="noir-top">
         <div>
-          <CompanyLogo model={model} className="noir-logo" />
+          <CompanyLogo model={model} className="noir-logo" onDark={!model.branding?.lightPrint} />
           <div className="noir-brand">
             {facts.company}
             <span className="noir-gold">.</span>
