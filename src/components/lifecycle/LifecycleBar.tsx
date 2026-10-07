@@ -9,6 +9,7 @@ import type { Project } from '../../project/project'
 import { pullLatestChanges, type SharedData } from '../../project/sharedData'
 import { PaymentsPanel } from '../payments/PaymentsPanel'
 import { Button } from '../ui/button'
+import { CopyEmailButton } from './CopyEmailButton'
 import { FinalizeDialog } from './FinalizeDialog'
 import { NextMonthButton } from './NextMonthButton'
 import { QuoteActions } from './QuoteActions'
@@ -51,6 +52,7 @@ export function LifecycleBar({ model, shared, project, history }: LifecycleBarPr
             <Button size="sm" variant="outline" onClick={lifecycle.print}>
               Print
             </Button>
+            {model.status === 'sent' && <CopyEmailButton doc={model} />}
             {canUnsend && model.status !== 'void' && (
               <Button size="sm" variant="ghost" onClick={() => void lifecycle.unsend()}>
                 Back to draft
