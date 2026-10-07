@@ -76,7 +76,7 @@ const customerSchema = z.object({
 })
 
 // Render selectors are optional and resolve at render time, so older stored documents render without migration.
-const templateIdSchema = z.enum(['blank', 'minimal', 'noirLedger', 'atelier', 'statement', 'swiss'])
+const templateIdSchema = z.enum(['blank', 'minimal', 'noirLedger', 'atelier', 'statement', 'swiss', 'correspondence'])
 const pageSizeSchema = z.enum(['a4', 'letter', 'a5', 'a3'])
 const brandingSchema = z
   .object({

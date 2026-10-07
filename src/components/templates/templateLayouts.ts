@@ -3,6 +3,7 @@ import type { printedTotals } from '../../document/finalize'
 import type { ResolvedTokens } from '../../document/tokens'
 import type { DocumentModel, TemplateId } from '../../document/types'
 import { atelierLayout } from './atelier/atelierLayout'
+import { correspondenceLayout } from './correspondence/correspondenceLayout'
 import { noirLedgerLayout } from './noir-ledger/noirLedgerLayout'
 import { statementLayout } from './statement/statementLayout'
 import { swissLayout } from './swiss/swissLayout'
@@ -34,4 +35,5 @@ export const TEMPLATE_LAYOUTS: Partial<Record<TemplateId, TemplateLayout>> = {
   atelier: atelierLayout,
   statement: statementLayout,
   swiss: swissLayout,
+  correspondence: correspondenceLayout,
 }

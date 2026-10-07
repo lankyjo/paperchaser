@@ -1,0 +1,159 @@
+/* Correspondence: a business letter with mono details and dotted-leader money lines. */
+
+.tpl-correspondence {
+  line-height: 1.55;
+}
+
+.corr-mono,
+.tpl-correspondence .doc-items-quantity,
+.tpl-correspondence .doc-items-price {
+  font-family: 'Geist Mono Variable', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--tpl-muted);
+}
+
+.corr-letterhead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12mm;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--tpl-ink);
+}
+
+.corr-letterhead img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  margin-bottom: 6px;
+}
+
+.corr-letterhead h2 {
+  margin: 0;
+  font-size: var(--tpl-title-size);
+  font-weight: var(--tpl-title-weight);
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.corr-letterhead .corr-mono {
+  text-align: right;
+  line-height: 1.7;
+}
+
+.corr-reference {
+  margin: 8mm 0 var(--tpl-section-gap);
+  text-align: right;
+  line-height: 1.8;
+}
+
+.tpl-correspondence .doc-parties-title {
+  display: none;
+}
+
+.tpl-correspondence .doc-heading {
+  font-size: 22px;
+  font-weight: 400;
+}
+
+/* Money lines as a ledger: title, italic note, dotted leader, quantity and amount. */
+.tpl-correspondence .doc-items thead {
+  display: none;
+}
+
+.tpl-correspondence .doc-items tr {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  border: 0;
+}
+
+.tpl-correspondence .doc-items td {
+  padding: 7px 0;
+}
+
+.tpl-correspondence .doc-items-title {
+  flex: 0 0 auto;
+  max-width: 45%;
+}
+
+.tpl-correspondence .doc-items-description {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-style: italic;
+  font-size: 13px;
+  color: #8a8276;
+}
+
+.tpl-correspondence .doc-items-description::after,
+.tpl-correspondence .doc-totals-row span:first-child::after {
+  content: '';
+  flex: 1;
+  min-width: 24px;
+  border-bottom: 1px dotted #a39b8e;
+  transform: translateY(-4px);
+}
+
+.tpl-correspondence .doc-items-quantity::after {
+  content: ' ×';
+}
+
+.tpl-correspondence .doc-totals {
+  max-width: none;
+  margin-top: 4mm;
+}
+
+.tpl-correspondence .doc-totals-row {
+  gap: 10px;
+  padding: 4px 0;
+  color: var(--tpl-muted);
+}
+
+.tpl-correspondence .doc-totals-row span:first-child {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.tpl-correspondence .doc-totals-grand {
+  border-top: 1px solid var(--tpl-ink);
+  margin-top: 10px;
+  padding-top: 14px;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--tpl-ink);
+}
+
+.tpl-correspondence .doc-totals-grand span:first-child::after {
+  border-bottom-color: transparent;
+}
+
+.corr-footer {
+  margin-top: var(--tpl-section-gap);
+}
+
+.corr-closing {
+  margin: 0 0 8mm;
+}
+
+.corr-contact {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  border-top: 1px solid var(--tpl-border);
+  padding-top: 16px;
+  text-transform: none;
+}
+
+.corr-contact b {
+  display: block;
+  color: var(--tpl-ink);
+  font-weight: 500;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+}
