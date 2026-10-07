@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { clientsRepo, documentsRepo, projectsRepo } from '../../db/repos'
+import { documentsRepo, projectsRepo } from '../../db/repos'
 import { newInvoice } from '../../document/newInvoice'
 import type { DocumentModel } from '../../document/types'
 import { useMountEffect } from '../../hooks/useMountEffect'
-import { createClient, type Client } from '../../project/client'
 import { createProject, type Project } from '../../project/project'
 
 export interface ProjectWithDocuments {
@@ -16,30 +15,14 @@ async function loadProjects(): Promise<ProjectWithDocuments[]> {
   return Promise.all(projects.map(async (project) => ({ project, documents: await documentsRepo.byProject(project.id) })))
 }
 
-// Stored projects with their documents and clients, plus creating projects and assigning clients.
+// Stored projects with their documents, plus creating a project that starts with one invoice.
 export function useProjects() {
   const [projects, setProjects] = useState<ProjectWithDocuments[] | null>(null)
-  const [clients, setClients] = useState<Client[]>([])
-  const reload = async () => {
-    const [nextProjects, nextClients] = await Promise.all([loadProjects(), clientsRepo.list()])
-    setProjects(nextProjects)
-    setClients(nextClients)
-  }
+  const reload = async () => setProjects(await loadProjects())
 
   useMountEffect(() => {
     void reload()
   })
-
-  const assignClient = async (project: Project, clientId: string | undefined) => {
-    await projectsRepo.put({ ...project, clientId, updatedAt: new Date().toISOString() })
-    await reload()
-  }
-
-  const createClientFor = async (project: Project, name: string) => {
-    const client = createClient({ id: crypto.randomUUID(), name })
-    await clientsRepo.put(client)
-    await assignClient(project, client.id)
-  }
 
   const createWithInvoice = async (title: string): Promise<DocumentModel> => {
     const now = new Date()
@@ -50,5 +33,5 @@ export function useProjects() {
     return invoice
   }
 
-  return { projects, clients, createWithInvoice, assignClient, createClientFor }
+  return { projects, createWithInvoice }
 }

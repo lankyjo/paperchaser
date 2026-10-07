@@ -1,18 +1,33 @@
 import { useState } from 'react'
-import { documentsRepo } from '../../db/repos'
+import { clientsRepo, documentsRepo, projectsRepo } from '../../db/repos'
 import type { DocumentModel } from '../../document/types'
 import { useMountEffect } from '../../hooks/useMountEffect'
+import { applySharedData, sharedFromClient, type SharedData } from '../../project/sharedData'
 import { BuilderWorkspace } from './BuilderWorkspace'
 
-// Loads a stored document by id and opens it in the builder; edits autosave through the builder history.
+interface Loaded {
+  model: DocumentModel
+  shared: SharedData
+}
+
+async function loadWithProjectData(documentId: string): Promise<Loaded | null> {
+  const doc = await documentsRepo.get(documentId)
+  if (doc === undefined) return null
+  const project = await projectsRepo.get(doc.projectId)
+  const client = project?.clientId === undefined ? undefined : await clientsRepo.get(project.clientId)
+  const shared = sharedFromClient(client)
+  return { model: applySharedData(doc, shared), shared }
+}
+
+// Loads a stored document with its project's shared data applied, then opens it in the builder.
 export function StoredDocument({ documentId }: { documentId: string }) {
-  const [model, setModel] = useState<DocumentModel | null | undefined>(undefined)
+  const [loaded, setLoaded] = useState<Loaded | null | undefined>(undefined)
 
   useMountEffect(() => {
-    void documentsRepo.get(documentId).then((doc) => setModel(doc ?? null))
+    void loadWithProjectData(documentId).then(setLoaded)
   })
 
-  if (model === undefined) return <div className="flex min-h-screen items-center justify-center" />
-  if (model === null) return <p className="p-6 text-sm">Document not found.</p>
-  return <BuilderWorkspace model={model} />
+  if (loaded === undefined) return <div className="flex min-h-screen items-center justify-center" />
+  if (loaded === null) return <p className="p-6 text-sm">Document not found.</p>
+  return <BuilderWorkspace model={loaded.model} shared={loaded.shared} />
 }

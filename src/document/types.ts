@@ -84,6 +84,8 @@ const brandingSchema = z
 
 export const documentSchema = z.object({
   projectId: z.string(),
+  // Project-shared fields this document has edited locally, so project changes no longer overwrite them.
+  overrides: z.array(z.enum(['customer.name', 'customer.address'])).optional(),
   // z.object() strips unknown keys rather than rejecting them.
   id: z.string(),
   // One model shared across invoice, quote and receipt.

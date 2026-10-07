@@ -6,7 +6,7 @@ import { useProjects } from './useProjects'
 
 // Home screen: create a project, then open any of its documents.
 export function ProjectsHome() {
-  const { projects, clients, createWithInvoice, assignClient, createClientFor } = useProjects()
+  const { projects, createWithInvoice } = useProjects()
   const navigate = useNavigate()
 
   const create = async (title: string) => {
@@ -29,13 +29,7 @@ export function ProjectsHome() {
       {projects?.length === 0 && <p className="text-sm text-muted-foreground">No projects yet.</p>}
       <ul className="flex flex-col gap-3">
         {projects?.map((entry) => (
-          <ProjectCard
-            key={entry.project.id}
-            entry={entry}
-            clients={clients}
-            onPickClient={(clientId) => void assignClient(entry.project, clientId)}
-            onCreateClient={(name) => void createClientFor(entry.project, name)}
-          />
+          <ProjectCard key={entry.project.id} entry={entry} />
         ))}
       </ul>
     </main>

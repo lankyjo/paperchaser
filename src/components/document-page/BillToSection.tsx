@@ -2,6 +2,7 @@ import type { DocumentModel } from '../../document/types'
 import type { RichTextDoc } from '../../document/richtext'
 import { getPlainText } from '../../document/richtext'
 import { RichTextCell } from '../edit/RichTextCell'
+import { OverrideNotice } from './OverrideNotice'
 
 // Customer name and address block, as editable cells or plain text.
 export function BillToSection({
@@ -42,6 +43,7 @@ export function BillToSection({
               onCommit={(next) => commitAddressLine(idx, next)}
             />
           ))}
+          <OverrideNotice model={model} onCommit={onCommit} />
         </>
       ) : (
         <>

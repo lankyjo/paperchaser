@@ -1,23 +1,16 @@
 import { Link } from '@tanstack/react-router'
 import { getPlainText } from '../../document/richtext'
-import type { Client } from '../../project/client'
-import { ClientPicker } from './ClientPicker'
 import type { ProjectWithDocuments } from './useProjects'
 
-interface ProjectCardProps {
-  entry: ProjectWithDocuments
-  clients: Client[]
-  onPickClient: (clientId: string | undefined) => void
-  onCreateClient: (name: string) => void
-}
-
-// One project: its title, client and links to its documents.
-export function ProjectCard({ entry: { project, documents }, clients, onPickClient, onCreateClient }: ProjectCardProps) {
-  const title = project.title || 'Untitled project'
+// One project on the home list: its title links to the project page, then its documents.
+export function ProjectCard({ entry: { project, documents } }: { entry: ProjectWithDocuments }) {
   return (
     <li className="rounded-lg border bg-card p-4">
-      <h2 className="font-medium">{title}</h2>
-      <ClientPicker projectTitle={title} clientId={project.clientId} clients={clients} onPick={onPickClient} onCreate={onCreateClient} />
+      <h2 className="font-medium">
+        <Link to="/projects/$projectId" params={{ projectId: project.id }}>
+          {project.title || 'Untitled project'}
+        </Link>
+      </h2>
       <ul className="mt-2 flex flex-col gap-1 text-sm">
         {documents.map((doc) => (
           <li key={doc.id}>

@@ -11,6 +11,7 @@ test('a new project opens its invoice, and edits survive a reload', async ({ pag
   await customerName.click()
   await page.keyboard.type('Acme Coffee Roasters')
   await page.keyboard.press('Enter')
+  await expect(page.getByText('Saving…')).toBeVisible()
   await expect(page.getByText('Saved', { exact: true })).toBeVisible()
 
   await page.reload()

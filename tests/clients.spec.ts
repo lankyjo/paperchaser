@@ -5,11 +5,12 @@ test('a client created on a project is reused, cannot be deleted while in use, a
   await page.getByLabel('Project title').fill('Acme rebrand')
   await page.getByRole('button', { name: 'New project' }).click()
   await page.goto('/')
+  await page.getByRole('link', { name: 'Acme rebrand' }).click()
   await page.getByLabel('New client for Acme rebrand').fill('Acme Coffee')
   await page.getByRole('button', { name: 'Add', exact: true }).click()
   await expect(page.getByLabel('Client for Acme rebrand', { exact: true }).locator('option:checked')).toHaveText('Acme Coffee')
 
-  await page.getByRole('link', { name: 'Clients' }).click()
+  await page.goto('/clients')
   const card = page.getByRole('listitem').filter({ hasText: 'Acme Coffee' })
   await expect(card.getByText('Used by 1 drafts in 1 projects')).toBeVisible()
   await expect(card.getByRole('button', { name: 'Delete' })).toBeDisabled()
