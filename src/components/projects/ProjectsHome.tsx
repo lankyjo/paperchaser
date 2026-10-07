@@ -28,6 +28,9 @@ export function ProjectsHome() {
         <Link to="/clients" className="ml-auto mr-3 text-sm underline">
           Clients
         </Link>
+        <Link to="/services" className="mr-3 text-sm underline">
+          Services
+        </Link>
         <Link to="/settings" className="mr-3 text-sm underline">
           Settings
         </Link>

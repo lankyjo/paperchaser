@@ -28,8 +28,8 @@ const COMPANY = { name: 'Acme GmbH', address: ['Acmeweg 1'], email: 'acme@test.t
 
 
 /** Fixture-shaped catalog items. */
-const BERATUNG_ITEM = { id: 'prod-1', name: 'Beratung', priceMinor: 10000 }
-const DRUCK_ITEM = { id: 'prod-2', name: 'Druck', priceMinor: 120 }
+const BERATUNG_ITEM = { id: 'prod-1', name: 'Beratung', description: '', priceMinor: 10000, taxRateMinor: 0 }
+const DRUCK_ITEM = { id: 'prod-2', name: 'Druck', description: '', priceMinor: 120, taxRateMinor: 0 }
 
 beforeEach(async () => {
   await db.delete()
@@ -192,10 +192,10 @@ describe('catalogRepo', () => {
     expect(await catalogRepo.get('prod-1')).toBeUndefined()
   })
 
-  it('byName returns only matching catalog items (name index)', async () => {
-    await catalogRepo.put(BERATUNG_ITEM)
+  it('lists saved services by name', async () => {
     await catalogRepo.put(DRUCK_ITEM)
-    expect(await catalogRepo.byName('Beratung')).toEqual([BERATUNG_ITEM])
+    await catalogRepo.put(BERATUNG_ITEM)
+    expect((await catalogRepo.list()).map((i) => i.name)).toEqual(['Beratung', 'Druck'])
   })
 })
 

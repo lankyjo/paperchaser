@@ -2,6 +2,7 @@ import type { DocumentModel, PageSize, TemplateId } from '../../document/types'
 import type { RichTextDoc } from '../../document/richtext'
 import type { blockActions } from '../blocks/blockActions'
 import { BlockOutline } from '../blocks/BlockOutline'
+import { ServicePicker } from '../catalog/ServicePicker'
 import { DocumentPage } from '../DocumentPage'
 import { OutlinePane, type OutlinePaneProps } from '../OutlinePane'
 import { PropertiesPane, type PropertiesPaneProps } from '../PropertiesPane'
@@ -19,6 +20,7 @@ export function DesktopPanes({
   propertiesProps,
   onCustomerNameCommit,
   onCommit,
+  onInsertItem,
 }: {
   model: DocumentModel
   template?: TemplateId
@@ -30,11 +32,13 @@ export function DesktopPanes({
   propertiesProps: PropertiesPaneProps
   onCustomerNameCommit: (name: RichTextDoc) => void
   onCommit: (next: DocumentModel) => void
+  onInsertItem?: (line: DocumentModel['lineItems'][number]) => void
 }) {
   return (
     <main className="hidden flex-1 overflow-hidden print:flex print:min-h-0 lg:flex">
       <aside className="w-56 shrink-0 overflow-y-auto border-r border-foreground/10 bg-card p-3 print:hidden">
         <OutlinePane {...outlineProps} />
+        {editable && onInsertItem && <ServicePicker onInsert={onInsertItem} />}
         {editable && (
           <div className="mt-4">
             <h2 className="mb-2 px-1 text-sm font-semibold">Sections</h2>

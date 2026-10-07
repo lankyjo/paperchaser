@@ -70,6 +70,7 @@ export function BuilderWorkspace({
             propertiesProps={{ ...sharedPropertiesProps, selectedItemId: selection.selectedItemId }}
             onCustomerNameCommit={commitCustomerName}
             onCommit={commit}
+            onInsertItem={items.insertItem}
           />
         ) : (
           <MobileStack {...layout} saveFailed={saveState === 'failed'} />

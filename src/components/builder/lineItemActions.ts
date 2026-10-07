@@ -15,6 +15,7 @@ export function lineItemActions(model: DocumentModel, commit: (next: DocumentMod
   }
 
   return {
+    insertItem: (line: LineItem) => commitItems([...model.lineItems, line]),
     addItem: () =>
       commitItems([
         ...model.lineItems,

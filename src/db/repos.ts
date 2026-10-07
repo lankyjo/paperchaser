@@ -6,6 +6,7 @@ import { finalizeDocument, isNumberedType, nextNumber, type Counter } from '../d
 import { revisionNumber } from '../document/quotes'
 import { getPlainText } from '../document/richtext'
 import type { Company, DocumentModel } from '../document/types'
+import type { CatalogItem } from '../project/catalog'
 import type { Client } from '../project/client'
 import type { Project } from '../project/project'
 import { db as rawDb } from './db'
@@ -17,11 +18,6 @@ export interface CompanyRow extends Company {
 }
 
 // Catalog item: minimal product shape.
-export interface CatalogItemRow {
-  id: string
-  name: string
-  priceMinor: number
-}
 
 // Key-value preference row; `key` is the primary key.
 export interface PreferenceRow {
@@ -39,7 +35,7 @@ export interface AssetRow {
 interface Tables {
   company: Table<CompanyRow>
   clients: Table<Client>
-  catalog: Table<CatalogItemRow>
+  catalog: Table<CatalogItem>
   documents: Table<DocumentModel>
   preferences: Table<PreferenceRow>
   projects: Table<Project>
@@ -170,11 +166,10 @@ export const clientsRepo = {
 }
 
 export const catalogRepo = {
-  put: (item: CatalogItemRow) => db.catalog.put(item),
+  put: (item: CatalogItem) => db.catalog.put(item),
   get: (id: string) => db.catalog.get(id),
   delete: (id: string) => db.catalog.delete(id),
-  // Name-indexed exact match for product search.
-  byName: (name: string) => db.catalog.where('name').equals(name).toArray(),
+  list: () => db.catalog.orderBy('name').toArray(),
 }
 
 export const preferencesRepo = {
