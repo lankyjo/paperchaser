@@ -26,3 +26,8 @@ dist-ssr
 # Harness diff artifacts — never committed (research Security Domain; only
 # synthetic fixtures in git). Golden baselines under tests/fixtures/ ARE tracked.
 tests/artifacts/
+
+# local planning scratch and throwaway prototypes
+.scratch/
+prototypes/
+.planning/research/.cache/
