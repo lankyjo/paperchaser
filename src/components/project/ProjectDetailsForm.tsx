@@ -5,6 +5,8 @@ import type { Project } from '../../project/project'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
+import { isValidLocale } from '../../lib/isValidLocale'
+import { CurrencyLocaleFields } from './CurrencyLocaleFields'
 
 // Title, fee, dates and deliverables shared by every document in the project.
 const TAX_MODES: { value: TaxMode; label: string }[] = [
@@ -15,7 +17,9 @@ const TAX_MODES: { value: TaxMode; label: string }[] = [
 
 export function ProjectDetailsForm({ project, taxModeLocked, onSave }: { project: Project; taxModeLocked: boolean; onSave: (next: Project) => void }) {
   const [title, setTitle] = useState(project.title)
-  const [fee, setFee] = useState(project.feeMinor === undefined ? '' : minorToRaw(project.feeMinor, 'EUR'))
+  const [currency, setCurrency] = useState(project.currency ?? 'EUR')
+  const [locale, setLocale] = useState(project.locale ?? navigator.language)
+  const [fee, setFee] = useState(project.feeMinor === undefined ? '' : minorToRaw(project.feeMinor, currency, locale))
   const [startDate, setStartDate] = useState(project.startDate ?? '')
   const [dueDate, setDueDate] = useState(project.dueDate ?? '')
   const [deliverables, setDeliverables] = useState((project.deliverables ?? []).join('\n'))
@@ -26,7 +30,9 @@ export function ProjectDetailsForm({ project, taxModeLocked, onSave }: { project
     onSave({
       ...project,
       title: title.trim(),
-      feeMinor: parseToMinor(fee, 'EUR') ?? undefined,
+      feeMinor: parseToMinor(fee, currency, locale) ?? undefined,
+      currency,
+      locale: isValidLocale(locale) ? locale : project.locale,
       startDate: startDate || undefined,
       dueDate: dueDate || undefined,
       deliverables: deliverables.split('\n').map((l) => l.trim()).filter(Boolean),
@@ -44,6 +50,13 @@ export function ProjectDetailsForm({ project, taxModeLocked, onSave }: { project
         <Label htmlFor="project-fee">Project fee</Label>
         <Input id="project-fee" inputMode="decimal" value={fee} onChange={(e) => setFee(e.target.value)} />
       </div>
+      <CurrencyLocaleFields
+        currency={currency}
+        locale={locale}
+        currencyLocked={taxModeLocked}
+        onCurrencyChange={setCurrency}
+        onLocaleChange={setLocale}
+      />
       <div className="grid gap-1">
         <Label htmlFor="project-tax">Tax</Label>
         <select

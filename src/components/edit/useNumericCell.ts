@@ -1,22 +1,13 @@
 import { useRef, useState, type ClipboardEvent, type KeyboardEvent } from 'react'
-import { CURRENCY_DECIMALS, minorToRaw, parseQuantity, parseToMinor } from '../../document/money'
+import { formatMoney, minorToRaw, parseQuantity, parseToMinor } from '../../document/money'
 import { isAllowedNumericKeystroke } from './isAllowedNumericKeystroke'
 import { selectContents } from './selectContents'
 
 export type NumericCellProps =
-  | { valueMinor: number; currency: string; onCommit: (valueMinor: number) => void; onCancel?: () => void; placeholder?: string }
-  | { quantity: number; currency: string; onCommit: (quantity: number) => void; onCancel?: () => void; placeholder?: string }
+  | { valueMinor: number; currency: string; locale?: string; onCommit: (valueMinor: number) => void; onCancel?: () => void; placeholder?: string }
+  | { quantity: number; currency: string; locale?: string; onCommit: (quantity: number) => void; onCancel?: () => void; placeholder?: string }
 
 const CONTROL_KEYS = new Set(['Backspace', 'Delete', 'Tab', 'Enter', 'Escape', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'])
-
-function formatMoney(valueMinor: number, currency: string): string {
-  const major = valueMinor / 10 ** (CURRENCY_DECIMALS[currency] ?? 2)
-  try {
-    return new Intl.NumberFormat('de-DE', { style: 'currency', currency }).format(major)
-  } catch {
-    return major.toString()
-  }
-}
 
 function focusSiblingCell(from: HTMLElement | null, dir: 1 | -1) {
   const cells = Array.from(document.querySelectorAll<HTMLElement>('[data-numeric-cell][contenteditable="true"]'))
@@ -34,11 +25,11 @@ export function useNumericCell(props: NumericCellProps) {
   const [focused, setFocused] = useState(false)
   const [invalid, setInvalid] = useState(false)
   const isQty = 'quantity' in props
-  const { currency, onCancel } = props
+  const { currency, locale, onCancel } = props
   const onCommit = props.onCommit as (n: number) => void
-  const displayRaw = isQty ? String(props.quantity) : minorToRaw(props.valueMinor, currency)
-  const viewText = isQty ? String(props.quantity) : formatMoney(props.valueMinor, currency)
-  const parse = (raw: string) => (isQty ? parseQuantity(raw.trim()) : parseToMinor(raw.trim(), currency))
+  const displayRaw = isQty ? String(props.quantity) : minorToRaw(props.valueMinor, currency, locale)
+  const viewText = isQty ? String(props.quantity) : formatMoney(props.valueMinor, currency, locale)
+  const parse = (raw: string) => (isQty ? parseQuantity(raw.trim()) : parseToMinor(raw.trim(), currency, locale))
   const showText = (text: string) => {
     if (ref.current) ref.current.textContent = text
   }

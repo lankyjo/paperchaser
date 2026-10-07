@@ -3,6 +3,7 @@ import { getPlainText } from '../document/richtext'
 import type { TaxMode } from '../document/totals'
 import type { DocumentModel } from '../document/types'
 import type { Client } from './client'
+import type { Project } from './project'
 
 export type SharedField = NonNullable<DocumentModel['overrides']>[number]
 
@@ -10,13 +11,21 @@ export interface SharedData {
   customerName: string
   customerAddress: string[]
   taxMode?: TaxMode
+  currency?: string
+  locale?: string
 }
 
-export function sharedFromClient(client: Client | undefined, taxMode?: TaxMode): SharedData {
-  return { customerName: client?.name ?? '', customerAddress: client?.billingAddress ?? [], taxMode }
+export function sharedFromProject(client: Client | undefined, project?: Pick<Project, 'taxMode' | 'currency' | 'locale'>): SharedData {
+  return {
+    customerName: client?.name ?? '',
+    customerAddress: client?.billingAddress ?? [],
+    taxMode: project?.taxMode,
+    currency: project?.currency,
+    locale: project?.locale,
+  }
 }
 
-// Tax mode stays editable only while every money document is still a draft.
+// Tax mode and currency stay editable only while every money document is still a draft.
 export function isTaxModeLocked(documents: Pick<DocumentModel, 'type' | 'status'>[]): boolean {
   return documents.some((d) => isMoneyDocument(d) && d.status !== 'draft')
 }
@@ -42,8 +51,13 @@ const FIELDS = Object.keys(sharedValue) as SharedField[]
 export function applySharedData(doc: DocumentModel, shared: SharedData): DocumentModel {
   if (doc.status !== 'draft') return doc
   const overrides = doc.overrides ?? []
-  const withTaxMode = shared.taxMode === undefined ? doc : { ...doc, taxMode: shared.taxMode }
-  return FIELDS.filter((f) => !overrides.includes(f)).reduce((next, f) => withProjectValue(next, f, shared), withTaxMode)
+  const settings = {
+    ...doc,
+    ...(shared.taxMode !== undefined && { taxMode: shared.taxMode }),
+    ...(shared.currency !== undefined && { currency: shared.currency }),
+    ...(shared.locale !== undefined && { locale: shared.locale }),
+  }
+  return FIELDS.filter((f) => !overrides.includes(f)).reduce((next, f) => withProjectValue(next, f, shared), settings)
 }
 
 // A shared field counts as overridden exactly when its text differs from the project value.

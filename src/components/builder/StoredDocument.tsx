@@ -3,7 +3,7 @@ import { clientsRepo, documentsRepo, projectsRepo } from '../../db/repos'
 import type { DocumentModel } from '../../document/types'
 import { useMountEffect } from '../../hooks/useMountEffect'
 import { isMoneyDocument } from '../../document/documentBlocks'
-import { applySharedData, sharedFromClient, type SharedData } from '../../project/sharedData'
+import { applySharedData, sharedFromProject, type SharedData } from '../../project/sharedData'
 import { BlockWorkspace } from '../blocks/BlockWorkspace'
 import { ExplainerBanner } from '../explainer/ExplainerBanner'
 import { BuilderWorkspace } from './BuilderWorkspace'
@@ -18,7 +18,7 @@ async function loadWithProjectData(documentId: string): Promise<Loaded | null> {
   if (doc === undefined) return null
   const project = await projectsRepo.get(doc.projectId)
   const client = project?.clientId === undefined ? undefined : await clientsRepo.get(project.clientId)
-  const shared = sharedFromClient(client, project?.taxMode)
+  const shared = sharedFromProject(client, project)
   return { model: applySharedData(doc, shared), shared }
 }
 

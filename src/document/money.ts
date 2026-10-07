@@ -1,30 +1,49 @@
 // Pure money and rounding helpers; no React, DOM or Dexie.
 
-// Currency to decimal places; adding a currency is a registry entry, not a model change.
-export const CURRENCY_DECIMALS: Readonly<Record<string, number>> = { EUR: 2, JPY: 0 }
+// Fraction digits Intl uses for a currency: 0 for JPY, 2 for EUR, 3 for KWD.
+export function currencyDecimals(currency: string): number {
+  return new Intl.NumberFormat('en', { style: 'currency', currency }).resolvedOptions().maximumFractionDigits ?? 2
+}
 
-// Parses a raw decimal string (comma or dot) to nonnegative integer minor units, or null if invalid.
-export function parseToMinor(raw: string, currency: string): number | null {
-  const dec = CURRENCY_DECIMALS[currency] ?? 2
-  const normalized = raw.trim().replace(',', '.')
+export function isSupportedCurrency(code: string): boolean {
+  return /^[A-Z]{3}$/.test(code) && Intl.supportedValuesOf('currency').includes(code)
+}
+
+// Older documents carry no locale and keep the German euro formatting they were created with.
+export function formatMoney(minor: number, currency: string, locale = 'de-DE'): string {
+  return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(minor / 10 ** currencyDecimals(currency))
+}
+
+// Group and decimal separators of a locale, e.g. "." and "," for de-DE.
+function separators(locale: string) {
+  const parts = new Intl.NumberFormat(locale).formatToParts(1234.5)
+  return { group: parts.find((p) => p.type === 'group')?.value ?? ',', decimal: parts.find((p) => p.type === 'decimal')?.value ?? '.' }
+}
+
+// Normalizes typed number text to "1234.56"; without a locale a single comma is read as the decimal point.
+function normalizeNumber(raw: string, locale?: string): string {
+  const trimmed = raw.trim()
+  if (locale === undefined) return trimmed.replace(',', '.')
+  const { group, decimal } = separators(locale)
+  return trimmed.replace(/\s/g, '').split(group).join('').replace(decimal, '.')
+}
+
+// Parses typed money text to nonnegative integer minor units, or null if invalid.
+export function parseToMinor(raw: string, currency: string, locale?: string): number | null {
+  const dec = currencyDecimals(currency)
+  const normalized = normalizeNumber(raw, locale)
   if (normalized === '' || normalized === '.' || normalized === '-' || normalized === '-.') return null
   if (!/^-?\d*\.?\d*$/.test(normalized)) return null
   const parsed = Number(normalized)
-  if (!Number.isFinite(parsed) || Number.isNaN(parsed)) return null
-  if (parsed < 0) return null
-  // Reject multiple dots already covered by regex, but also guard comma handling
+  if (!Number.isFinite(parsed) || parsed < 0) return null
   const minor = Math.round(roundMinor(parsed, dec) * 10 ** dec)
-  if (!Number.isInteger(minor) || minor < 0) return null
-  return minor
+  return Number.isInteger(minor) && minor >= 0 ? minor : null
 }
 
-/** Convert minor units back to a raw decimal string for edit mode (no currency formatting). */
-export function minorToRaw(minor: number, currency: string): string {
-  const dec = CURRENCY_DECIMALS[currency] ?? 2
-  const major = minor / 10 ** dec
-  // Avoid floating representation noise: use fixed then trim trailing zeros
-  if (dec === 0) return Math.round(major).toString()
-  return major.toString()
+// Minor units as editable text without grouping, in the locale's decimal style; trailing zeros dropped.
+export function minorToRaw(minor: number, currency: string, locale = 'en-US'): string {
+  const dec = currencyDecimals(currency)
+  return new Intl.NumberFormat(locale, { useGrouping: false, maximumFractionDigits: dec }).format(minor / 10 ** dec)
 }
 
 /** Check if a raw string is valid nonnegative numeric input (for isValid helper). */

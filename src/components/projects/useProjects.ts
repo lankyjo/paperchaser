@@ -27,8 +27,8 @@ export function useProjects() {
 
   const createWithInvoice = async (title: string): Promise<DocumentModel> => {
     const now = new Date()
-    const project = createProject({ id: crypto.randomUUID(), title, now: now.toISOString() })
-    const invoice = newInvoice({ id: crypto.randomUUID(), projectId: project.id, today: now.toLocaleDateString('en-CA') })
+    const project = { ...createProject({ id: crypto.randomUUID(), title, now: now.toISOString() }), currency: 'EUR', locale: navigator.language }
+    const invoice = { ...newInvoice({ id: crypto.randomUUID(), projectId: project.id, today: now.toLocaleDateString('en-CA') }), locale: project.locale }
     await projectsRepo.put(project)
     await documentsRepo.put(invoice)
     return invoice

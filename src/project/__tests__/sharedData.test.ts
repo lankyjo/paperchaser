@@ -3,10 +3,10 @@ import { describe, expect, it } from 'vitest'
 import { newInvoice } from '../../document/newInvoice'
 import { getPlainText } from '../../document/richtext'
 import { createClient } from '../client'
-import { applySharedData, isTaxModeLocked, resetOverride, sharedFromClient, trackOverrides } from '../sharedData'
+import { applySharedData, isTaxModeLocked, resetOverride, sharedFromProject, trackOverrides } from '../sharedData'
 
 const client = { ...createClient({ id: 'c1', name: 'Acme Coffee' }), billingAddress: ['300 Main St', 'Portland'] }
-const shared = sharedFromClient(client)
+const shared = sharedFromProject(client)
 const draft = newInvoice({ id: 'd1', projectId: 'p1', today: '2026-10-07' })
 
 describe('applySharedData', () => {
@@ -53,5 +53,13 @@ describe('tax mode', () => {
   it('locks once any money document has been sent', () => {
     expect(isTaxModeLocked([{ type: 'invoice', status: 'draft' }, { type: 'welcome', status: 'sent' }])).toBe(false)
     expect(isTaxModeLocked([{ type: 'invoice', status: 'sent' }])).toBe(true)
+  })
+})
+
+describe('currency and locale', () => {
+  it('flow from the project into drafts', () => {
+    const doc = applySharedData(draft, { ...shared, currency: 'NGN', locale: 'en-NG' })
+    expect(doc.currency).toBe('NGN')
+    expect(doc.locale).toBe('en-NG')
   })
 })

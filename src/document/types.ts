@@ -3,7 +3,7 @@
 import * as z from 'zod'
 
 import { blockSchema } from './blocks'
-import { CURRENCY_DECIMALS } from './money'
+import { isSupportedCurrency } from './money'
 import { richTextDocSchema } from './richtext'
 import type { RichTextDoc } from './richtext'
 
@@ -108,8 +108,10 @@ export const documentSchema = z.object({
   taxMode: z.enum(['exclusive', 'inclusive', 'none']).optional(),
   // Ordered content blocks; documents without line items are built entirely from these.
   blocks: z.array(blockSchema).optional(),
-  // Adding a currency means adding it to CURRENCY_DECIMALS.
-  currency: z.enum(Object.keys(CURRENCY_DECIMALS) as [string, ...string[]]),
+  // Any ISO 4217 code Intl knows; decimals come from Intl too.
+  currency: z.string().refine(isSupportedCurrency, { message: 'unknown currency code' }),
+  // BCP 47 locale for dates and numbers; absent on older documents, which keep German formatting.
+  locale: z.string().optional(),
   // Enforces YYYY-MM-DD.
   issueDate: z.iso.date(),
   number: textFieldSchema,

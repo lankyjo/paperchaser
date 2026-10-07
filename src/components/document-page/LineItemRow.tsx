@@ -3,7 +3,7 @@ import type { DocumentModel } from '../../document/types'
 import { getPlainText } from '../../document/richtext'
 import { NumericCell } from '../edit/NumericCell'
 import { RichTextCell } from '../edit/RichTextCell'
-import { formatMinor } from './formatMinor'
+import { formatMoney } from '../../document/money'
 
 type LineItem = DocumentModel['lineItems'][number]
 
@@ -11,12 +11,14 @@ type LineItem = DocumentModel['lineItems'][number]
 export function LineItemRow({
   item,
   currency,
+  locale,
   netMinor,
   rowStyle,
   onPatch,
 }: {
   item: LineItem
   currency: DocumentModel['currency']
+  locale: string | undefined
   netMinor: number
   rowStyle: CSSProperties
   onPatch?: (patch: Partial<LineItem>) => void
@@ -54,20 +56,20 @@ export function LineItemRow({
       </td>
       <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
         {onPatch ? (
-          <NumericCell quantity={item.quantity} currency={currency} onCommit={(quantity) => onPatch({ quantity })} />
+          <NumericCell quantity={item.quantity} currency={currency} locale={locale} onCommit={(quantity) => onPatch({ quantity })} />
         ) : (
           item.quantity
         )}
       </td>
       <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
         {onPatch ? (
-          <NumericCell valueMinor={item.unitPriceMinor} currency={currency} onCommit={(unitPriceMinor) => onPatch({ unitPriceMinor })} />
+          <NumericCell valueMinor={item.unitPriceMinor} currency={currency} locale={locale} onCommit={(unitPriceMinor) => onPatch({ unitPriceMinor })} />
         ) : (
-          formatMinor(item.unitPriceMinor)
+          formatMoney(item.unitPriceMinor, currency, locale)
         )}
       </td>
       <td style={{ padding: '6px 0', verticalAlign: 'top', textAlign: 'right' }}>
-        {formatMinor(netMinor)}
+        {formatMoney(netMinor, currency, locale)}
       </td>
     </tr>
   )

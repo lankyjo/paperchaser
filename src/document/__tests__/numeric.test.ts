@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CURRENCY_DECIMALS, minorToRaw, parseQuantity, parseToMinor, roundMinor } from '../money'
+import { minorToRaw, parseQuantity, parseToMinor, roundMinor } from '../money'
 
 describe('roundMinor precision (D-09, T-04-14)', () => {
   it('EUR 2dp: 19.99 stays 19.99', () => {
@@ -103,11 +103,6 @@ describe('minorToRaw — display for edit mode', () => {
   })
 })
 
-describe('CURRENCY_DECIMALS registry', () => {
-  it('has EUR 2dp and JPY 0dp', () => {
-    expect(CURRENCY_DECIMALS).toEqual({ EUR: 2, JPY: 0 })
-  })
-})
 
 describe('keystroke filter allowance (via isValid check)', () => {
   it('allows digits and single decimal, rejects letters', () => {

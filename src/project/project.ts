@@ -11,6 +11,8 @@ export const projectSchema = z.object({
   dueDate: z.iso.date().optional(),
   deliverables: z.array(z.string()).optional(),
   taxMode: z.enum(['exclusive', 'inclusive', 'none']).optional(),
+  currency: z.string().optional(),
+  locale: z.string().optional(),
   // Single-document steps the user has marked finished.
   doneSteps: z.array(z.string()).optional(),
   createdAt: z.iso.datetime(),

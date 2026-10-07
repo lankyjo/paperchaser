@@ -51,7 +51,6 @@ export function useBuilderDocument(
     onBrandingChange: settings.changeBranding,
     onLogoChange: settings.changeLogo,
     onPageSizeChange: settings.changePageSize,
-    onCurrencyChange: settings.changeCurrency,
     onLineItemChange: items.changeLineItem,
   }
 

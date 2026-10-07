@@ -17,7 +17,6 @@ export interface PropertiesPaneProps {
   onBrandingChange: (branding: Partial<Branding> | undefined) => void
   onLogoChange: (logo: string | null) => void
   onPageSizeChange: (pageSize: PageSize) => void
-  onCurrencyChange?: (currency: DocumentModel['currency']) => void
   onLineItemChange?: (id: string, patch: Partial<DocumentModel['lineItems'][number]>) => void
 }
 
@@ -29,7 +28,6 @@ export function PropertiesPane({
   onBrandingChange,
   onLogoChange,
   onPageSizeChange,
-  onCurrencyChange,
   onLineItemChange,
 }: PropertiesPaneProps) {
   if (selectedItemId !== null) {
@@ -46,7 +44,7 @@ export function PropertiesPane({
       <h2 className="px-1 text-sm font-semibold">Document</h2>
       <TemplateGallery selected={template} onSelect={onTemplateChange} />
       <BrandingPanel model={model} template={template} onBrandingChange={onBrandingChange} onLogoChange={onLogoChange} />
-      <CurrencyCard currency={model.currency} onCurrencyChange={onCurrencyChange} />
+      <CurrencyCard currency={model.currency} />
       <Card size="sm">
         <CardHeader>
           <CardTitle>Page size</CardTitle>

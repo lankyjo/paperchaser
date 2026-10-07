@@ -28,7 +28,6 @@ export function useDocumentSettings(
     commit({ ...model, pageSize })
   }
   // ponytail: display-only currency switch; stored minor units are never converted
-  const changeCurrency = (currency: DocumentModel['currency']) => commit({ ...model, currency })
   const toggleVisibility = (blockId: BlockId, visible: boolean) => {
     const current = model.settings?.blockVisibility ?? {}
     commit({ ...model, settings: { ...model.settings, blockVisibility: { ...current, [blockId]: visible } } })
@@ -41,7 +40,6 @@ export function useDocumentSettings(
     changeBranding,
     changeLogo,
     changePageSize,
-    changeCurrency,
     toggleVisibility,
   }
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { FIXTURE_MAP } from '../fixtures'
-import { CURRENCY_DECIMALS, roundMinor } from '../money'
+import { roundMinor } from '../money'
 import { computeTotals, deriveWatermark } from '../totals'
 import { documentSchema } from '../types'
 
@@ -57,10 +57,6 @@ describe('computeTotals — per-line rounding (D-01/D-03, Pitfall 1)', () => {
 })
 
 describe('computeTotals — per-currency decimals (D-12)', () => {
-  it('registers EUR 2dp and JPY 0dp', () => {
-    expect(CURRENCY_DECIMALS).toEqual({ EUR: 2, JPY: 0 })
-  })
-
   it('JPY (0dp) rounds to whole yen: qty 3 × 12345 at 10% → subtotal 37035', () => {
     const totals = computeTotals({
       lineItems: [{ quantity: 3, unitPriceMinor: 12345, taxRateMinor: 1000 }],

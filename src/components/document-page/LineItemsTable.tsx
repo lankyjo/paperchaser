@@ -34,6 +34,7 @@ export function LineItemsTable({
             key={item.id}
             item={item}
             currency={model.currency}
+            locale={model.locale}
             netMinor={lineNets[index]}
             rowStyle={row}
             onPatch={onCommit ? (patch) => patchItem(item.id, patch) : undefined}
