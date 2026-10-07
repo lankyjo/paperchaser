@@ -4,6 +4,7 @@ import { preferencesRepo, projectsRepo } from '../../db/repos'
 import { downloadJson } from '../../lib/downloadFile'
 import { parseBundle, type Bundle, type ProjectBundle, type WorkspaceBundle } from '../../project/backup'
 import { todayIso } from '../../lib/todayIso'
+import { useMountEffect } from '../../hooks/useMountEffect'
 
 const LAST_BACKUP_KEY = 'lastBackupAt'
 
@@ -13,10 +14,18 @@ type Pending = { kind: 'projectClash'; bundle: ProjectBundle } | { kind: 'worksp
 export function useBackup() {
   const [message, setMessage] = useState<string | null>(null)
   const [pending, setPending] = useState<Pending>(null)
+  // Undefined while loading, null when no backup was ever downloaded.
+  const [lastBackupAt, setLastBackupAt] = useState<string | null | undefined>(undefined)
+
+  useMountEffect(() => {
+    void preferencesRepo.get<string>(LAST_BACKUP_KEY).then((at) => setLastBackupAt(at ?? null))
+  })
 
   const backup = async () => {
     downloadJson(`paperchaser-backup-${todayIso()}.json`, await exportWorkspace())
-    await preferencesRepo.put(LAST_BACKUP_KEY, new Date().toISOString())
+    const at = new Date().toISOString()
+    await preferencesRepo.put(LAST_BACKUP_KEY, at)
+    setLastBackupAt(at)
   }
 
   const route = async (bundle: Bundle) => {
@@ -52,5 +61,5 @@ export function useBackup() {
     setMessage('Workspace restored. Your previous data was downloaded first.')
   }
 
-  return { backup, importFile, pending, resolveProject, restoreWorkspace, cancel: () => setPending(null), message }
+  return { backup, lastBackupAt, importFile, pending, resolveProject, restoreWorkspace, cancel: () => setPending(null), message }
 }

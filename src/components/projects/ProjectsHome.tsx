@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { filterProjects } from '../../project/searchProjects'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
+import { DataSafetyNotices } from '../data-safety/DataSafetyNotices'
 import { NewProjectForm } from './NewProjectForm'
 import { OverdueList } from './OverdueList'
 import { ProjectCard } from './ProjectCard'
@@ -39,6 +40,7 @@ export function ProjectsHome() {
           Quick invoice
         </Button>
       </div>
+      <DataSafetyNotices />
       <OverdueList overdue={overdue} />
       <NewProjectForm onCreate={(title) => void create(title)} />
       <div className="flex items-center gap-3">

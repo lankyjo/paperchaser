@@ -4,11 +4,12 @@ import { useBackup } from './useBackup'
 
 // Download a full backup, or import a project file or backup, deciding clashes explicitly.
 export function BackupSection() {
-  const { backup, importFile, pending, resolveProject, restoreWorkspace, cancel, message } = useBackup()
+  const { backup, lastBackupAt, importFile, pending, resolveProject, restoreWorkspace, cancel, message } = useBackup()
   return (
     <section aria-label="Backup and import" className="flex flex-col gap-3 rounded-lg border bg-card p-4">
       <h2 className="font-medium">Backup and import</h2>
       <p className="text-sm text-muted-foreground">Your data lives only in this browser. Download a backup regularly and keep it somewhere safe.</p>
+      {lastBackupAt !== undefined && <p className="text-sm">{lastBackupAt === null ? 'No backup downloaded yet.' : `Last backup: ${new Date(lastBackupAt).toLocaleString()}`}</p>}
       <div className="flex flex-wrap items-center gap-2">
         <Button onClick={() => void backup()}>Download backup</Button>
         <label className="text-sm">

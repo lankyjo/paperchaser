@@ -48,3 +48,18 @@ test('restoring a workspace backup downloads the current data first, then replac
   await expect(page.getByRole('link', { name: 'Keep me' })).toBeVisible()
   await expect(page.getByRole('link', { name: 'Added later' })).toHaveCount(0)
 })
+
+test('home reminds to back up until a backup is downloaded, and settings shows when that was', async ({ page }) => {
+  await page.goto('/')
+  await page.getByLabel('Project title').fill('Reminder test')
+  await page.getByRole('button', { name: 'New project' }).click()
+  await page.goto('/')
+  const reminder = page.getByRole('region', { name: 'Backup reminder' })
+  await expect(reminder).toContainText('You have not downloaded a backup yet.')
+  const download = page.waitForEvent('download')
+  await reminder.getByRole('button', { name: 'Download backup' }).click()
+  await download
+  await expect(reminder).toHaveCount(0)
+  await page.goto('/settings')
+  await expect(page.getByText(/^Last backup: /)).toBeVisible()
+})
