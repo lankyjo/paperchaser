@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "test": "playwright test",
     "test:unit": "vitest run",
-    "test:update": "UPDATE_BASELINES=1 playwright test tests/parity.spec.ts -g baseline",
+    "test:update": "UPDATE_BASELINES=1 playwright test tests/parity.spec.ts -g golden",
     "check:comments": "node scripts/findCommentViolations.ts",
     "check:naming": "ls-lint",
     "check:no-use-effect": "! grep -rnE '\\buse(Layout)?Effect\\s*\\(' src --include='*.tsx'",
