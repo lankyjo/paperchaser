@@ -19,7 +19,7 @@ export function ItemImageField({ image, onChange, onRemove }: { image?: string; 
       <Label>Image</Label>
       {image ? (
         <div className="space-y-2">
-          <LocalImage src={image} alt="" className="max-h-24 max-w-full rounded object-contain ring-1 ring-foreground/10" />
+          <LocalImage src={image} alt="" className="aspect-square w-24 rounded-md object-cover ring-1 ring-foreground/10" />
           <div className="flex gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => inputRef.current?.click()}>
               Replace
