@@ -1,18 +1,8 @@
-import { useState } from 'react'
-import { loadDocumentForEditing, type LoadedDocument } from './loadDocumentForEditing'
-import { useMountEffect } from '../../hooks/useMountEffect'
+import type { LoadedDocument } from './loadDocumentForEditing'
 import { BuilderWorkspace } from './BuilderWorkspace'
 
-// Loads a stored document with its project's shared data applied, then opens it in the builder.
-export function StoredDocument({ documentId }: { documentId: string }) {
-  const [loaded, setLoaded] = useState<LoadedDocument | null | undefined>(undefined)
-
-  useMountEffect(() => {
-    void loadDocumentForEditing(documentId).then(setLoaded)
-  })
-
-  if (loaded === undefined) return <div className="flex min-h-screen items-center justify-center" />
-  if (loaded === null) return <p className="p-6 text-sm">Document not found.</p>
+// A stored document, loaded with its project's shared data applied, open in the builder.
+export function StoredDocument({ loaded }: { loaded: LoadedDocument }) {
   return (
     <>
       {loaded.scheduleMismatch && (

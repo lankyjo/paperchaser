@@ -3,6 +3,7 @@ import { createRoute, createRootRoute, createRouter, lazyRouteComponent, redirec
 import { RootComponent } from './routes/__root'
 import { IndexPage } from './routes/index'
 import { hasOpenedApp, markAppOpened } from './lib/appVisit'
+import { loadDocumentForEditing } from './components/builder/loadDocumentForEditing'
 
 // Every page but the projects home loads on first visit, keeping the start-up bundle small.
 const rootRoute = createRootRoute()
@@ -42,6 +43,9 @@ const indexRoute = createRoute({
 const documentRoute = createRoute({
   getParentRoute: () => appShellRoute,
   path: '/documents/$documentId',
+  // The open document stays on screen while the next one loads, then swaps in place; never served from cache.
+  loader: ({ params }) => loadDocumentForEditing(params.documentId),
+  gcTime: 0,
   component: lazyRouteComponent(() => import('./routes/DocumentRoute'), 'DocumentRoute'),
 })
 
