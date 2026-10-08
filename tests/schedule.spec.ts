@@ -10,6 +10,7 @@ test('an agreement schedule creates deposit and balance invoices, and flags a se
   await page.goto('/app')
   await page.getByLabel('Search projects').fill('Acme rebrand')
   await page.getByRole('button', { name: 'New project' }).click()
+  await expect(page).toHaveURL(/\/(documents|projects)\//)
   await page.goto('/app')
   await page.getByRole('link', { name: 'Acme rebrand' }).click()
   await page.getByLabel('Currency', { exact: true }).selectOption('EUR')

@@ -5,6 +5,7 @@ test('a project exports to a file that re-imports as a copy, and a newer-version
   await page.goto('/app')
   await page.getByLabel('Search projects').fill('Acme rebrand')
   await page.getByRole('button', { name: 'New project' }).click()
+  await expect(page).toHaveURL(/\/(documents|projects)\//)
   await page.goto('/app')
   await page.getByRole('link', { name: 'Acme rebrand' }).click()
 
@@ -53,6 +54,7 @@ test('home reminds to back up until a backup is downloaded, and settings shows w
   await page.goto('/app')
   await page.getByLabel('Search projects').fill('Reminder test')
   await page.getByRole('button', { name: 'New project' }).click()
+  await expect(page).toHaveURL(/\/(documents|projects)\//)
   await page.goto('/app')
   const reminder = page.getByRole('region', { name: 'Backup reminder' })
   await expect(reminder).toContainText('You have not downloaded a backup yet.')

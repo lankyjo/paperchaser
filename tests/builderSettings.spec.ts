@@ -41,6 +41,7 @@ test('the selected item shows its price in the project currency', async ({ page 
 
   await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
+  await expect(page).toHaveURL(/\/(documents|projects)\//)
   await page.goto('/app')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByLabel('Currency', { exact: true }).selectOption('JPY')

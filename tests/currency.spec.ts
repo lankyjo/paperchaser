@@ -3,6 +3,7 @@ import { expect, test } from './helpers/test'
 test('a project in Nigerian naira with British formatting prints amounts that way, and the fee accepts that format', async ({ page }) => {
   await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
+  await expect(page).toHaveURL(/\/(documents|projects)\//)
   await page.goto('/app')
   await page.getByRole('link', { name: 'Untitled project' }).click()
 

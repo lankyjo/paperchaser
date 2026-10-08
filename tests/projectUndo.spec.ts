@@ -4,6 +4,7 @@ test('project edits undo and redo on the project page, separately from document 
   await page.goto('/app')
   await page.getByLabel('Search projects').fill('Original title')
   await page.getByRole('button', { name: 'New project' }).click()
+  await expect(page).toHaveURL(/\/(documents|projects)\//)
   await page.goto('/app')
   await page.getByRole('link', { name: 'Original title' }).click()
 

@@ -3,6 +3,7 @@ import { expect, test } from './helpers/test'
 test('"New for next month" starts a draft a month later from a monthly report', async ({ page }) => {
   await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
+  await expect(page).toHaveURL(/\/(documents|projects)\//)
   await page.goto('/app')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start monthly report' }).click()

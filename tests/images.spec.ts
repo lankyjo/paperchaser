@@ -19,6 +19,7 @@ const assetCount = (page: Page) =>
 test('images upload compressed, are stored once, and uploaded SVG scripts never run', async ({ page }) => {
   await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
+  await expect(page).toHaveURL(/\/(documents|projects)\//)
   await page.goto('/app')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start welcome' }).click()
@@ -43,6 +44,7 @@ test('images upload compressed, are stored once, and uploaded SVG scripts never 
 test('a drawn signature is trimmed and stored, with a blank client signature line', async ({ page }) => {
   await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
+  await expect(page).toHaveURL(/\/(documents|projects)\//)
   await page.goto('/app')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start client agreement' }).click()

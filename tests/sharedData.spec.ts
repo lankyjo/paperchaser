@@ -4,6 +4,7 @@ test('an invoice reads its client from the project, can override it, and reset b
   await page.goto('/app')
   await page.getByLabel('Search projects').fill('Acme rebrand')
   await page.getByRole('button', { name: 'New project' }).click()
+  await expect(page).toHaveURL(/\/(documents|projects)\//)
   await page.goto('/app')
   await page.getByRole('link', { name: 'Acme rebrand' }).click()
   await page.getByLabel('New client for Acme rebrand').fill('Acme Coffee')

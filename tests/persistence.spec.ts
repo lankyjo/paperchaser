@@ -32,6 +32,7 @@ test('an edit is kept when leaving the editor inside the app before autosave fir
   await page.keyboard.press('Enter')
   await page.getByRole('link', { name: 'Project' }).first().click()
   await expect(page).toHaveURL(/\/projects\//)
-  await page.goto(docUrl)
+  await page.goBack()
+  await expect(page).toHaveURL(docUrl)
   await expect(customerName).toHaveText('Left in a hurry')
 })

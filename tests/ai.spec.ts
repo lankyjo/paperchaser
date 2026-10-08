@@ -5,6 +5,7 @@ const reply = (operations: object[]) => JSON.stringify({ summary: 'Warmer headin
 async function openWelcome(page: Page) {
   await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
+  await expect(page).toHaveURL(/\/(documents|projects)\//)
   await page.goto('/app')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start welcome' }).click()
