@@ -3,7 +3,7 @@ import { expect, test } from './helpers/test'
 test.use({ viewport: { width: 390, height: 844 }, hasTouch: true })
 
 test('on mobile, the pipeline and document settings open as bottom sheets', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
   await expect(page.locator('#document-root')).toBeVisible()
   const guide = page.getByRole('dialog', { name: 'About the Invoice' })
@@ -24,7 +24,7 @@ test('on mobile, the pipeline and document settings open as bottom sheets', asyn
 
 test('resizing across the desktop breakpoint keeps the open document and the selected item', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 })
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
   await page.getByRole('button', { name: 'Add item' }).first().click()
   await page.getByRole('complementary', { name: 'Outline' }).getByText('Untitled', { exact: true }).click()

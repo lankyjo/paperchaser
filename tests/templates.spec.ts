@@ -6,7 +6,7 @@ import { TEMPLATE_REGISTRY } from '../src/document/tokens'
 for (const template of Object.keys(TEMPLATE_REGISTRY)) {
   test(`${template} renders every document type`, async ({ page }) => {
     for (const type of DOC_TYPE_IDS) {
-      await page.goto(`/?fixture=doc-${type}&template=${template}`)
+      await page.goto(`/app?fixture=doc-${type}&template=${template}`)
       const first = page.locator('#print-root .document-page').first()
       await expect(first, `${template} ${type}`).toBeAttached()
       await expect(first, `${template} ${type} title`).toContainText(DOC_TYPES[type].title, { ignoreCase: true })

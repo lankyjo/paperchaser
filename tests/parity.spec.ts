@@ -60,7 +60,7 @@ function nonWhiteFraction(img: PNG): number {
 }
 
 async function openFixture(page: Page, query: string): Promise<void> {
-  await page.goto(`/?fixture=${query}`)
+  await page.goto(`/app?fixture=${query}`)
   await page.waitForSelector('#document-root')
   await page.evaluate(() => document.fonts.ready)
   await expect(page.locator('#print-root .document-page').first()).toBeAttached()

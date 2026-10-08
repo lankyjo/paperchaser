@@ -14,7 +14,7 @@ async function expectNoViolations(page: Page, label: string) {
 }
 
 test('home, project, editor and settings have no WCAG 2.2 AA violations', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await expect(page.getByRole('region', { name: 'Set up your business' })).toBeVisible()
   await expectNoViolations(page, 'first-run home')
 
@@ -40,7 +40,7 @@ test('home, project, editor and settings have no WCAG 2.2 AA violations', async 
 test('the mobile editor has no WCAG 2.2 AA violations', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.addInitScript(() => localStorage.setItem('paperchaser.welcomeSkipped', '1'))
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
   await page.getByRole('dialog', { name: 'About the Invoice' }).getByRole('button', { name: 'Got it' }).click()
   await expect(page.locator('#document-root')).toBeVisible()

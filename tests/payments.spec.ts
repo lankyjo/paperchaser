@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('payments on a sent invoice update the balance and stamp, create receipts, and block going back to draft', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
   await page.getByRole('button', { name: 'Add item' }).click()
   const pageRoot = page.locator('#document-root')

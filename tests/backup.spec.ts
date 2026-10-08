@@ -2,10 +2,10 @@ import { expect, test } from './helpers/test'
 import { readFileSync } from 'node:fs'
 
 test('a project exports to a file that re-imports as a copy, and a newer-version file is refused', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByLabel('Search projects').fill('Acme rebrand')
   await page.getByRole('button', { name: 'New project' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Acme rebrand' }).click()
 
   const download = page.waitForEvent('download')
@@ -17,7 +17,7 @@ test('a project exports to a file that re-imports as a copy, and a newer-version
   await page.getByLabel('Import file').setInputFiles({ name: 'acme.json', mimeType: 'application/json', buffer: Buffer.from(json) })
   await page.getByRole('button', { name: 'Import as copy' }).click()
   await expect(page.getByRole('status')).toHaveText('Project imported.')
-  await page.goto('/')
+  await page.goto('/app')
   await expect(page.getByRole('link', { name: 'Acme rebrand' })).toHaveCount(2)
 
   await page.goto('/settings')
@@ -27,7 +27,7 @@ test('a project exports to a file that re-imports as a copy, and a newer-version
 })
 
 test('restoring a workspace backup downloads the current data first, then replaces it', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByLabel('Search projects').fill('Keep me')
   await page.getByRole('button', { name: 'New project' }).click()
   await page.goto('/settings')
@@ -35,7 +35,7 @@ test('restoring a workspace backup downloads the current data first, then replac
   await page.getByRole('button', { name: 'Download backup' }).click()
   const backup = readFileSync(await (await backupDownload).path(), 'utf8')
 
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByLabel('Search projects').fill('Added later')
   await page.getByRole('button', { name: 'New project' }).click()
   await page.goto('/settings')
@@ -44,16 +44,16 @@ test('restoring a workspace backup downloads the current data first, then replac
   await page.getByRole('button', { name: 'Restore backup' }).click()
   await safety
   await expect(page.getByRole('status')).toContainText('Workspace restored')
-  await page.goto('/')
+  await page.goto('/app')
   await expect(page.getByRole('link', { name: 'Keep me' })).toBeVisible()
   await expect(page.getByRole('link', { name: 'Added later' })).toHaveCount(0)
 })
 
 test('home reminds to back up until a backup is downloaded, and settings shows when that was', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByLabel('Search projects').fill('Reminder test')
   await page.getByRole('button', { name: 'New project' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   const reminder = page.getByRole('region', { name: 'Backup reminder' })
   await expect(reminder).toContainText('You have not downloaded a backup yet.')
   const download = page.waitForEvent('download')

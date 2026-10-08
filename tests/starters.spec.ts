@@ -1,9 +1,9 @@
 import { expect, test } from './helpers/test'
 
 async function openProject(page: import('@playwright/test').Page) {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Untitled project' }).click()
 }
 

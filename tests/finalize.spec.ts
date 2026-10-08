@@ -12,7 +12,7 @@ test.beforeEach(async ({ page }) => {
 const prints = (page: import('./helpers/test').Page) => page.evaluate(() => (window as unknown as { __prints: string[] }).__prints)
 
 test('finalize warns, numbers, locks and prints; back to draft keeps the number', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
   const pageRoot = page.locator('#document-root')
   await expect(pageRoot.locator('[contenteditable="true"]').first()).toBeVisible()
@@ -36,7 +36,7 @@ test('finalize warns, numbers, locks and prints; back to draft keeps the number'
 })
 
 test('numbering settings warn before reusing numbers', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
   await page.getByRole('button', { name: 'Finalize and print' }).click()
   await page.getByRole('button', { name: 'Finalize anyway' }).click()
@@ -52,10 +52,10 @@ test('numbering settings warn before reusing numbers', async ({ page }) => {
 })
 
 test('an unsent invoice keeps its snapshot until the latest project data is pulled', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByLabel('Search projects').fill('Acme rebrand')
   await page.getByRole('button', { name: 'New project' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Acme rebrand' }).click()
   await page.getByLabel('New client for Acme rebrand').fill('Acme Coffee')
   await page.getByRole('button', { name: 'Add', exact: true }).click()

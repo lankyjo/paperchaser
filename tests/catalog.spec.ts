@@ -10,7 +10,7 @@ test('a saved service is inserted into an invoice as a priced line item', async 
   await form.getByRole('button', { name: 'Save' }).click()
   await expect(page.getByRole('listitem', { name: 'Logo design' })).toBeVisible()
 
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
   await page.getByLabel('Add from services').selectOption({ label: 'Logo design' })
   const pageRoot = page.locator('#document-root')

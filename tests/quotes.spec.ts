@@ -7,10 +7,10 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('a quote is revised as -R2, only the latest revision can be accepted, and acceptance sets the project fee', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByLabel('Search projects').fill('Acme rebrand')
   await page.getByRole('button', { name: 'New project' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Acme rebrand' }).click()
   await expect(page).toHaveURL(/\/projects\//)
   const projectUrl = page.url()
@@ -45,9 +45,9 @@ test('a quote is revised as -R2, only the latest revision can be accepted, and a
 })
 
 test('a declined quote can mark its project lost', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await expect(page).toHaveURL(/\/projects\//)
   const projectUrl = page.url()

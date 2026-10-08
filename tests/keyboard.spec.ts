@@ -26,7 +26,7 @@ async function tabTo(page: Page, name: string, key: 'Tab' | 'Shift+Tab' = 'Tab',
 }
 
 test('a document can be created, edited and finalized with the keyboard alone', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await tabTo(page, 'Quick invoice')
   await page.keyboard.press('Enter')
   await expect(page.locator('#document-root')).toBeVisible()

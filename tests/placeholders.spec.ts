@@ -1,9 +1,9 @@
 import { expect, test } from './helpers/test'
 
 test('sample placeholders are highlighted, survive editing around them, and disappear once replaced', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start welcome' }).click()
   const pageRoot = page.locator('#document-root')

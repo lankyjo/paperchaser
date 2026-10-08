@@ -1,10 +1,10 @@
 import { expect, test } from './helpers/test'
 
 test('an invoice reads its client from the project, can override it, and reset back', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByLabel('Search projects').fill('Acme rebrand')
   await page.getByRole('button', { name: 'New project' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Acme rebrand' }).click()
   await page.getByLabel('New client for Acme rebrand').fill('Acme Coffee')
   await page.getByRole('button', { name: 'Add', exact: true }).click()

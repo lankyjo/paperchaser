@@ -1,10 +1,10 @@
 import { expect, test } from './helpers/test'
 
 test('the project page lists ten steps, opens any step, and tracks status and progress', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByLabel('Search projects').fill('Acme rebrand')
   await page.getByRole('button', { name: 'New project' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Acme rebrand' }).click()
 
   const steps = page.getByRole('listitem').filter({ has: page.getByRole('heading', { level: 3 }) })

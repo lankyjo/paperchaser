@@ -7,10 +7,10 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('a lead sends quotes only, becomes active on its first invoice once it has a client, and archives read-only', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByLabel('Search projects').fill('Pitch for Acme')
   await page.getByRole('button', { name: 'New project' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Pitch for Acme' }).click()
   await expect(page).toHaveURL(/\/projects\//)
   const projectUrl = page.url()
@@ -36,7 +36,7 @@ test('a lead sends quotes only, becomes active on its first invoice once it has 
   await page.getByRole('button', { name: 'Archive' }).click()
   await expect(page.getByRole('button', { name: 'Start welcome' })).toBeDisabled()
 
-  await page.goto('/')
+  await page.goto('/app')
   await expect(page.getByRole('link', { name: 'Pitch for Acme' })).toHaveCount(0)
   await page.getByLabel('Show archived').check()
   await page.getByLabel('Search projects').fill('acme coffee')
@@ -44,13 +44,13 @@ test('a lead sends quotes only, becomes active on its first invoice once it has 
 })
 
 test('a project with nothing billed can be deleted', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByLabel('Search projects').fill('Scrap me')
   await page.getByRole('button', { name: 'New project' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Scrap me' }).click()
   await page.getByRole('button', { name: 'Delete project' }).click()
   await page.getByRole('button', { name: 'Delete project' }).last().click()
-  await expect(page).toHaveURL(/\/$/)
+  await expect(page).toHaveURL(/\/app$/)
   await expect(page.getByRole('link', { name: 'Scrap me' })).toHaveCount(0)
 })

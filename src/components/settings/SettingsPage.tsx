@@ -14,7 +14,7 @@ export function SettingsPage() {
   const { counters, change, save, reusesNumbers } = useNumbering()
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4">
-      <Link to="/" className="text-sm underline">
+      <Link to="/app" className="text-sm underline">
         Projects
       </Link>
       <CompanyProfileSection />

@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 })
 
 async function sentInvoiceOf100(page: Page) {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
   await page.getByRole('button', { name: 'Add item' }).click()
   await page.locator('#document-root [data-numeric-cell]').nth(1).click()

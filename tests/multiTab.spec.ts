@@ -12,7 +12,7 @@ async function typeCustomer(page: Page, text: string) {
 
 test('an idle second tab follows edits live; a tab whose edit is based on an old revision goes read-only', async ({ context }) => {
   const a = await context.newPage()
-  await a.goto('/')
+  await a.goto('/app')
   await a.getByRole('button', { name: 'Quick invoice' }).click()
   await expect(a).toHaveURL(/\/documents\//)
   const b = await context.newPage()

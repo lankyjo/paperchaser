@@ -40,6 +40,7 @@ export default defineConfig({
         name: 'Paperchaser',
         short_name: 'Paperchaser',
         description: 'Client paperwork for freelancers, from quote to feedback. Free and offline.',
+        start_url: '/app',
         display: 'standalone',
         theme_color: '#1f1b17',
         background_color: '#1f1b17',

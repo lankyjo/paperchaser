@@ -16,7 +16,7 @@ export function ClientsPage() {
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Clients</h1>
-        <Link to="/" className="text-sm underline">
+        <Link to="/app" className="text-sm underline">
           Projects
         </Link>
       </div>

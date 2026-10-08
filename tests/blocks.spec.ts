@@ -1,10 +1,10 @@
 import { expect, test } from './helpers/test'
 
 test('a welcome document is built from blocks that can be edited, hidden, reordered and added, and survives a reload', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByLabel('Search projects').fill('Acme rebrand')
   await page.getByRole('button', { name: 'New project' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Acme rebrand' }).click()
   await page.getByRole('button', { name: 'Start welcome' }).click()
 
@@ -36,9 +36,9 @@ test('a welcome document is built from blocks that can be edited, hidden, reorde
 })
 
 test('table and numbered-steps blocks can be added and filled in', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start welcome' }).click()
   const pageRoot = page.locator('#document-root')
@@ -59,9 +59,9 @@ test('table and numbered-steps blocks can be added and filled in', async ({ page
 })
 
 test('a chart takes pasted CSV, reports bad lines, and draws one bar per row; metric tiles can be added', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start welcome' }).click()
   const pageRoot = page.locator('#document-root')
@@ -78,9 +78,9 @@ test('a chart takes pasted CSV, reports bad lines, and draws one bar per row; me
 })
 
 test('rating and checklist blocks print empty boxes and log answers when clicked', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start feedback' }).click()
   const pageRoot = page.locator('#document-root')

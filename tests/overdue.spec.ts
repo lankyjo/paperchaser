@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('an overdue invoice is listed on the dashboard, gets an unnumbered reminder, and a lost project flags it', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
   await page.getByLabel('Due date').fill('2020-01-31')
   await page.getByRole('button', { name: 'Add item' }).click()
@@ -19,7 +19,7 @@ test('an overdue invoice is listed on the dashboard, gets an unnumbered reminder
   await page.getByRole('button', { name: /Finalize/ }).last().click()
   await expect(page.getByText('Sent · INV-0001')).toBeVisible()
 
-  await page.goto('/')
+  await page.goto('/app')
   const overdue = page.getByRole('region', { name: 'Overdue invoices' })
   await expect(overdue).toContainText('INV-0001')
   await expect(overdue).toContainText('days overdue')
@@ -30,7 +30,7 @@ test('an overdue invoice is listed on the dashboard, gets an unnumbered reminder
   await page.getByRole('button', { name: /Finalize/ }).last().click()
   await expect(page.getByText('Sent', { exact: true })).toBeVisible()
 
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByLabel('Status').selectOption('lost')
   await expect(page.getByRole('alert')).toContainText('still open')

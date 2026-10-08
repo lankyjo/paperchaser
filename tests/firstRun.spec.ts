@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { expect, test } from '@playwright/test'
 
 test('first launch saves your business details and adds a deletable sample project of every document type', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   const setup = page.getByRole('region', { name: 'Set up your business' })
   await setup.getByLabel('Business name').fill('Northwind Studio')
   await setup.getByLabel('Email').fill('hello@northwind.test')
@@ -21,7 +21,7 @@ test('first launch saves your business details and adds a deletable sample proje
   await page.goto('/settings')
   await expect(page.getByRole('region', { name: 'Company profile' }).getByLabel('Business name')).toHaveValue('Northwind Studio')
 
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Sample: Acme coffee rebrand' }).click()
   await page.getByRole('button', { name: 'Delete project' }).click()
   await page.getByRole('dialog').getByRole('button', { name: 'Delete project' }).click()
@@ -32,7 +32,7 @@ test('a new device can restore a backup from the welcome instead of setting up a
   const old = await browser.newContext()
   await old.addInitScript(() => localStorage.setItem('paperchaser.welcomeSkipped', '1'))
   const page = await old.newPage()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByLabel('Search projects').fill('Harbour signage')
   await page.getByLabel('Search projects').press('Enter')
   await expect(page).toHaveURL(/\/documents\//)
@@ -44,7 +44,7 @@ test('a new device can restore a backup from the welcome instead of setting up a
 
   const fresh = await browser.newContext()
   const device = await fresh.newPage()
-  await device.goto('/')
+  await device.goto('/app')
   await device.getByLabel('Backup file').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: backup })
   await expect(device.getByRole('link', { name: 'Harbour signage' })).toBeVisible()
   await device.reload()

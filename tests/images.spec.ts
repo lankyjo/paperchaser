@@ -17,9 +17,9 @@ const assetCount = (page: Page) =>
   )
 
 test('images upload compressed, are stored once, and uploaded SVG scripts never run', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start welcome' }).click()
   const pageRoot = page.locator('#document-root')
@@ -41,9 +41,9 @@ test('images upload compressed, are stored once, and uploaded SVG scripts never 
 })
 
 test('a drawn signature is trimmed and stored, with a blank client signature line', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start client agreement' }).click()
   const pageRoot = page.locator('#document-root')
@@ -69,7 +69,7 @@ test('a drawn signature is trimmed and stored, with a blank client signature lin
 })
 
 test('a logo upload is stored as a compressed asset, rendered in the header, and survives pruning', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
   await expect(page).toHaveURL(/\/documents\//)
   const docUrl = page.url()
@@ -79,7 +79,7 @@ test('a logo upload is stored as a compressed asset, rendered in the header, and
   expect(await assetCount(page)).toBe(1)
   await expect(page.getByText('Saved', { exact: true })).toBeVisible()
 
-  await page.goto('/')
+  await page.goto('/app')
   await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
   await page.goto(docUrl)
   await expect(logo).toHaveAttribute('src', /^data:image\/(webp|png)/)

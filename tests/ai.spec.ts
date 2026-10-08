@@ -3,9 +3,9 @@ import { expect, test, type Page } from './helpers/test'
 const reply = (operations: object[]) => JSON.stringify({ summary: 'Warmer heading', operations })
 
 async function openWelcome(page: Page) {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Untitled project' }).click()
   await page.getByRole('button', { name: 'Start welcome' }).click()
 }

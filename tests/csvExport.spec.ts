@@ -5,7 +5,7 @@ test('settings export sent invoices for a date range as CSV', async ({ page }) =
   await page.addInitScript(() => {
     window.print = () => {}
   })
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
   await page.getByRole('button', { name: 'Finalize and print' }).click()
   await page.getByRole('button', { name: /Finalize/ }).last().click()

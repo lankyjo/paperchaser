@@ -1,10 +1,10 @@
 import { expect, test } from './helpers/test'
 
 test('a step explains itself on first open, collapses once dismissed, and stays collapsed after that', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByLabel('Search projects').fill('Acme rebrand')
   await page.getByRole('button', { name: 'New project' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Acme rebrand' }).click()
   await expect(page.getByRole('listitem', { name: 'Project Brief' }).getByText('Define exactly what the work should achieve')).toBeVisible()
 

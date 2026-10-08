@@ -3,7 +3,7 @@ import { expect, test } from './helpers/test'
 test('the built app blocks inline scripts and network requests to unknown hosts', async ({ page }) => {
   const violations: string[] = []
   page.on('console', (msg) => msg.text().includes('Content Security Policy') && violations.push(msg.text()))
-  await page.goto('/')
+  await page.goto('/app')
   await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
 
   const inlineRan = await page.evaluate(() => {

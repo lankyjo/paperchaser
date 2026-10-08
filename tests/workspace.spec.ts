@@ -1,7 +1,7 @@
 import { expect, test } from './helpers/test'
 
 test('the desktop workspace remembers its layout across reloads and panels maximize', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
   await expect(page.locator('#document-root')).toBeVisible()
   for (const tab of ['Outline', 'Document', 'Properties', 'About this step', 'Pipeline', 'Projects']) {

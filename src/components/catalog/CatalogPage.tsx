@@ -11,7 +11,7 @@ export function CatalogPage() {
   const { items, save, remove } = useCatalog()
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4">
-      <Link to="/" className="text-sm underline">
+      <Link to="/app" className="text-sm underline">
         Projects
       </Link>
       <h1 className="text-xl font-semibold">Services</h1>

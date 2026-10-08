@@ -7,10 +7,10 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('an agreement schedule creates deposit and balance invoices, and flags a sent invoice when the schedule changes', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByLabel('Search projects').fill('Acme rebrand')
   await page.getByRole('button', { name: 'New project' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Acme rebrand' }).click()
   await page.getByLabel('Currency', { exact: true }).selectOption('EUR')
   await page.getByLabel('Number and date format').fill('en-US')

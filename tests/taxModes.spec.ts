@@ -1,9 +1,9 @@
 import { expect, test } from './helpers/test'
 
 test('the project tax mode changes how invoice totals are labelled', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
-  await page.goto('/')
+  await page.goto('/app')
   await page.getByRole('link', { name: 'Untitled project' }).click()
 
   await page.getByLabel('Tax', { exact: true }).selectOption('inclusive')

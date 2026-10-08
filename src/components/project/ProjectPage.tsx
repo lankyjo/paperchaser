@@ -26,7 +26,7 @@ export function ProjectPage({ projectId }: { projectId: string }) {
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4">
       <div className="flex items-center justify-between">
-        <Link to="/" className="text-sm underline">
+        <Link to="/app" className="text-sm underline">
           Projects
         </Link>
         <Button size="sm" variant="outline" className="ml-auto mr-2" onClick={() => void exportProject(project.id).then((b) => downloadJson(`${title}.paperchaser.json`, b))}>
@@ -41,7 +41,7 @@ export function ProjectPage({ projectId }: { projectId: string }) {
         canDelete={project.sample === true || canDeleteProject(documents)}
         openInvoices={openInvoices(documents).map((o) => o.invoice)}
         onSave={(next) => void save(next)}
-        onDelete={() => void remove().then(() => navigate({ to: '/' }))}
+        onDelete={() => void remove().then(() => navigate({ to: '/app' }))}
       />
       <fieldset disabled={project.archived} className="contents">
         <StepPicker
