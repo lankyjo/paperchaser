@@ -1,13 +1,13 @@
 import { PIPELINE_STEPS } from '../../project/pipeline'
 import type { Company } from '../../document/types'
 import { HOME_COPY } from '../../strings/home'
-import { CompanyProfileForm } from '../company/CompanyProfileForm'
+import { WelcomeForm } from './WelcomeForm'
 import { Button } from '../ui/button'
 
 // First launch: a dark welcome with the ten-step pipeline beside the business setup form.
 export function WelcomeScreen({ onFinish, onSkip }: { onFinish: (company: Company) => void; onSkip: () => void }) {
   return (
-    <main className="ink -my-6 grid min-h-dvh lg:grid-cols-[1.1fr_1fr]">
+    <main className="ink -my-6 grid min-h-dvh bg-[oklch(0.2_0.008_60)] lg:grid-cols-[1.1fr_1fr]">
       <section className="flex flex-col justify-between gap-10 px-5 py-8 lg:px-16 lg:py-14">
         <div className="flex items-center gap-2.5 font-semibold">
           <span aria-hidden="true" className="size-5.5 rounded-md bg-gold" />
@@ -28,13 +28,12 @@ export function WelcomeScreen({ onFinish, onSkip }: { onFinish: (company: Compan
           </ol>
         </div>
       </section>
-      <section aria-label="Set up your business" className="grid content-center bg-card px-5 py-8 lg:px-16 lg:py-14">
+      <section aria-label="Set up your business" className="grid content-center bg-[oklch(0.24_0.008_60)] px-5 py-8 lg:px-16 lg:py-14">
         <div className="max-w-md">
           <h2 className="text-lg font-semibold">{HOME_COPY.setupTitle}</h2>
-          <p className="mb-6 mt-1 text-muted-foreground">{HOME_COPY.setupLead}</p>
-          <CompanyProfileForm submitLabel={HOME_COPY.setupSubmit} onSave={onFinish} />
-          <p className="mt-3 text-sm text-muted-foreground">{HOME_COPY.setupHint}</p>
-          <Button variant="ghost" size="sm" className="mt-4 -ml-2" onClick={onSkip}>
+          <p className="mt-1 mb-6 text-sm text-muted-foreground">{HOME_COPY.setupLead}</p>
+          <WelcomeForm onSave={onFinish} />
+          <Button variant="ghost" size="sm" className="mt-6 -ml-2 text-muted-foreground" onClick={onSkip}>
             {HOME_COPY.skip}
           </Button>
         </div>

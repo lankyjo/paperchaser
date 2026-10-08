@@ -6,7 +6,7 @@ test('first launch saves your business details and adds a deletable sample proje
   await setup.getByLabel('Business name').fill('Northwind Studio')
   await setup.getByLabel('Email').fill('hello@northwind.test')
   await setup.getByLabel('Address').fill('12 Harbor Lane\nPortland')
-  await setup.getByLabel('Payment details (optional)').fill('Harbor Credit Union\nIBAN DE89 3704 0044 0532 0130 00')
+  await setup.getByLabel('Payment details').fill('Harbor Credit Union\nIBAN DE89 3704 0044 0532 0130 00')
   await setup.getByRole('button', { name: 'Start', exact: true }).click()
   await expect(setup).toHaveCount(0)
 
