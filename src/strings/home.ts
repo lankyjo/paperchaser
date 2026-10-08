@@ -8,7 +8,7 @@ export const HOME_COPY = {
   setupLead: 'The sender on every quote, invoice and agreement.',
   setupSubmit: 'Start',
   setupHint: 'Adds a sample project to explore',
-  skip: 'Skip for now',
+  restore: 'Restore a backup',
   search: 'Search projects or name a new one',
   newProject: 'New project',
   newProjectNamed: (title: string) => `New project "${title}"`,

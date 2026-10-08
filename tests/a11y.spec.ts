@@ -39,8 +39,8 @@ test('home, project, editor and settings have no WCAG 2.2 AA violations', async 
 
 test('the mobile editor has no WCAG 2.2 AA violations', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
+  await page.addInitScript(() => localStorage.setItem('paperchaser.welcomeSkipped', '1'))
   await page.goto('/')
-  await page.getByRole('button', { name: 'Skip for now' }).click()
   await page.getByRole('button', { name: 'Quick invoice' }).click()
   await page.getByRole('dialog', { name: 'About the Invoice' }).getByRole('button', { name: 'Got it' }).click()
   await expect(page.locator('#document-root')).toBeVisible()

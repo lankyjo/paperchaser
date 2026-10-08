@@ -6,6 +6,6 @@ import { CommandCenter } from './CommandCenter'
 export function HomePage() {
   const firstRun = useFirstRun()
   if (firstRun.needed === null) return null
-  if (firstRun.needed) return <WelcomeScreen onFinish={(company) => void firstRun.finish(company)} onSkip={firstRun.skip} />
+  if (firstRun.needed) return <WelcomeScreen onFinish={(company) => void firstRun.finish(company)} onRestored={firstRun.restored} />
   return <CommandCenter />
 }

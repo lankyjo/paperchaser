@@ -1,11 +1,11 @@
 import { PIPELINE_STEPS } from '../../project/pipeline'
 import type { Company } from '../../document/types'
 import { HOME_COPY } from '../../strings/home'
+import { RestoreBackupButton } from './RestoreBackupButton'
 import { WelcomeForm } from './WelcomeForm'
-import { Button } from '../ui/button'
 
 // First launch: a dark welcome with the ten-step pipeline beside the business setup form.
-export function WelcomeScreen({ onFinish, onSkip }: { onFinish: (company: Company) => void; onSkip: () => void }) {
+export function WelcomeScreen({ onFinish, onRestored }: { onFinish: (company: Company) => void; onRestored: () => void }) {
   return (
     <main className="ink -my-6 grid min-h-dvh bg-[oklch(0.2_0.008_60)] lg:grid-cols-[1.1fr_1fr]">
       <section className="flex flex-col justify-between gap-10 px-5 py-8 lg:px-16 lg:py-14">
@@ -33,9 +33,7 @@ export function WelcomeScreen({ onFinish, onSkip }: { onFinish: (company: Compan
           <h2 className="text-lg font-semibold">{HOME_COPY.setupTitle}</h2>
           <p className="mt-1 mb-6 text-sm text-muted-foreground">{HOME_COPY.setupLead}</p>
           <WelcomeForm onSave={onFinish} />
-          <Button variant="ghost" size="sm" className="mt-6 -ml-2 text-muted-foreground" onClick={onSkip}>
-            {HOME_COPY.skip}
-          </Button>
+          <RestoreBackupButton onRestored={onRestored} />
         </div>
       </section>
     </main>

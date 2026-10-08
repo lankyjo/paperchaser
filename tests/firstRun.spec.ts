@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { expect, test } from '@playwright/test'
 
 test('first launch saves your business details and adds a deletable sample project of every document type', async ({ page }) => {
@@ -27,11 +28,26 @@ test('first launch saves your business details and adds a deletable sample proje
   await expect(page.getByRole('link', { name: 'Sample: Acme coffee rebrand' })).toHaveCount(0)
 })
 
-test('the welcome can be skipped, and stays skipped in this browser', async ({ page }) => {
+test('a new device can restore a backup from the welcome instead of setting up again', async ({ browser }) => {
+  const old = await browser.newContext()
+  await old.addInitScript(() => localStorage.setItem('paperchaser.welcomeSkipped', '1'))
+  const page = await old.newPage()
   await page.goto('/')
-  await page.getByRole('button', { name: 'Skip for now' }).click()
-  await expect(page.getByLabel('Search projects or name a new one')).toBeVisible()
-  await page.reload()
-  await expect(page.getByRole('region', { name: 'Set up your business' })).toHaveCount(0)
-  await expect(page.getByLabel('Search projects or name a new one')).toBeVisible()
+  await page.getByLabel('Search projects').fill('Harbour signage')
+  await page.getByLabel('Search projects').press('Enter')
+  await expect(page).toHaveURL(/\/documents\//)
+  await page.goto('/settings')
+  const download = page.waitForEvent('download')
+  await page.getByRole('button', { name: 'Download backup' }).click()
+  const backup = readFileSync(await (await download).path())
+  await old.close()
+
+  const fresh = await browser.newContext()
+  const device = await fresh.newPage()
+  await device.goto('/')
+  await device.getByLabel('Backup file').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: backup })
+  await expect(device.getByRole('link', { name: 'Harbour signage' })).toBeVisible()
+  await device.reload()
+  await expect(device.getByRole('region', { name: 'Set up your business' })).toHaveCount(0)
+  await fresh.close()
 })
