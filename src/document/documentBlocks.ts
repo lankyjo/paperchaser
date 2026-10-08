@@ -21,5 +21,8 @@ export function documentBlocks(doc: Pick<DocumentModel, 'type' | 'blocks' | 'set
 
 export const canHideBlock = (doc: Pick<DocumentModel, 'type'>, type: BlockType) => !(isMoneyDocument(doc) && REQUIRED_ON_MONEY.has(type))
 
+// Money sections are part of a money document's structure; every other section can be removed.
+export const canRemoveBlock = (doc: Pick<DocumentModel, 'type'>, type: BlockType) => !(isMoneyDocument(doc) && MONEY_BLOCKS.includes(type))
+
 // Blocks a user may add to any document; money blocks exist once and are never added.
 export const ADDABLE_BLOCK_TYPES: BlockType[] = ['heading', 'richText', 'keyValue', 'table', 'steps', 'metrics', 'chart', 'rating', 'checklist', 'image', 'signature', 'paymentSchedule']

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Eye, EyeOff, Lock } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import type { DocumentModel } from '../document/types'
 import { getPlainText } from '../document/richtext'
 import { DeleteItemDialog } from './outline/DeleteItemDialog'
@@ -62,13 +62,12 @@ export function OutlinePane({
           <div key={block.id}>
             <div
               className={cn(
-                'flex items-center gap-1.5 rounded px-1 py-0.5 text-[13px] cursor-pointer select-none',
+                'flex items-center gap-1.5 rounded px-1 py-1 text-[13px] font-medium cursor-pointer select-none',
                 isSelected && !isItemsBlock && 'bg-primary/10 font-semibold',
                 !visible && 'opacity-50',
               )}
               onClick={() => onSelect(block.id, null)}
             >
-              <Lock className="size-3 shrink-0 text-muted-foreground" aria-hidden="true" />
               <span className="flex-1 truncate">{block.label}</span>
               {!isItemsBlock && <button
                 type="button"

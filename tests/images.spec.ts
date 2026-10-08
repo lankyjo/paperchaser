@@ -25,16 +25,25 @@ test('images upload compressed, are stored once, and uploaded SVG scripts never 
   await page.getByRole('button', { name: 'Start welcome' }).click()
   const pageRoot = page.locator('#document-root')
 
-  await page.getByRole('button', { name: 'Add image' }).click()
+  await page.getByRole('button', { name: 'Add section' }).click()
+
+
+  await page.getByRole('menuitem', { name: 'Image', exact: true }).click()
   await pageRoot.getByLabel('Upload image').setInputFiles({ name: 'red.png', mimeType: 'image/png', buffer: PNG })
   await expect(pageRoot.locator('figure img')).toHaveAttribute('src', /^data:image\/(webp|png)/)
 
-  await page.getByRole('button', { name: 'Add image' }).click()
+  await page.getByRole('button', { name: 'Add section' }).click()
+
+
+  await page.getByRole('menuitem', { name: 'Image', exact: true }).click()
   await pageRoot.getByLabel('Upload image').last().setInputFiles({ name: 'red.png', mimeType: 'image/png', buffer: PNG })
   await expect(pageRoot.locator('figure img')).toHaveCount(2)
   expect(await assetCount(page)).toBe(1)
 
-  await page.getByRole('button', { name: 'Add image' }).click()
+  await page.getByRole('button', { name: 'Add section' }).click()
+
+
+  await page.getByRole('menuitem', { name: 'Image', exact: true }).click()
   await pageRoot.getByLabel('Upload image').last().setInputFiles({ name: 'evil.svg', mimeType: 'image/svg+xml', buffer: EVIL_SVG })
   await expect(pageRoot.locator('figure img')).toHaveCount(3)
   expect(await page.evaluate(() => (window as { __pwned?: boolean }).__pwned)).toBeUndefined()

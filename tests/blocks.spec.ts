@@ -22,8 +22,15 @@ test('a welcome document is built from blocks that can be edited, hidden, reorde
   await page.getByRole('button', { name: 'Hide Text' }).click()
   await expect(pageRoot.getByText("We're excited to work with you")).toHaveCount(0)
 
-  await page.getByRole('button', { name: 'Move Details list up' }).click()
-  await page.getByRole('button', { name: 'Add heading' }).click()
+  const handle = await page.getByRole('button', { name: 'Drag Details list' }).boundingBox()
+  const target = await page.getByRole('button', { name: 'Drag Text' }).boundingBox()
+  await page.mouse.move(handle!.x + 8, handle!.y + 8)
+  await page.mouse.down()
+  await page.mouse.move(handle!.x + 8, target!.y + 2, { steps: 12 })
+  await page.mouse.up()
+  await page.getByRole('button', { name: 'Add section' }).click()
+
+  await page.getByRole('menuitem', { name: 'Heading', exact: true }).click()
   const outline = page.getByRole('navigation', { name: 'Blocks' }).getByRole('listitem')
   await expect(outline).toHaveCount(5)
   await expect(outline.nth(1)).toContainText('Details list')
@@ -45,7 +52,10 @@ test('table and numbered-steps blocks can be added and filled in', async ({ page
   await page.getByRole('button', { name: 'Start welcome' }).click()
   const pageRoot = page.locator('#document-root')
 
-  await page.getByRole('button', { name: 'Add table' }).click()
+  await page.getByRole('button', { name: 'Add section' }).click()
+
+
+  await page.getByRole('menuitem', { name: 'Table', exact: true }).click()
   const table = pageRoot.locator('table').last()
   await table.locator('th [contenteditable]').first().click()
   await page.keyboard.type('File')
@@ -54,7 +64,10 @@ test('table and numbered-steps blocks can be added and filled in', async ({ page
   await expect(table.locator('tbody tr')).toHaveCount(2)
   await expect(table.locator('th').first()).toHaveText('File')
 
-  await page.getByRole('button', { name: 'Add numbered steps' }).click()
+  await page.getByRole('button', { name: 'Add section' }).click()
+
+
+  await page.getByRole('menuitem', { name: 'Numbered steps', exact: true }).click()
   // Welcome already has a steps block, so the new one is the last.
   await pageRoot.getByRole('button', { name: 'Add step' }).last().click()
   await expect(pageRoot.locator('ol').last().locator('li')).toHaveCount(2)
@@ -69,13 +82,19 @@ test('a chart takes pasted CSV, reports bad lines, and draws one bar per row; me
   await page.getByRole('button', { name: 'Start welcome' }).click()
   const pageRoot = page.locator('#document-root')
 
-  await page.getByRole('button', { name: 'Add chart' }).click()
+  await page.getByRole('button', { name: 'Add section' }).click()
+
+
+  await page.getByRole('menuitem', { name: 'Chart', exact: true }).click()
   await pageRoot.getByLabel('Paste CSV').fill('Week,Views\nW1,120\nW2,lots\nW3,"1,450"')
   await pageRoot.getByRole('button', { name: 'Use pasted data' }).click()
   await expect(pageRoot.getByRole('alert')).toHaveText('Line 3: value "lots" is not a number')
   await expect(pageRoot.getByRole('img', { name: 'Bar chart' }).locator('rect')).toHaveCount(2)
 
-  await page.getByRole('button', { name: 'Add metric tiles' }).click()
+  await page.getByRole('button', { name: 'Add section' }).click()
+
+
+  await page.getByRole('menuitem', { name: 'Metric tiles', exact: true }).click()
   await pageRoot.getByRole('button', { name: 'Add tile' }).click()
   await expect(pageRoot.locator('[data-placeholder="Label"]')).toHaveCount(4)
 })
@@ -89,12 +108,18 @@ test('rating and checklist blocks print empty boxes and log answers when clicked
   await page.getByRole('button', { name: 'Start feedback' }).click()
   const pageRoot = page.locator('#document-root')
 
-  await page.getByRole('button', { name: 'Add rating questions' }).click()
+  await page.getByRole('button', { name: 'Add section' }).click()
+
+
+  await page.getByRole('menuitem', { name: 'Rating questions', exact: true }).click()
   await expect(pageRoot.getByRole('button', { pressed: true })).toHaveCount(0)
   await pageRoot.getByRole('button', { name: 'Question 1: 4' }).click()
   await expect(pageRoot.getByRole('button', { name: 'Question 1: 4' })).toHaveAttribute('aria-pressed', 'true')
 
-  await page.getByRole('button', { name: 'Add checklist' }).click()
+  await page.getByRole('button', { name: 'Add section' }).click()
+
+
+  await page.getByRole('menuitem', { name: 'Checklist', exact: true }).click()
   await pageRoot.getByRole('button', { name: 'Tick item 1' }).click()
   await expect(pageRoot.getByRole('button', { name: 'Tick item 1' })).toHaveAttribute('aria-pressed', 'true')
 })

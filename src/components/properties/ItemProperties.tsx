@@ -1,60 +1,49 @@
 import type { DocumentModel } from '../../document/types'
-import { formatMoney, minorToPercent } from '../../document/money'
+import { minorToPercent, minorToRaw, parseQuantity, parseToMinor, percentToMinor } from '../../document/money'
 import { getPlainText } from '../../document/richtext'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { CommitField } from './CommitField'
 import { ItemImageField } from './ItemImageField'
 
-// Read-only summary of the selected line item plus its image field; text is edited on the canvas.
+type LineItem = DocumentModel['lineItems'][number]
+
+// The selected line item's fields, editable here or on the canvas, plus its image.
 export function ItemProperties({
   item,
   currency,
   locale,
   onLineItemChange,
 }: {
-  item: DocumentModel['lineItems'][number]
+  item: LineItem
   currency: string
   locale: string | undefined
-  onLineItemChange?: (id: string, patch: Partial<DocumentModel['lineItems'][number]>) => void
+  onLineItemChange?: (id: string, patch: Partial<LineItem>) => void
 }) {
+  const change = (patch: Partial<LineItem>) => onLineItemChange?.(item.id, patch)
+  // Invalid numbers are ignored, so the field snaps back to the stored value.
+  const changeNumber = (parse: (raw: string) => number | null, toPatch: (n: number) => Partial<LineItem>) => (raw: string) => {
+    const n = parse(raw)
+    if (n !== null) change(toPatch(n))
+  }
+  const percent = (raw: string) => {
+    const n = Number(raw.replace(',', '.').replace('%', '').trim())
+    return raw.trim() !== '' && Number.isFinite(n) && n >= 0 ? n : null
+  }
   return (
-    <div className="space-y-4">
-      <Card size="sm">
-        <CardHeader>
-          <CardTitle>Item</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div>
-            <p className="text-xs text-muted-foreground">Title</p>
-            <p className="text-sm">{getPlainText(item.title) || '—'}</p>
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Description</p>
-            <p className="text-sm">{getPlainText(item.description) || '—'}</p>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <p className="text-xs text-muted-foreground">Quantity</p>
-              <p className="text-sm">{item.quantity}</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Unit price</p>
-              <p className="text-sm">{formatMoney(item.unitPriceMinor, currency, locale)}</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Tax</p>
-              <p className="text-sm">{minorToPercent(item.taxRateMinor)}%</p>
-            </div>
-            {item.discount !== undefined && (
-              <div>
-                <p className="text-xs text-muted-foreground">Discount</p>
-                <p className="text-sm">{item.discount.kind === 'percent' ? `${minorToPercent(item.discount.value)}%` : formatMoney(item.discount.value, currency, locale)}</p>
-              </div>
-            )}
-          </div>
-          <p className="text-[11px] text-muted-foreground">Editing happens inline on the canvas.</p>
-          <ItemImageField image={item.image} onChange={(dataUrl) => onLineItemChange?.(item.id, { image: dataUrl ?? undefined })} onRemove={() => onLineItemChange?.(item.id, { image: undefined })} />
-        </CardContent>
-      </Card>
-    </div>
+    <Card size="sm">
+      <CardHeader>
+        <CardTitle>Item</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <CommitField disabled={!onLineItemChange} label="Title" value={getPlainText(item.title)} onCommit={(title) => change({ title })} />
+        <CommitField disabled={!onLineItemChange} label="Description" value={getPlainText(item.description)} multiline onCommit={(description) => change({ description })} />
+        <div className="grid grid-cols-2 gap-3">
+          <CommitField disabled={!onLineItemChange} label="Quantity" inputMode="decimal" value={String(item.quantity)} onCommit={changeNumber(parseQuantity, (quantity) => ({ quantity }))} />
+          <CommitField disabled={!onLineItemChange} label="Unit price" inputMode="decimal" value={minorToRaw(item.unitPriceMinor, currency, locale)} onCommit={changeNumber((raw) => parseToMinor(raw, currency, locale), (unitPriceMinor) => ({ unitPriceMinor }))} />
+          <CommitField disabled={!onLineItemChange} label="Tax %" inputMode="decimal" value={String(minorToPercent(item.taxRateMinor))} onCommit={changeNumber(percent, (p) => ({ taxRateMinor: percentToMinor(p) }))} />
+        </div>
+        <ItemImageField image={item.image} onChange={(dataUrl) => change({ image: dataUrl ?? undefined })} onRemove={() => change({ image: undefined })} />
+      </CardContent>
+    </Card>
   )
 }

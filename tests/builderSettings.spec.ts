@@ -54,7 +54,7 @@ test('the selected item shows its price in the project currency', async ({ page 
   await page.getByRole('listitem', { name: 'Invoice' }).getByRole('link').first().click()
   await page.getByLabel('Add from services').selectOption({ label: 'Logo design' })
   await page.locator('aside').getByText('Logo design').first().click()
-  await expect(page.locator('aside').getByText('Unit price', { exact: true }).locator('..')).toContainText('¥120,000')
+  await expect(page.getByLabel('Unit price', { exact: true })).toHaveValue('120000')
 })
 
 test('Noir Ledger can switch to a light background for printing', async ({ page }) => {

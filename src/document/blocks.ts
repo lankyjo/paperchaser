@@ -96,14 +96,14 @@ export function addBlock(blocks: Block[], type: BlockType, afterId: string | nul
   return [...blocks.slice(0, at), emptyBlock[type](id), ...blocks.slice(at)]
 }
 
-export function moveBlock(blocks: Block[], id: string, delta: -1 | 1): Block[] {
-  const from = blocks.findIndex((b) => b.id === id)
-  const to = from + delta
-  if (from < 0 || to < 0 || to >= blocks.length) return blocks
+export function reorderBlocks(blocks: Block[], from: number, to: number): Block[] {
   const next = [...blocks]
-  ;[next[from], next[to]] = [next[to], next[from]]
+  const [moved] = next.splice(from, 1)
+  next.splice(to, 0, moved)
   return next
 }
+
+export const removeBlock = (blocks: Block[], id: string): Block[] => blocks.filter((b) => b.id !== id)
 
 export function toggleBlockHidden(blocks: Block[], id: string): Block[] {
   return blocks.map((b) => (b.id === id ? { ...b, hidden: !b.hidden } : b))

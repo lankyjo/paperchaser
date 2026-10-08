@@ -50,7 +50,7 @@ export function PropertiesPane({
 
   return (
     <div className="space-y-4">
-      <h2 className="px-1 text-sm font-semibold">Document</h2>
+      <h2 className="px-1 text-sm font-semibold">Template</h2>
       <TemplateGallery selected={template} onSelect={onTemplateChange} />
       <BrandingPanel model={model} template={template} onBrandingChange={onBrandingChange} onLogoChange={onLogoChange} />
       {isMoneyDocument(model) && <CurrencyCard currency={model.currency} />}

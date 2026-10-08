@@ -10,7 +10,10 @@ test('an invoice is built from sections: terms can be added and moved, line item
   await expect(sections.getByRole('button', { name: 'Hide Line items' })).toHaveCount(0)
   await expect(sections.getByRole('button', { name: 'Hide Totals' })).toHaveCount(0)
 
-  await sections.getByRole('button', { name: 'Add text' }).click()
+  await sections.getByRole('button', { name: 'Add section' }).click()
+
+
+  await page.getByRole('menuitem', { name: 'Text', exact: true }).click()
   await expect(sections.getByRole('listitem')).toHaveCount(4)
   const terms = pageRoot.locator('[data-placeholder="Write something"]')
   await terms.click()

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { addBlock, blockSchema, moveBlock, toggleBlockHidden, updateBlock, type Block } from '../blocks'
+import { addBlock, blockSchema, removeBlock, reorderBlocks, toggleBlockHidden, updateBlock, type Block } from '../blocks'
 
 const heading: Block = { id: 'b1', type: 'heading', text: 'Welcome' }
 const intro: Block = { id: 'b2', type: 'richText', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hi' }] }] }
@@ -41,11 +41,6 @@ describe('block operations', () => {
     expect(addBlock([], 'checklist', null, 'k')[0]).toEqual({ id: 'k', type: 'checklist', title: '', items: [{ text: '' }] })
   })
 
-  it('moves a block up or down and ignores moves past either end', () => {
-    expect(moveBlock(blocks, 'b3', -1).map((b) => b.id)).toEqual(['b1', 'b3', 'b2'])
-    expect(moveBlock(blocks, 'b1', -1)).toEqual(blocks)
-  })
-
   it('toggles hidden and updates a block by id without touching others', () => {
     expect(toggleBlockHidden(blocks, 'b2')[1]).toMatchObject({ id: 'b2', hidden: true })
     expect(updateBlock(blocks, { ...heading, text: 'Hello' })[0]).toEqual({ ...heading, text: 'Hello' })
@@ -66,5 +61,22 @@ describe('signature block', () => {
     const sig: Block = { id: 's', type: 'signature', assetId: 'abc', name: 'Maya Lindqvist', role: 'Founder', clientLine: true }
     expect(blockSchema.parse(JSON.parse(JSON.stringify(sig)))).toEqual(sig)
     expect(addBlock([], 'signature', null, 's')[0]).toEqual({ id: 's', type: 'signature', assetId: '', name: '', role: '', clientLine: true })
+  })
+})
+
+describe('reorderBlocks and removeBlock', () => {
+  const list = [
+    { id: 'a', type: 'heading', text: 'A' },
+    { id: 'b', type: 'heading', text: 'B' },
+    { id: 'c', type: 'heading', text: 'C' },
+  ] as Block[]
+
+  it('moves a block from one index to another', () => {
+    expect(reorderBlocks(list, 0, 2).map((b) => b.id)).toEqual(['b', 'c', 'a'])
+    expect(reorderBlocks(list, 2, 0).map((b) => b.id)).toEqual(['c', 'a', 'b'])
+  })
+
+  it('removes only the named block', () => {
+    expect(removeBlock(list, 'b').map((b) => b.id)).toEqual(['a', 'c'])
   })
 })

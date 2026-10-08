@@ -1,11 +1,11 @@
 import { Check } from 'lucide-react'
 
-import { resolveTokens } from '../document/resolveTokens'
 import { TEMPLATE_NAMES } from '../document/tokens'
 import type { TemplateId } from '../document/tokens'
 import { cn } from '@/lib/utils'
+import { TemplateThumbnail } from './templates/TemplateThumbnail'
 
-// Template picker cards showing each template's name and ink/primary/accent swatches.
+// Template picker cards: a small sample page in each template, with its name.
 const TEMPLATE_CARDS = (Object.entries(TEMPLATE_NAMES) as Array<[TemplateId, string]>).map(([id, name]) => ({ id, name }))
 
 export function TemplateGallery({
@@ -18,7 +18,6 @@ export function TemplateGallery({
   return (
     <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Template gallery">
       {TEMPLATE_CARDS.map((card) => {
-        const resolved = resolveTokens(card.id)
         const active = card.id === selected
         return (
           <button
@@ -35,14 +34,10 @@ export function TemplateGallery({
                 : 'border-border hover:border-foreground/40 hover:bg-muted/50',
             )}
           >
+            <TemplateThumbnail template={card.id} />
             <span className="flex items-center justify-between gap-1">
               <span className="truncate font-medium">{card.name}</span>
               {active && <Check className="size-4 shrink-0 text-primary" aria-hidden="true" />}
-            </span>
-            <span className="flex gap-1" aria-hidden="true">
-              <Swatch color={resolved.palette.ink} />
-              <Swatch color={resolved.palette.primary ?? resolved.palette.ink} />
-              <Swatch color={resolved.accent} />
             </span>
           </button>
         )
@@ -51,11 +46,3 @@ export function TemplateGallery({
   )
 }
 
-function Swatch({ color }: { color: string }) {
-  return (
-    <span
-      className="size-3 rounded-full ring-1 ring-inset ring-foreground/15"
-      style={{ backgroundColor: color }}
-    />
-  )
-}

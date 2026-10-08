@@ -45,7 +45,7 @@ export function OutlineLineItems({
           <p className="mb-1">No items yet</p>
           <p className="text-xs">Add your first line item to start the table.</p>
           {onAddItem && (
-            <Button type="button" variant="outline" size="sm" className="mt-2 h-7 text-xs" onClick={(e) => { e.stopPropagation(); onAddItem() }}>
+            <Button type="button" size="sm" className="mt-2 h-7 text-xs" onClick={(e) => { e.stopPropagation(); onAddItem() }}>
               <Plus className="mr-1 size-3" /> Add item
             </Button>
           )}
