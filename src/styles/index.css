@@ -176,6 +176,9 @@ body {
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    /* Thin, quiet scrollbars that only show a faint thumb. */
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--muted-foreground) 35%, transparent) transparent;
   }
   body {
     @apply bg-background text-foreground;

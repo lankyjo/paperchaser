@@ -9,6 +9,7 @@ test.beforeEach(async ({ page }) => {
 test('an overdue invoice is listed on the dashboard, gets an unnumbered reminder, and a lost project flags it', async ({ page }) => {
   await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
+  await page.getByRole('tab', { name: 'Properties' }).click()
   await page.getByLabel('Due date').fill('2020-01-31')
   await page.getByRole('button', { name: 'Add item' }).click()
   await page.locator('#document-root [data-numeric-cell]').nth(1).click()

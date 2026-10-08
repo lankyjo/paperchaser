@@ -16,6 +16,7 @@ test('a step explains itself on first open, collapses once dismissed, and stays 
   await expect(guide).toHaveCount(0)
 
   await page.reload()
+  await page.getByRole('tab', { name: 'About this step' }).click()
   await expect(page.getByRole('button', { name: 'About this step' })).toBeVisible()
   await expect(guide).toHaveCount(0)
   await page.getByRole('button', { name: 'About this step' }).click()

@@ -20,17 +20,18 @@ type PanelId = keyof typeof WORKSPACE_PANELS
 
 export const PANEL_COMPONENTS = Object.fromEntries(Object.entries(WORKSPACE_PANELS).map(([id, panel]) => [id, panel.component]))
 
-const add = (api: DockviewApi, id: PanelId, position?: Parameters<DockviewApi['addPanel']>[0]['position'], size?: { initialWidth?: number; initialHeight?: number }) =>
+const add = (api: DockviewApi, id: PanelId, position?: Parameters<DockviewApi['addPanel']>[0]['position'], size?: { initialWidth?: number; minimumWidth?: number }) =>
   api.addPanel({ id, component: id, title: WORKSPACE_PANELS[id].title, renderer: 'always', ...(position && { position }), ...size })
 
-// Outline left with the pipeline and projects under it, the page in the middle, the explainer above properties on the right.
+// Two full-height side columns with tabs, so no panel is squeezed: outline, pipeline and projects left; properties and the explainer right.
 export function addDefaultPanels(api: DockviewApi) {
-  add(api, 'canvas')
-  add(api, 'outline', { referencePanel: 'canvas', direction: 'left' }, { initialWidth: 250 })
-  add(api, 'properties', { referencePanel: 'canvas', direction: 'right' }, { initialWidth: 290 })
-  add(api, 'explainer', { referencePanel: 'properties', direction: 'above' }, { initialHeight: 220 })
-  add(api, 'steps', { referencePanel: 'outline', direction: 'below' }, { initialHeight: 220 })
-  add(api, 'projects', { referencePanel: 'steps', direction: 'within' })
-  api.getPanel('steps')?.api.setActive()
+  add(api, 'canvas', undefined, { minimumWidth: 420 })
+  add(api, 'outline', { referencePanel: 'canvas', direction: 'left' }, { initialWidth: 280, minimumWidth: 220 })
+  add(api, 'steps', { referencePanel: 'outline', direction: 'within' })
+  add(api, 'projects', { referencePanel: 'outline', direction: 'within' })
+  add(api, 'properties', { referencePanel: 'canvas', direction: 'right' }, { initialWidth: 300, minimumWidth: 240 })
+  add(api, 'explainer', { referencePanel: 'properties', direction: 'within' })
+  api.getPanel('outline')?.api.setActive()
+  api.getPanel('explainer')?.api.setActive()
   api.getPanel('canvas')?.api.setActive()
 }

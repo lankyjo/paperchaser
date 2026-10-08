@@ -13,14 +13,14 @@ interface StepPickerProps {
 export function StepPicker({ documents, doneSteps, onCreate, onToggleDone }: StepPickerProps) {
   const progress = projectProgress(documents, doneSteps)
   return (
-    <section className="flex flex-col gap-3">
+    <section className="@container flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <h2 className="font-medium">Pipeline</h2>
         <span className="text-sm text-muted-foreground">
           {progress.done}/{progress.total} done
         </span>
       </div>
-      <ol className="grid gap-3 sm:grid-cols-2">
+      <ol className="grid gap-3 @md:grid-cols-2">
         {PIPELINE_STEPS.map(({ type, multi }) => (
           <StepCard
             key={type}

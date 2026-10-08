@@ -7,8 +7,7 @@ import { getPlainText } from '../../document/richtext'
 import type { DocumentModel } from '../../document/types'
 import { sendBlockedReason } from '../../project/lifecycle'
 import type { Project } from '../../project/project'
-import { pullLatestChanges, type SharedData } from '../../project/sharedData'
-import { PaymentsPanel } from '../payments/PaymentsPanel'
+import type { SharedData } from '../../project/sharedData'
 import { Button } from '../ui/button'
 import { CopyEmailButton } from './CopyEmailButton'
 import { FinalizeDialog } from './FinalizeDialog'
@@ -17,25 +16,24 @@ import { QuoteActions } from './QuoteActions'
 import { useDocumentLifecycle } from './useDocumentLifecycle'
 import { VoidButton } from './VoidButton'
 
-interface LifecycleBarProps {
+export interface LifecycleBarProps {
   model: DocumentModel
   shared: SharedData | undefined
   project?: Project
   history: { replace: (next: DocumentModel) => void; getRev: () => number }
 }
 
-// Draft: finalize and print. Sent: print again or return to draft. Unsent snapshot: pull the latest project data.
+// Top-bar actions. Draft: finalize and print. Sent: print again, copy the email, return to draft or void.
 export function LifecycleBar({ model, shared, project, history }: LifecycleBarProps) {
   const [confirming, setConfirming] = useState(false)
   const lifecycle = useDocumentLifecycle(model, history, shared, project)
   const blocked = project ? sendBlockedReason(project, model.type) : null
-  const changes = shared && model.status === 'draft' && model.frozen ? pullLatestChanges(model, shared) : []
   const capabilities = DOC_TYPES[model.type]
   const number = getPlainText(model.number)
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-2 px-4 py-2 text-sm print:hidden">
+      <div className="flex flex-wrap items-center gap-2 text-sm print:hidden">
         {model.status === 'draft' ? (
           <>
             <Button size="sm" disabled={blocked !== null} onClick={() => setConfirming(true)}>
@@ -63,19 +61,6 @@ export function LifecycleBar({ model, shared, project, history }: LifecycleBarPr
           </>
         )}
         {capabilities.recurring && <NextMonthButton doc={model} />}
-        {changes.length > 0 && lifecycle.pullLatest && (
-          <div role="status" className="flex flex-wrap items-center gap-2 rounded border px-2 py-1">
-            <span>Project data changed since this was sent:</span>
-            {changes.map((c) => (
-              <span key={c.field} className="text-muted-foreground">
-                {c.field}: {c.from || '—'} → {c.to || '—'}
-              </span>
-            ))}
-            <Button size="sm" variant="outline" onClick={() => void lifecycle.pullLatest?.()}>
-              Pull latest
-            </Button>
-          </div>
-        )}
         <FinalizeDialog
           open={confirming}
           warnings={confirming ? preFinalizeWarnings(model) : []}
@@ -87,9 +72,6 @@ export function LifecycleBar({ model, shared, project, history }: LifecycleBarPr
           }}
         />
       </div>
-      {capabilities.payable && model.status === 'sent' && (
-        <PaymentsPanel invoice={model} onSave={(payments) => void lifecycle.savePayments(payments)} />
-      )}
     </>
   )
 }

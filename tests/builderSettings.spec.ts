@@ -3,6 +3,7 @@ import { expect, test } from './helpers/test'
 test('undo restores the template and page size the builder shows', async ({ page }) => {
   await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
+  await page.getByRole('tab', { name: 'Properties' }).click()
   const gallery = page.getByRole('radiogroup', { name: 'Template gallery' })
   const initial = await gallery.getByRole('radio', { checked: true }).textContent()
 
@@ -23,6 +24,7 @@ test('undo restores the template and page size the builder shows', async ({ page
 test('header and footer presets show only for templates without their own header', async ({ page }) => {
   await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
+  await page.getByRole('tab', { name: 'Properties' }).click()
   const gallery = page.getByRole('radiogroup', { name: 'Template gallery' })
   await gallery.getByRole('radio', { name: 'Minimal' }).click()
   await expect(page.getByText('Header style')).toBeVisible()
@@ -58,6 +60,7 @@ test('the selected item shows its price in the project currency', async ({ page 
 test('Noir Ledger can switch to a light background for printing', async ({ page }) => {
   await page.goto('/app')
   await page.getByRole('button', { name: 'Quick invoice' }).click()
+  await page.getByRole('tab', { name: 'Properties' }).click()
   const gallery = page.getByRole('radiogroup', { name: 'Template gallery' })
   const background = () => page.locator('#document-root').evaluate((el) => getComputedStyle(el).backgroundColor)
   await expect(page.getByLabel('Light background (saves ink)')).toHaveCount(0)

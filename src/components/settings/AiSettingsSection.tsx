@@ -4,7 +4,7 @@ import { startOpenRouterLogin } from '../../ai/openRouterLogin'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
-import { useAiSettings } from './useAiSettings'
+import type { useAiSettings } from './useAiSettings'
 
 const PROVIDERS: { value: AiProvider; label: string }[] = [
   { value: 'openrouter', label: 'OpenRouter (sign in, many models)' },
@@ -12,14 +12,14 @@ const PROVIDERS: { value: AiProvider; label: string }[] = [
 ]
 
 // Optional AI: choose a provider and model; keys stay in a separate store that backups never include.
-export function AiSettingsSection() {
-  const { settings, save, hasKey, saveKey, forgetKey, message } = useAiSettings()
+export function AiSettingsSection({ ai, title = 'AI assistant (optional)', framed = true }: { ai: ReturnType<typeof useAiSettings>; title?: string; framed?: boolean }) {
+  const { settings, save, hasKey, saveKey, forgetKey, message } = ai
   const [key, setKey] = useState('')
   const [remember, setRemember] = useState(false)
   if (settings === null) return null
   return (
-    <section aria-label="AI assistant" className="flex flex-col gap-3 rounded-lg border bg-card p-4 text-sm">
-      <h2 className="font-medium">AI assistant (optional)</h2>
+    <section aria-label="AI connection" className={framed ? 'flex flex-col gap-3 rounded-lg border bg-card p-4 text-sm' : 'flex flex-col gap-3 text-sm'}>
+      <h2 className="font-medium">{title}</h2>
       <p className="text-muted-foreground">
         AI sends the document you are editing to the provider you choose. A local model keeps everything on this computer.
       </p>

@@ -4,8 +4,9 @@ import type { DocumentModel } from '../../document/types'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import type { Project } from '../../project/project'
 import type { SharedData } from '../../project/sharedData'
-import { AiPanel } from '../ai/AiPanel'
+import { AiDock } from '../ai/AiDock'
 import { LifecycleBar } from '../lifecycle/LifecycleBar'
+import { LifecycleNotices } from '../lifecycle/LifecycleNotices'
 import { ScheduleContext } from '../blocks/scheduleContext'
 import { useScheduleInvoices } from '../blocks/useScheduleInvoices'
 import { ProjectDataContext } from './projectDataContext'
@@ -46,7 +47,7 @@ export function BuilderWorkspace({
 
   return (
     <ProjectDataContext.Provider value={shared}>
-      <div className={cn('flex flex-col print:min-h-0', isDesktop ? 'h-screen' : 'min-h-screen')} onKeyDown={(e: KeyboardEvent) => handleKeyDown(e)}>
+      <div data-fullscreen={isDesktop || undefined} className={cn('flex flex-col print:min-h-0', isDesktop ? 'h-dvh overflow-hidden' : 'min-h-screen')} onKeyDown={(e: KeyboardEvent) => handleKeyDown(e)}>
         <BuilderHeader
           projectId={editableProp ? model.projectId : undefined}
           editable={editable}
@@ -62,14 +63,15 @@ export function BuilderWorkspace({
           pageSize={settings.pageSize}
           onPageSizeChange={settings.changePageSize}
           onOpenPreview={() => setPreviewOpen(true)}
+          actions={editableProp && <LifecycleBar model={model} shared={shared} project={project} history={history} />}
         />
         {DOC_TYPES[model.type].legalNotice && (
           <p role="note" className="mx-4 rounded border px-3 py-2 text-xs text-muted-foreground print:hidden">
             {DOC_LABELS.legalNotice}
           </p>
         )}
-        {editableProp && <LifecycleBar model={model} shared={shared} project={project} history={history} />}
-        {editable && <AiPanel model={model} commit={commit} />}
+        {editableProp && <LifecycleNotices model={model} shared={shared} project={project} history={history} />}
+        {editable && <AiDock model={model} commit={commit} />}
         <PagedDocument model={model} template={settings.template} branding={model.branding} pageSize={settings.pageSize} variant="print" />
         <ScheduleContext.Provider value={scheduleActions}>
           <EditorLayout

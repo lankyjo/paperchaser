@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import type { SaveState } from '../edit/useAutoSave'
 import { Link } from '@tanstack/react-router'
 import type { PageSize } from '../../document/types'
@@ -8,7 +9,7 @@ import { UndoRedoButtons } from './UndoRedoButtons'
 import { ZoomControls } from './ZoomControls'
 import { BrandMark } from '../brand/BrandMark'
 
-// Builder top bar: brand, editing badge, undo/redo, zoom, save status, page size and preview buttons.
+// Builder top bar: brand, editing badge, undo/redo, zoom, then save status, page size, document actions and preview.
 export function BuilderHeader({
   projectId,
   editable,
@@ -24,6 +25,7 @@ export function BuilderHeader({
   pageSize,
   onPageSizeChange,
   onOpenPreview,
+  actions,
 }: {
   projectId?: string
   editable: boolean
@@ -39,6 +41,7 @@ export function BuilderHeader({
   pageSize: PageSize
   onPageSizeChange: (pageSize: PageSize) => void
   onOpenPreview: () => void
+  actions?: ReactNode
 }) {
   const undoRedo = { canUndo, canRedo, onUndo, onRedo }
   return (
@@ -53,7 +56,7 @@ export function BuilderHeader({
             Project
           </Link>
         )}
-        {editable && <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground"><span className="size-2 rounded-full bg-primary-foreground animate-pulse" />Editing • Click any text to edit</span>}
+        {editable && <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground"><span className="size-2 rounded-full bg-primary-foreground animate-pulse" />Editing<span className="hidden xl:inline"> • Click any text to edit</span></span>}
         <UndoRedoButtons className="hidden items-center gap-1 lg:flex" {...undoRedo} />
         <ZoomControls zoom={zoom} onZoomIn={onZoomIn} onZoomOut={onZoomOut} />
       </div>
@@ -61,6 +64,7 @@ export function BuilderHeader({
         <UndoRedoButtons className="flex items-center gap-1 lg:hidden" {...undoRedo} />
         <SaveIndicator saveState={saveState} onRetry={onRetrySave} />
         <PageSizeSelect value={pageSize} onChange={onPageSizeChange} />
+        {actions}
         <Button onClick={onOpenPreview} className="hidden lg:inline-flex">
           Print preview
         </Button>

@@ -5,6 +5,7 @@ import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { AccountantExport } from './AccountantExport'
 import { AiSettingsSection } from './AiSettingsSection'
+import { useAiSettings } from './useAiSettings'
 import { BackupSection } from './BackupSection'
 import { CompanyProfileSection } from './CompanyProfileSection'
 import { useNumbering } from './useNumbering'
@@ -39,7 +40,7 @@ export function SettingsPage() {
       <Button onClick={() => void save()}>Save numbering</Button>
       <BackupSection />
       <AccountantExport />
-      <AiSettingsSection />
+      <AiSettingsSection ai={useAiSettings()} />
     </main>
   )
 }

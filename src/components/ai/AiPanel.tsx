@@ -8,12 +8,13 @@ export function AiPanel({ model, commit }: { model: DocumentModel; commit: (next
   const [instruction, setInstruction] = useState('')
   const { state, suggest, accept, discard } = useAiSuggestion(model, commit)
   return (
-    <section aria-label="AI assistant" className="mx-4 flex flex-col gap-2 rounded-lg border bg-card p-3 text-sm print:hidden">
-      <div className="flex gap-2">
+    <section aria-label="AI assistant" className="flex flex-col gap-2 text-sm print:hidden">
+      <div className="flex flex-col items-end gap-2">
         <textarea
+          autoFocus
           aria-label="Ask AI"
           placeholder="Ask AI, e.g. “Write a friendly intro for a coffee brand”"
-          className="min-h-10 flex-1 rounded-md border bg-transparent px-2 py-1"
+          className="min-h-20 w-full rounded-md border bg-transparent px-2 py-1"
           value={instruction}
           onChange={(e) => setInstruction(e.target.value)}
         />

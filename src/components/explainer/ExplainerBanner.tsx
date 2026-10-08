@@ -3,10 +3,12 @@ import type { DocumentModel } from '../../document/types'
 import { Button } from '../ui/button'
 import { ExplainerContent } from './ExplainerContent'
 import { useExplainer } from './useExplainer'
+import { useOnTrue } from '../../hooks/useOnTrue'
 
-// Beginner guide for the open document's step: why it matters, what goes in, and a tip; never printed.
-export function ExplainerBanner({ type }: { type: DocumentModel['type'] }) {
+// Beginner guide for the open document's step: why it matters, what goes in, and a tip; never printed. `onSeen` fires once it is collapsed.
+export function ExplainerBanner({ type, onSeen }: { type: DocumentModel['type']; onSeen?: () => void }) {
   const { open, ready, show, hide } = useExplainer(type)
+  useOnTrue(ready && !open, onSeen)
   if (!ready) return null
   if (!open) {
     return (

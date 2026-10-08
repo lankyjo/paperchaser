@@ -5,7 +5,7 @@ import { useMountEffect } from '../../hooks/useMountEffect'
 import { isRestorableLayout } from '../../lib/workspaceLayout'
 import { addDefaultPanels, WORKSPACE_PANELS } from './defaultLayout'
 
-const LAYOUT_KEY = 'workspaceLayout'
+const LAYOUT_KEY = 'workspaceLayout.v2'
 
 // Loads the saved panel layout before dockview mounts, restores it (or the default) and saves every change.
 export function useWorkspaceLayout() {

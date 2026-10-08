@@ -16,6 +16,7 @@ test('a quote is revised as -R2, only the latest revision can be accepted, and a
   await expect(page).toHaveURL(/\/projects\//)
   const projectUrl = page.url()
   await page.getByRole('button', { name: 'Start quote' }).click()
+  await page.getByRole('tab', { name: 'Properties' }).click()
   await page.getByLabel('Valid until').fill('2099-12-31')
   await page.getByRole('button', { name: 'Add item' }).click()
   await page.locator('#document-root [data-numeric-cell]').nth(1).click()

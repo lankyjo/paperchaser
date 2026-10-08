@@ -21,6 +21,7 @@ test('a local model suggestion is reviewed, accepted, and can be undone; protect
     route.fulfill({ json: { choices: [{ message: { content: reply(operations) } }] } }),
   )
   await openWelcome(page)
+  await page.getByRole('button', { name: 'Open AI assistant' }).click()
   const ai = page.getByRole('region', { name: 'AI assistant' })
   await ai.getByLabel('Ask AI').fill('Make the heading warmer')
   await ai.getByRole('button', { name: 'Suggest' }).click()
@@ -57,6 +58,7 @@ test('OpenRouter is called from the browser with the user key, the chosen model 
     })
   })
   await openWelcome(page)
+  await page.getByRole('button', { name: 'Open AI assistant' }).click()
   const ai = page.getByRole('region', { name: 'AI assistant' })
   await ai.getByLabel('Ask AI').fill('Say hello')
   await ai.getByRole('button', { name: 'Suggest' }).click()
