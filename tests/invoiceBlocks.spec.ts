@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './helpers/test'
 
 test('an invoice is built from sections: terms can be added and moved, line items and totals cannot be hidden', async ({ page }) => {
   await page.goto('/')

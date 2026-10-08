@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './helpers/test'
 
 test.beforeEach(async ({ page }) => {
   // Records print calls and the tab title at that moment instead of opening a real print dialog.
@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
   })
 })
 
-const prints = (page: import('@playwright/test').Page) => page.evaluate(() => (window as unknown as { __prints: string[] }).__prints)
+const prints = (page: import('./helpers/test').Page) => page.evaluate(() => (window as unknown as { __prints: string[] }).__prints)
 
 test('finalize warns, numbers, locks and prints; back to draft keeps the number', async ({ page }) => {
   await page.goto('/')
@@ -53,7 +53,7 @@ test('numbering settings warn before reusing numbers', async ({ page }) => {
 
 test('an unsent invoice keeps its snapshot until the latest project data is pulled', async ({ page }) => {
   await page.goto('/')
-  await page.getByLabel('Project title').fill('Acme rebrand')
+  await page.getByLabel('Search projects').fill('Acme rebrand')
   await page.getByRole('button', { name: 'New project' }).click()
   await page.goto('/')
   await page.getByRole('link', { name: 'Acme rebrand' }).click()

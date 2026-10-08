@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './helpers/test'
 
 test('"New for next month" starts a draft a month later from a monthly report', async ({ page }) => {
   await page.goto('/')

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './helpers/test'
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test('a lead sends quotes only, becomes active on its first invoice once it has a client, and archives read-only', async ({ page }) => {
   await page.goto('/')
-  await page.getByLabel('Project title').fill('Pitch for Acme')
+  await page.getByLabel('Search projects').fill('Pitch for Acme')
   await page.getByRole('button', { name: 'New project' }).click()
   await page.goto('/')
   await page.getByRole('link', { name: 'Pitch for Acme' }).click()
@@ -45,7 +45,7 @@ test('a lead sends quotes only, becomes active on its first invoice once it has 
 
 test('a project with nothing billed can be deleted', async ({ page }) => {
   await page.goto('/')
-  await page.getByLabel('Project title').fill('Scrap me')
+  await page.getByLabel('Search projects').fill('Scrap me')
   await page.getByRole('button', { name: 'New project' }).click()
   await page.goto('/')
   await page.getByRole('link', { name: 'Scrap me' }).click()

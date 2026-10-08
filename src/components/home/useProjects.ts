@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { clientsRepo, documentsRepo, projectsRepo } from '../../db/repos'
 import { newInvoice } from '../../document/newInvoice'
-import { overdueInvoices, type OverdueInvoice } from '../../document/overdue'
+import { overdueInvoices } from '../../document/overdue'
 import type { DocumentModel } from '../../document/types'
 import { useMountEffect } from '../../hooks/useMountEffect'
 import { createProject, type Project } from '../../project/project'
+import { receiptsToSend } from '../../project/homeTasks'
 import { realDocuments } from '../../project/sampleProject'
 import { todayIso } from '../../lib/todayIso'
 
@@ -21,25 +22,20 @@ async function loadHome() {
     if (!byProject.has(d.projectId)) byProject.set(d.projectId, [])
     byProject.get(d.projectId)!.push(d)
   }
+  // The sample project never shows up as overdue or as owing a receipt.
+  const real = realDocuments(projects, documents)
   return {
     projects: projects.map((project) => ({ project, documents: byProject.get(project.id) ?? [] })),
-    // The sample project never shows up as overdue.
-    overdue: overdueInvoices(realDocuments(projects, documents), todayIso()),
+    overdue: overdueInvoices(real, todayIso()),
+    receipts: receiptsToSend(real),
     clientNames: new Map(clients.map((c) => [c.id, c.name])),
   }
 }
 
-// Stored projects with their documents, plus creating a project that starts with one invoice.
+// Stored projects with their documents, what needs attention, and creating a project that starts with one invoice.
 export function useProjects() {
-  const [projects, setProjects] = useState<ProjectWithDocuments[] | null>(null)
-  const [clientNames, setClientNames] = useState(new Map<string, string>())
-  const [overdue, setOverdue] = useState<OverdueInvoice[]>([])
-  const reload = () =>
-    loadHome().then((home) => {
-      setProjects(home.projects)
-      setOverdue(home.overdue)
-      setClientNames(home.clientNames)
-    })
+  const [home, setHome] = useState<Awaited<ReturnType<typeof loadHome>> | null>(null)
+  const reload = () => loadHome().then(setHome)
   useMountEffect(() => {
     void reload()
   })
@@ -53,5 +49,12 @@ export function useProjects() {
     return invoice
   }
 
-  return { projects, clientNames, overdue, createWithInvoice, reload }
+  return {
+    projects: home?.projects ?? null,
+    clientNames: home?.clientNames ?? new Map<string, string>(),
+    overdue: home?.overdue ?? [],
+    receipts: home?.receipts ?? [],
+    createWithInvoice,
+    reload,
+  }
 }

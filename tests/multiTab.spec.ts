@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Page } from './helpers/test'
 
 const customerName = (page: Page) =>
   page.locator('#document-root section', { has: page.getByRole('heading', { name: 'Bill to' }) }).locator('[contenteditable]').first()

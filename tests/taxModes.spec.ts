@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './helpers/test'
 
 test('the project tax mode changes how invoice totals are labelled', async ({ page }) => {
   await page.goto('/')

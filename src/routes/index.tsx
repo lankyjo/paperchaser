@@ -1,5 +1,5 @@
 import { BuilderWorkspace } from '../components/builder/BuilderWorkspace'
-import { ProjectsHome } from '../components/projects/ProjectsHome'
+import { HomePage } from '../components/home/HomePage'
 import { FIXTURE_MAP } from '../document/fixtures'
 import { PAGE_SIZES, TEMPLATE_REGISTRY } from '../document/tokens'
 import type { PageSize, TemplateId } from '../document/types'
@@ -24,7 +24,7 @@ export function IndexPage() {
     rawSize !== null && SIZE_KEYS.has(rawSize) ? (rawSize as PageSize) : undefined
 
   // Fixtures render read-only for the parity harness; otherwise the projects home opens.
-  if (key === null) return <ProjectsHome />
+  if (key === null) return <HomePage />
   const fixture = FIXTURE_MAP[key]
   return <BuilderWorkspace model={{ ...fixture, template: template ?? fixture.template, pageSize: pageSize ?? fixture.pageSize }} editable={false} />
 }

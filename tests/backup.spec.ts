@@ -1,9 +1,9 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './helpers/test'
 import { readFileSync } from 'node:fs'
 
 test('a project exports to a file that re-imports as a copy, and a newer-version file is refused', async ({ page }) => {
   await page.goto('/')
-  await page.getByLabel('Project title').fill('Acme rebrand')
+  await page.getByLabel('Search projects').fill('Acme rebrand')
   await page.getByRole('button', { name: 'New project' }).click()
   await page.goto('/')
   await page.getByRole('link', { name: 'Acme rebrand' }).click()
@@ -28,7 +28,7 @@ test('a project exports to a file that re-imports as a copy, and a newer-version
 
 test('restoring a workspace backup downloads the current data first, then replaces it', async ({ page }) => {
   await page.goto('/')
-  await page.getByLabel('Project title').fill('Keep me')
+  await page.getByLabel('Search projects').fill('Keep me')
   await page.getByRole('button', { name: 'New project' }).click()
   await page.goto('/settings')
   const backupDownload = page.waitForEvent('download')
@@ -36,7 +36,7 @@ test('restoring a workspace backup downloads the current data first, then replac
   const backup = readFileSync(await (await backupDownload).path(), 'utf8')
 
   await page.goto('/')
-  await page.getByLabel('Project title').fill('Added later')
+  await page.getByLabel('Search projects').fill('Added later')
   await page.getByRole('button', { name: 'New project' }).click()
   await page.goto('/settings')
   await page.getByLabel('Import file').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(backup) })
@@ -51,7 +51,7 @@ test('restoring a workspace backup downloads the current data first, then replac
 
 test('home reminds to back up until a backup is downloaded, and settings shows when that was', async ({ page }) => {
   await page.goto('/')
-  await page.getByLabel('Project title').fill('Reminder test')
+  await page.getByLabel('Search projects').fill('Reminder test')
   await page.getByRole('button', { name: 'New project' }).click()
   await page.goto('/')
   const reminder = page.getByRole('region', { name: 'Backup reminder' })

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './helpers/test'
 
 test('undo restores the template and page size the builder shows', async ({ page }) => {
   await page.goto('/')

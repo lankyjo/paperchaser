@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './helpers/test'
 import { DOC_TYPE_IDS, DOC_TYPES } from '../src/document/docTypes'
 import { TEMPLATE_REGISTRY } from '../src/document/tokens'
 

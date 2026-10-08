@@ -1,8 +1,8 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './helpers/test'
 
 test('project edits undo and redo on the project page, separately from document history', async ({ page }) => {
   await page.goto('/')
-  await page.getByLabel('Project title').fill('Original title')
+  await page.getByLabel('Search projects').fill('Original title')
   await page.getByRole('button', { name: 'New project' }).click()
   await page.goto('/')
   await page.getByRole('link', { name: 'Original title' }).click()

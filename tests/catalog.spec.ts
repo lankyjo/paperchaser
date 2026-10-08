@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './helpers/test'
 
 test('a saved service is inserted into an invoice as a priced line item', async ({ page }) => {
   await page.goto('/services')

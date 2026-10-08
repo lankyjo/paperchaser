@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { finalizeDocument } from '../finalize'
 import { newInvoice } from '../newInvoice'
-import { newReminder, overdueInvoices } from '../overdue'
+import { newReminder, overdueInvoices, overdueTotal } from '../overdue'
 import { documentSchema, type DocumentModel } from '../types'
 
 const sent = (id: string, dueDate: string, paidMinor = 0): DocumentModel => ({
@@ -38,5 +38,13 @@ describe('newReminder', () => {
     expect(documentSchema.parse(reminder)).toEqual(reminder)
     expect(reminder).toMatchObject({ type: 'reminder', number: '', reminderFor: '1', status: 'draft' })
     expect(JSON.stringify(reminder.blocks)).toContain('INV-1')
+  })
+})
+
+describe('overdueTotal', () => {
+  const late = (currency: string, balanceMinor: number) => ({ invoice: { ...newInvoice({ id: currency + balanceMinor, projectId: 'p', today: '2026-10-01' }), currency, locale: 'en-GB' }, balanceMinor, daysOverdue: 3 })
+
+  it('adds up late balances per currency', () => {
+    expect(overdueTotal([late('EUR', 100000), late('EUR', 84000), late('GBP', 5000)])).toBe('€1,840.00 + £50.00')
   })
 })

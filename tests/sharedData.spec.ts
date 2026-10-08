@@ -1,8 +1,8 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './helpers/test'
 
 test('an invoice reads its client from the project, can override it, and reset back', async ({ page }) => {
   await page.goto('/')
-  await page.getByLabel('Project title').fill('Acme rebrand')
+  await page.getByLabel('Search projects').fill('Acme rebrand')
   await page.getByRole('button', { name: 'New project' }).click()
   await page.goto('/')
   await page.getByRole('link', { name: 'Acme rebrand' }).click()

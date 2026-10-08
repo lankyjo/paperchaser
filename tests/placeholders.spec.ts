@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './helpers/test'
 
 test('sample placeholders are highlighted, survive editing around them, and disappear once replaced', async ({ page }) => {
   await page.goto('/')

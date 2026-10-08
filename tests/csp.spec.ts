@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './helpers/test'
 
 test('the built app blocks inline scripts and network requests to unknown hosts', async ({ page }) => {
   const violations: string[] = []

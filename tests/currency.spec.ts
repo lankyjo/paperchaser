@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './helpers/test'
 
 test('a project in Nigerian naira with British formatting prints amounts that way, and the fee accepts that format', async ({ page }) => {
   await page.goto('/')

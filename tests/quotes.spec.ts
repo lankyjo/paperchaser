@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './helpers/test'
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test('a quote is revised as -R2, only the latest revision can be accepted, and acceptance sets the project fee', async ({ page }) => {
   await page.goto('/')
-  await page.getByLabel('Project title').fill('Acme rebrand')
+  await page.getByLabel('Search projects').fill('Acme rebrand')
   await page.getByRole('button', { name: 'New project' }).click()
   await page.goto('/')
   await page.getByRole('link', { name: 'Acme rebrand' }).click()

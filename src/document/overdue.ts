@@ -57,3 +57,13 @@ export function newReminder(invoice: DocumentModel, balanceMinor: number, { id, 
     ],
   }
 }
+
+// Total late balance, one amount per currency joined with " + ", in each invoice's own format.
+export function overdueTotal(overdue: OverdueInvoice[]): string {
+  const sums = new Map<string, { minor: number; locale: string | undefined }>()
+  for (const { invoice, balanceMinor } of overdue) {
+    const sum = sums.get(invoice.currency) ?? { minor: 0, locale: invoice.locale }
+    sums.set(invoice.currency, { ...sum, minor: sum.minor + balanceMinor })
+  }
+  return [...sums].map(([currency, { minor, locale }]) => formatMoney(minor, currency, locale)).join(' + ')
+}

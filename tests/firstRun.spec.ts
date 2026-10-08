@@ -7,7 +7,7 @@ test('first launch saves your business details and adds a deletable sample proje
   await setup.getByLabel('Email').fill('hello@northwind.test')
   await setup.getByLabel('Address').fill('12 Harbor Lane\nPortland')
   await setup.getByLabel('Payment details (optional)').fill('Harbor Credit Union\nIBAN DE89 3704 0044 0532 0130 00')
-  await setup.getByRole('button', { name: 'Save and add sample project' }).click()
+  await setup.getByRole('button', { name: 'Start', exact: true }).click()
   await expect(setup).toHaveCount(0)
 
   await page.getByRole('link', { name: 'Sample: Acme coffee rebrand' }).click()
@@ -25,4 +25,13 @@ test('first launch saves your business details and adds a deletable sample proje
   await page.getByRole('button', { name: 'Delete project' }).click()
   await page.getByRole('dialog').getByRole('button', { name: 'Delete project' }).click()
   await expect(page.getByRole('link', { name: 'Sample: Acme coffee rebrand' })).toHaveCount(0)
+})
+
+test('the welcome can be skipped, and stays skipped in this browser', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Skip for now' }).click()
+  await expect(page.getByLabel('Search projects or name a new one')).toBeVisible()
+  await page.reload()
+  await expect(page.getByRole('region', { name: 'Set up your business' })).toHaveCount(0)
+  await expect(page.getByLabel('Search projects or name a new one')).toBeVisible()
 })

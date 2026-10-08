@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './helpers/test'
 
 test('the desktop workspace remembers its layout across reloads and panels maximize', async ({ page }) => {
   await page.goto('/')
