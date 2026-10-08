@@ -5,7 +5,7 @@ export const HOME_COPY = {
   welcomeTitleEnd: ', from quote to thank-you.',
   welcomeLead: 'Ten documents, one project. Free, offline, and kept on this device.',
   setupTitle: 'Your business',
-  setupLead: 'This becomes the sender on every document.',
+  setupLead: 'The sender on every quote, invoice and agreement.',
   setupSubmit: 'Start',
   setupHint: 'Adds a sample project to explore',
   skip: 'Skip for now',
