@@ -27,10 +27,11 @@ dist-ssr
 # synthetic fixtures in git). Golden baselines under tests/fixtures/ ARE tracked.
 tests/artifacts/
 
-# local planning scratch and throwaway prototypes
+# local planning notes, decision records and throwaway prototypes
 .scratch/
 prototypes/
-.planning/research/.cache/
+.planning/
+docs/adr/
 workspace.json
 
 # Agent instruction files stay local
