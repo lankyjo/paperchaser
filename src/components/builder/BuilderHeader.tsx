@@ -6,6 +6,7 @@ import { PageSizeSelect } from './PageSizeSelect'
 import { SaveIndicator } from './SaveIndicator'
 import { UndoRedoButtons } from './UndoRedoButtons'
 import { ZoomControls } from './ZoomControls'
+import { BrandMark } from '../brand/BrandMark'
 
 // Builder top bar: brand, editing badge, undo/redo, zoom, save status, page size and preview buttons.
 export function BuilderHeader({
@@ -43,7 +44,10 @@ export function BuilderHeader({
   return (
     <header className="flex h-12 shrink-0 items-center justify-between gap-2 px-4 print:hidden">
       <div className="flex items-center gap-3">
-        <span className="text-base font-semibold tracking-tight">Paperchaser</span>
+        <span className="flex items-center gap-2 text-base font-semibold tracking-tight">
+          <BrandMark className="size-5" />
+          Paperchaser
+        </span>
         {projectId && (
           <Link to="/projects/$projectId" params={{ projectId }} className="text-sm underline">
             Project

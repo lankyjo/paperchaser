@@ -1,6 +1,7 @@
 import { PIPELINE_STEPS } from '../../project/pipeline'
 import type { Company } from '../../document/types'
 import { HOME_COPY } from '../../strings/home'
+import { BrandMark } from '../brand/BrandMark'
 import { RestoreBackupButton } from './RestoreBackupButton'
 import { WelcomeForm } from './WelcomeForm'
 
@@ -10,7 +11,7 @@ export function WelcomeScreen({ onFinish, onRestored }: { onFinish: (company: Co
     <main className="ink -my-6 grid min-h-dvh bg-[oklch(0.2_0.008_60)] lg:grid-cols-[1.1fr_1fr]">
       <section className="flex flex-col justify-between gap-10 px-5 py-8 lg:px-16 lg:py-14">
         <div className="flex items-center gap-2.5 font-semibold">
-          <span aria-hidden="true" className="size-5.5 rounded-md bg-gold" />
+          <BrandMark />
           Paperchaser
         </div>
         <h1 className="max-w-[13ch] text-4xl leading-[1.02] font-semibold tracking-tight lg:text-6xl">

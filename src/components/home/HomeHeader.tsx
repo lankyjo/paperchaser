@@ -1,3 +1,4 @@
+import { BrandMark } from '../brand/BrandMark'
 import { useCompanyProfile } from '../company/useCompanyProfile'
 import { getPlainText } from '../../document/richtext'
 import { useBackup } from '../settings/useBackup'
@@ -18,7 +19,7 @@ export function HomeHeader() {
   const { lastBackupAt } = useBackup()
   return (
     <header className="flex flex-wrap items-center gap-2.5">
-      <span aria-hidden="true" className="size-5.5 rounded-md bg-gold" />
+      <BrandMark />
       <h1 className="font-semibold">{(company && getPlainText(company.name)) || 'Paperchaser'}</h1>
       <span className="ml-auto inline-flex items-center gap-2 text-[12.5px] text-muted-foreground">
         <span aria-hidden="true" className="size-1.5 rounded-full bg-emerald-600" />

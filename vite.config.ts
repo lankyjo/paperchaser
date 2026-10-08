@@ -35,14 +35,19 @@ export default defineConfig({
     VitePWA({
       // 'prompt', never auto-reload: auto-reload refreshes tabs mid-edit and loses form data.
       registerType: 'prompt',
-      includeAssets: ['favicon.svg'],
+      includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'Paperchaser',
         short_name: 'Paperchaser',
-        description: 'Local-first invoice workspace',
+        description: 'Client paperwork for freelancers, from quote to feedback. Free and offline.',
         display: 'standalone',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
+        theme_color: '#1f1b17',
+        background_color: '#1f1b17',
+        icons: [
+          { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'pwa-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'pwa-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        ],
       },
       workbox: {
         cleanupOutdatedCaches: true,
